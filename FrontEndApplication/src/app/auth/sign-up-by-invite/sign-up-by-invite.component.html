@@ -1,0 +1,75 @@
+<!-- Page Content -->
+<form (ngSubmit)="signUp()" style="margin-top: 4%; overflow-x:hidden">
+  <div class="text-center" style="margin-bottom: 2%">
+    <h2>Sign Up</h2>
+  </div>
+
+  <!-- Fullname input -->
+  <div class="mb-3 row justify-content-center" style="width: 35%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="fullname">Fullname: </label>
+    <div class="col-sm-8">
+      <input [(ngModel)]="fullname" name="fullname" type="text" id="fullname" class="form-control" />
+    </div>
+  </div>
+
+  <!-- Email input -->
+  <div class="mb-3 row justify-content-center" style="width: 35%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="username">Email address: </label>
+    <div class="col-sm-8">
+      <input [(ngModel)]="email" name="username" type="email" id="username" class="form-control" />
+    </div>
+  </div>
+
+  <!-- Password input -->
+  <div class="mb-3 row justify-content-center" style="width: 35%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="password">Password: </label>
+    <div class="col-sm-8">
+      <input [(ngModel)]="password" name="password" type="password" id="password" class="form-control" />
+    </div>
+  </div>
+
+  <div class="mb-3 row justify-content-center" style="width: 35%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="confirmPassword">Confirm Password: </label>
+    <div class="col-sm-8">
+      <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" id="confirmPassword"
+        class="form-control" />
+    </div>
+  </div>
+
+  <div class="mb-3 row justify-content-center" style="width: 35%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="searchScientists">Search Scientist: </label>
+    <div class="col-sm-8">
+      <input type="text" [(ngModel)]="searchQuery" name="searchQuery" id="searchScientists" class="form-control">
+    </div>
+  </div>
+
+  <div class="mb-3 row justify-content-center" style="width: 35%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="scientists">Select Scientist: </label>
+    <div class="col-sm-8">
+      <select id="scientists" name="scientist" [(ngModel)]="selectedScientist" class="form-control">
+        <option *ngFor="let scientist of scientists | search : searchQuery" [value]="scientist.id"
+          [selected]="selectedScientist === scientist.id">
+          {{scientist.scientistName}}</option>
+      </select>
+    </div>
+  </div>
+
+
+  <div *ngIf="error.length > 0" class="row mb-4" style="color: red">
+    <div class="col d-flex justify-content-center">
+      <p>{{error}}</p>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center">Sign
+        Up</button>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <p>Already registered? <a routerLink="/auth/signin">Sign In</a></p>
+  </div>
+
+</form>

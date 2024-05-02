@@ -1,0 +1,79 @@
+import { Component, OnInit } from '@angular/core';
+import { ChangePasswordDto, SignUpDto } from '../models/auth.model';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+
+@Component({
+  selector: 'app-auth-set-new-password',
+  templateUrl: './set-new-password.component.html',
+  styleUrls: ['./set-new-password.component.css']
+})
+export class SetNewPasswordComponent implements OnInit {
+  password = '';
+  confirmPassword = '';
+  error = '';
+  token = ''
+
+  constructor(private readonly router: Router, private readonly authService: AuthService,
+    private readonly activatedRoute: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    this.activatedRoute.params.subscribe((data: Params) => {
+      this.token = data['token'];
+      this.authService.existsByForgotPasswordToken(this.token).subscribe({
+        next: (result: boolean) => {
+          if (!result) {
+            this.router.navigateByUrl("/auth/signin");
+          }
+        }
+      });
+    });
+  }
+
+  setNewPassword() {
+    let validationResult = this.validate();
+    if (validationResult.length > 0) {
+      this.error = validationResult;
+      return;
+    } else {
+      this.error = '';
+    }
+
+    let changePasswordDto = new ChangePasswordDto(this.password);
+
+    this.authService.changePassword(this.token, changePasswordDto).subscribe({
+      error: (error: any) => {
+        this.error = error?.error?.error;
+        this.clearPasswordFullname();
+      },
+      complete: () => {
+        this.clear();
+        this.router.navigateByUrl("/auth/signin");
+      }
+    });
+  }
+
+  validate(): string {
+    if (this.password.length < 8) {
+      return "Password must be at least 8 characters long!";
+    } if (this.confirmPassword.length === 0) {
+      return "Enter confirm password!";
+    }
+    if (this.confirmPassword !== this.password) {
+      return "Password and confirm password must match!";
+    }
+    return '';
+  }
+
+  clear() {
+    this.password = '';
+    this.confirmPassword = '';
+    this.error = '';
+  }
+
+  clearPasswordFullname() {
+    this.password = '';
+    this.confirmPassword = '';
+  }
+}
