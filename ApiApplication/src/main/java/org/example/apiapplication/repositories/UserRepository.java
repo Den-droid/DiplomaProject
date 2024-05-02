@@ -15,4 +15,6 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> findByInviteCode(String inviteCode);
 
     boolean existsByForgotPasswordToken(String token);
+    boolean existsByInviteCode(String inviteCode);
+
 }

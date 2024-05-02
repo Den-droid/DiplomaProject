@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { ChangePasswordDto, ForgotPasswordDto, RoleTokensDto, SignInDto, SignUpDto, SignUpScientistDto } from "../models/auth.model";
+import { ChangePasswordDto, ForgotPasswordDto, RoleTokensDto, SignInDto, SignUpByInviteDto, SignUpDto, SignUpScientistDto } from "../models/auth.model";
 import { baseUrl } from "src/app/constants/url.constant";
 import { Observable } from "rxjs";
 
@@ -31,7 +31,15 @@ export class AuthService {
     return this.httpClient.get<boolean>(this.url + "/forgotPassword/tokenExists/" + token);
   }
 
+  existsByInviteCode(inviteCode: string): Observable<boolean> {
+    return this.httpClient.get<boolean>(this.url + "/signUp/existsByInviteCode/" + inviteCode);
+  }
+
   changePassword(token: string, changePasswordDto: ChangePasswordDto): Observable<any> {
     return this.httpClient.post(this.url + "/forgotPassword/change/" + token, changePasswordDto);
+  }
+
+  signUpByInviteCode(inviteCode: string, signUpByInviteCode: SignUpByInviteDto): Observable<any> {
+    return this.httpClient.put(this.url + "/signUp/" + inviteCode, signUpByInviteCode);
   }
 }

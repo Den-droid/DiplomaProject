@@ -13,6 +13,7 @@ import { SignUpSuccessComponent } from './sign-up-success/sign-up-success.compon
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ForgotPasswordSuccessComponent } from './forgot-password-success/forgot-password-success.component';
 import { SetNewPasswordComponent } from './set-new-password/set-new-password.component';
+import { SignUpByInviteComponent } from './sign-up-by-invite/sign-up-by-invite.component';
 
 const authRoutes: Routes = [
   { path: "signin", component: SignInComponent },
@@ -21,14 +22,14 @@ const authRoutes: Routes = [
   { path: "forgotpassword", component: ForgotPasswordComponent },
   { path: "forgotpassword/success/:dummy", component: ForgotPasswordSuccessComponent },
   { path: "forgotpassword/:token", component: SetNewPasswordComponent },
-  { path: "signupbyinvitecode/:inviteCode", component: SignUpSuccessComponent }
+  { path: "signupbyinvitecode/:inviteCode", component: SignUpByInviteComponent }
 ]
 
 @NgModule({
   declarations: [
     AuthComponent, SignInComponent, SignUpComponent, SignUpSuccessComponent,
     ForgotPasswordComponent, ForgotPasswordSuccessComponent,
-    SetNewPasswordComponent, SearchPipe
+    SetNewPasswordComponent, SignUpByInviteComponent, SearchPipe
   ],
   imports: [
     CommonModule, FormsModule, RouterModule.forChild(authRoutes)

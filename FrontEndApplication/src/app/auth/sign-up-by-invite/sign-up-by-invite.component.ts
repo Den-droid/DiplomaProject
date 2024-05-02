@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { SignUpDto, SignUpScientistDto } from '../models/auth.model';
-import { Router } from '@angular/router';
+import { SignUpByInviteDto, SignUpDto, SignUpScientistDto } from '../models/auth.model';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { ValidateEmails } from '../functions/emails.validator';
+import { ValidateEmails } from '../../functions/emails.validator';
 
 @Component({
   selector: 'app-auth-signUp-by-invite',
@@ -14,19 +14,27 @@ export class SignUpByInviteComponent implements OnInit {
   password = '';
   confirmPassword = '';
   error = '';
+  inviteCode = '';
 
-  constructor(private readonly router: Router, private readonly authService: AuthService) {
+  constructor(private readonly router: Router, private readonly authService: AuthService,
+    private readonly activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-
+    this.activatedRoute.params.subscribe((data: Params) => {
+      this.inviteCode = data['inviteCode'];
+      console.log(this.inviteCode);
+      this.authService.existsByInviteCode(this.inviteCode).subscribe({
+        next: (result: boolean) => {
+          if (!result) {
+            this.router.navigateByUrl("/auth/signin");
+          }
+        }
+      });
+    });
   }
 
-  signUpSuccess() {
-    this.router.navigateByUrl("/auth/signin");
-  }
-
-  signUp() {
+  signUpByInviteCode() {
     let validationResult = this.validate();
     if (validationResult.length > 0) {
       this.error = validationResult;
@@ -35,29 +43,23 @@ export class SignUpByInviteComponent implements OnInit {
       this.error = '';
     }
 
-    let signUpDto = new SignUpDto(this.fullname, this.email, this.password, this.selectedScientist);
-    console.log(signUpDto);
+    let signUpByInviteDto = new SignUpByInviteDto(this.fullname, this.password);
 
-    // this.authService.signUp(signUpDto).subscribe({
-    //   error: (error: any) => {
-    //     this.error = error?.error?.error;
-    //     this.clearEmailPasswordFullname();
-    //   },
-    //   complete: () => {
-    //     this.clear();
-    //     this.router.navigateByUrl("/");
-    //   }
-    // });
+    this.authService.signUpByInviteCode(this.inviteCode, signUpByInviteDto).subscribe({
+      error: (error: any) => {
+        this.error = error?.error?.error;
+        this.clearPasswordFullname();
+      },
+      complete: () => {
+        this.clear();
+        this.router.navigateByUrl("/auth/signin");
+      }
+    });
   }
 
   validate(): string {
     if (this.fullname.length === 0) {
       return "Enter fullname!";
-    }
-    if (this.email.length === 0) {
-      return "Enter email!";
-    } if (!ValidateEmails(this.email)) {
-      return "Enter correct email!";
     }
     if (this.password.length < 8) {
       return "Password must be at least 8 characters long!";
@@ -67,22 +69,17 @@ export class SignUpByInviteComponent implements OnInit {
     if (this.confirmPassword !== this.password) {
       return "Password and confirm password must match!";
     }
-    if (this.selectedScientist === 0) {
-      return "Select scientist!";
-    }
     return '';
   }
 
   clear() {
-    this.email = '';
     this.password = '';
     this.confirmPassword = '';
     this.fullname = '';
     this.error = '';
   }
 
-  clearEmailPasswordFullname() {
-    this.email = '';
+  clearPasswordFullname() {
     this.password = '';
     this.confirmPassword = '';
     this.fullname = '';

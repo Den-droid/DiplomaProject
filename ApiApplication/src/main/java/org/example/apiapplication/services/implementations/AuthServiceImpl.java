@@ -184,4 +184,9 @@ public class AuthServiceImpl implements AuthService {
     public boolean existsForgotPasswordToken(String token) {
         return userRepository.existsByForgotPasswordToken(token);
     }
+
+    @Override
+    public boolean existsInviteCode(String inviteCode) {
+        return userRepository.existsByInviteCode(inviteCode);
+    }
 }

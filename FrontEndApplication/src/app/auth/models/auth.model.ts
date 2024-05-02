@@ -27,3 +27,7 @@ export class ForgotPasswordDto {
 export class ChangePasswordDto {
   constructor(public newPassword: string) { }
 }
+
+export class SignUpByInviteDto {
+  constructor(public fullName: string, public password: string) { }
+}

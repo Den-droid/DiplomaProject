@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RoleTokensDto, SignInDto } from '../models/auth.model';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { ValidateEmails } from '../functions/emails.validator';
+import { ValidateEmails } from '../../functions/emails.validator';
 
 @Component({
   selector: 'app-auth-signIn',

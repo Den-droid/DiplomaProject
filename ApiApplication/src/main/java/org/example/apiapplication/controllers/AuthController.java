@@ -42,7 +42,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/signUp/admin/{inviteCode}")
+    @PutMapping("/signUp/{inviteCode}")
     public ResponseEntity<?> adminSignUp(@PathVariable String inviteCode,
                                          @RequestBody AdminSignUpDto adminSignUpDto) {
         authService.signUpAdminByInviteCode(inviteCode, adminSignUpDto);
@@ -53,6 +53,12 @@ public class AuthController {
     public ResponseEntity<?> existsForgotPasswordToken(@PathVariable String token) {
         boolean tokenExists = authService.existsForgotPasswordToken(token);
         return ResponseEntity.ok(tokenExists);
+    }
+
+    @GetMapping("/signUp/existsByInviteCode/{inviteCode}")
+    public ResponseEntity<?> existsByInviteCode(@PathVariable String inviteCode) {
+        boolean codeExists = authService.existsInviteCode(inviteCode);
+        return ResponseEntity.ok(codeExists);
     }
 
     @PostMapping("/forgotPassword/create")

@@ -20,4 +20,7 @@ public interface AuthService {
     void createForgotPassword(ForgotPasswordDto forgotPasswordDto);
 
     boolean existsForgotPasswordToken(String token);
+
+    boolean existsInviteCode(String inviteCode);
+
 }
