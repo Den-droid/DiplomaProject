@@ -11,7 +11,6 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit {
-  fullname = '';
   email = '';
   password = '';
   confirmPassword = '';
@@ -54,7 +53,7 @@ export class SignUpComponent implements OnInit {
       this.error = '';
     }
 
-    let signUpDto = new SignUpDto(this.fullname, this.email, this.password, this.selectedScientist);
+    let signUpDto = new SignUpDto(this.email, this.password, this.selectedScientist);
 
     this.authService.signUp(signUpDto).subscribe({
       error: (error: any) => {
@@ -69,9 +68,6 @@ export class SignUpComponent implements OnInit {
   }
 
   validate(): string {
-    if (this.fullname.length === 0) {
-      return "Enter fullname!";
-    }
     if (this.email.length === 0) {
       return "Enter email!";
     } if (!ValidateEmails(this.email)) {
@@ -95,7 +91,6 @@ export class SignUpComponent implements OnInit {
     this.email = '';
     this.password = '';
     this.confirmPassword = '';
-    this.fullname = '';
     this.error = '';
   }
 
@@ -103,6 +98,5 @@ export class SignUpComponent implements OnInit {
     this.email = '';
     this.password = '';
     this.confirmPassword = '';
-    this.fullname = '';
   }
 }

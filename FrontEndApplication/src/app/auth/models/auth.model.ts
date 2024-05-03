@@ -17,7 +17,7 @@ export class SignUpScientistDto {
 }
 
 export class SignUpDto {
-  constructor(public fullName: string, public email: string, public password: string, public scientistId: number) { }
+  constructor(public email: string, public password: string, public scientistId: number) { }
 }
 
 export class ForgotPasswordDto {

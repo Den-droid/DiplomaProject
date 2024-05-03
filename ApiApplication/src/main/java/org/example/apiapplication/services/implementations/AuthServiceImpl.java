@@ -113,7 +113,6 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         user.setUsername(signUpDto.email());
         user.setEmail(signUpDto.email());
-        user.setFullName(signUpDto.fullName());
         user.setPassword(passwordEncoder.encode(signUpDto.password()));
         user.setApproved(false);
         user.setActive(false);
@@ -128,6 +127,8 @@ public class AuthServiceImpl implements AuthService {
                 .findById(signUpDto.scientistId())
                 .orElseThrow(() -> new ScientistWithIdNotExistsException(signUpDto.scientistId()));
         scientist.setUser(user);
+
+        user.setFullName(scientist.getFullName());
 
         scientistRepository.save(scientist);
         userRepository.save(user);

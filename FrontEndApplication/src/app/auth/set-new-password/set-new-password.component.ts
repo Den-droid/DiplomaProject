@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ChangePasswordDto, SignUpDto } from '../models/auth.model';
+import { ChangePasswordDto } from '../models/auth.model';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
