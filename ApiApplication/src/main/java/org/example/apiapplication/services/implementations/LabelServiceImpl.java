@@ -1,10 +1,8 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
-import org.example.apiapplication.dto.labels.AddLabelDto;
-import org.example.apiapplication.dto.labels.DeleteLabelDto;
-import org.example.apiapplication.dto.labels.EditLabelDto;
-import org.example.apiapplication.dto.labels.LabelDto;
+import org.example.apiapplication.dto.labels.*;
+import org.example.apiapplication.dto.page.PageDto;
 import org.example.apiapplication.entities.Label;
 import org.example.apiapplication.entities.Profile;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
@@ -12,6 +10,8 @@ import org.example.apiapplication.exceptions.label.LabelAlreadyExistsException;
 import org.example.apiapplication.repositories.LabelRepository;
 import org.example.apiapplication.repositories.ProfileRepository;
 import org.example.apiapplication.services.interfaces.LabelService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,19 +32,54 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public List<LabelDto> getAllLabels() {
-        List<LabelDto> labels = new ArrayList<>();
+    public GetLabelsDto getAllLabels(int page) {
+        Page<Label> labelPage = labelRepository.findAll(PageRequest.of(page - 1, 25));
+
+        List<LabelDto> labelDtos = labelPage.getContent().stream()
+                .map(x -> new LabelDto(x.getId(), x.getName()))
+                .toList();
+
+        return new GetLabelsDto(labelDtos, new PageDto(page, labelPage.getTotalPages()));
+    }
+
+    @Override
+    public GetLabelsDto getAllLabels() {
+        List<Label> labels = new ArrayList<>();
 
         for (Label label : labelRepository.findAll()) {
-            labels.add(new LabelDto(label.getId(), label.getName()));
+            labels.add(label);
         }
 
-        return labels;
+        List<LabelDto> labelsDtos = labels.stream()
+                .map(x -> new LabelDto(x.getId(), x.getName()))
+                .toList();
+
+        return new GetLabelsDto(labelsDtos, new PageDto(1, labels.size()));
+    }
+
+    @Override
+    public GetLabelsDto getAllLabelsByName(int page, String name) {
+        Page<Label> labelPage = labelRepository.findByNameContainsIgnoreCase(name.trim(),
+                PageRequest.of(page - 1, 5));
+
+        List<LabelDto> labelDtos = labelPage.getContent().stream()
+                .map(x -> new LabelDto(x.getId(), x.getName()))
+                .toList();
+
+        return new GetLabelsDto(labelDtos, new PageDto(page, labelPage.getTotalPages()));
+    }
+
+    @Override
+    public LabelDto getById(Integer id) {
+        Label label = labelRepository.findById(id)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Label", id));
+
+        return new LabelDto(label.getId(), label.getName());
     }
 
     @Override
     public void add(AddLabelDto addLabelDto) {
-        if (labelRepository.findByName(addLabelDto.name()).isPresent()) {
+        if (labelRepository.findByNameIgnoreCase(addLabelDto.name()).isPresent()) {
             throw new LabelAlreadyExistsException(addLabelDto.name());
         }
 
@@ -59,7 +94,7 @@ public class LabelServiceImpl implements LabelService {
         Label label = labelRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Label", id));
 
-        if (labelRepository.findByNameAndIdNot(editLabelDto.name(), id).isPresent()) {
+        if (labelRepository.findByNameIgnoreCaseAndIdNot(editLabelDto.name(), id).isPresent()) {
             throw new LabelAlreadyExistsException(editLabelDto.name());
         }
 
@@ -91,7 +126,7 @@ public class LabelServiceImpl implements LabelService {
         List<Label> profileLabels = new ArrayList<>();
 
         for (String label : labels) {
-            Optional<Label> optionalLabel = labelRepository.findByName(label);
+            Optional<Label> optionalLabel = labelRepository.findByNameIgnoreCase(label);
             if (optionalLabel.isEmpty()) {
                 Label newLabel = new Label();
                 newLabel.setName(label);

@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface ScientometricSystemService {
     List<ScientometricSystemDto> getAll();
+
+    boolean isExtractionRunningById(Integer id);
+
+    boolean isExtractionPossibleById(Integer id);
 }

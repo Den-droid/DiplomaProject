@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignUpByInviteDto, SignUpDto, SignUpScientistDto } from '../models/auth.model';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { ValidateEmails } from '../../functions/emails.validator';
+import { ValidateEmails } from '../../shared/validators/emails.validator';
 
 @Component({
   selector: 'app-auth-signUp-by-invite',

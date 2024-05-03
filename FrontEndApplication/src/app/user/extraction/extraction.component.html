@@ -1,0 +1,18 @@
+<!-- Page Content -->
+<div style="margin-top: 4%; overflow-x:hidden">
+  <div class="text-center" style="margin-bottom: 2%">
+    <h2>Extraction Statuses</h2>
+  </div>
+
+  <div class="mb-3 row justify-content-center" style="width: 50%; margin-right:auto; margin-left: auto;
+    border: 2px solid lightblue; padding: 5px" *ngFor="let scientometricSystem of scientometricSystems; index as i">
+    <label class="col-sm-4"> {{scientometricSystemsNames[i]}} </label>
+    <div class="col-sm-8 text-center">
+      <label *ngIf="isRunning[i]">This Extraction is already running</label>
+      <label *ngIf="!isRunning[i] && !isPossible[i]">This Extraction
+        can be launched after {{scientometricSystem.nextMinImportDate | date : 'dd.MM.yyyy'}}</label>
+      <button *ngIf="!isRunning[i] && isPossible[i]" type="button" class="btn btn-primary btn-block"
+        (click)="launchExtraction(i,scientometricSystem.name)">Launch Extraction</button>
+    </div>
+  </div>
+</div>

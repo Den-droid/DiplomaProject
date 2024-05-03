@@ -1,16 +1,19 @@
 package org.example.apiapplication.services.interfaces;
 
-import org.example.apiapplication.dto.labels.AddLabelDto;
-import org.example.apiapplication.dto.labels.DeleteLabelDto;
-import org.example.apiapplication.dto.labels.EditLabelDto;
-import org.example.apiapplication.dto.labels.LabelDto;
+import org.example.apiapplication.dto.labels.*;
 import org.example.apiapplication.entities.Label;
 import org.example.apiapplication.entities.Profile;
 
 import java.util.List;
 
 public interface LabelService {
-    List<LabelDto> getAllLabels();
+    GetLabelsDto getAllLabels(int page);
+
+    GetLabelsDto getAllLabels();
+
+    GetLabelsDto getAllLabelsByName(int page, String name);
+
+    LabelDto getById(Integer id);
 
     void add(AddLabelDto addLabelDto);
 

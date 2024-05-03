@@ -2,9 +2,9 @@ import { Pipe, PipeTransform } from "@angular/core";
 import { SignUpScientistDto } from "../models/auth.model";
 
 @Pipe({
-  name: 'search'
+  name: 'scientist_search'
 })
-export class SearchPipe implements PipeTransform {
+export class ScientistSearchPipe implements PipeTransform {
   transform(scientists: SignUpScientistDto[], search: string = ''): SignUpScientistDto[] {
     if (!search.trim()) {
       return scientists;

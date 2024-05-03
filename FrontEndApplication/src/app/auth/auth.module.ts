@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { SignUpComponent } from './sign-up/sign-up.component';
-import { SearchPipe } from './pipes/search.pipe';
+import { ScientistSearchPipe } from './pipes/scientist-search.pipe';
 import { SignUpSuccessComponent } from './sign-up-success/sign-up-success.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ForgotPasswordSuccessComponent } from './forgot-password-success/forgot-password-success.component';
@@ -29,7 +29,7 @@ const authRoutes: Routes = [
   declarations: [
     AuthComponent, SignInComponent, SignUpComponent, SignUpSuccessComponent,
     ForgotPasswordComponent, ForgotPasswordSuccessComponent,
-    SetNewPasswordComponent, SignUpByInviteComponent, SearchPipe
+    SetNewPasswordComponent, SignUpByInviteComponent, ScientistSearchPipe
   ],
   imports: [
     CommonModule, FormsModule, RouterModule.forChild(authRoutes)
@@ -43,7 +43,7 @@ const authRoutes: Routes = [
       },
       multi: true,
       deps: [Router]
-    },
+    }
   ],
   bootstrap: [AuthComponent]
 })

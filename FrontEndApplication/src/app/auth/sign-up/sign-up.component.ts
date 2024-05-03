@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignUpDto, SignUpScientistDto } from '../models/auth.model';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { ValidateEmails } from '../../functions/emails.validator';
+import { ValidateEmails } from '../../shared/validators/emails.validator';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -16,8 +16,19 @@ export class SignUpComponent implements OnInit {
   password = '';
   confirmPassword = '';
   scientists: SignUpScientistDto[] = [];
-  selectedScientist = 1;
-  searchQuery = '';
+  selectedScientist = 0;
+
+  _searchQuery = '';
+
+  public get searchQuery(): string {
+    return this._searchQuery;
+  }
+
+  public set searchQuery(v: string) {
+    this._searchQuery = v;
+    this.selectedScientist = 0;
+  }
+
   error = '';
   uuid = '';
 
@@ -32,10 +43,6 @@ export class SignUpComponent implements OnInit {
         this.selectedScientist = this.scientists[0].id;
       }
     });
-  }
-
-  signUpSuccess() {
-    this.router.navigateByUrl("/auth/signin");
   }
 
   signUp() {

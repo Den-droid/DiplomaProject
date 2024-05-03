@@ -1,0 +1,15 @@
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <a class="page-link" style="cursor: pointer" (click)="previousPage()" >Previous</a>
+    </li>
+    <li class="page-item" [class.active]="currentPage === page" *ngFor="let page of pages; index as i">
+      <a class="page-link" (click)="changePage(page)" style="cursor: pointer" >
+        {{pagesText[i]}}
+      </a>
+    </li>
+    <li class="page-item" [class.disabled]="currentPage === totalPages">
+      <a class="page-link" style="cursor: pointer" (click)="nextPage()">Next</a>
+    </li>
+  </ul>
+</nav>

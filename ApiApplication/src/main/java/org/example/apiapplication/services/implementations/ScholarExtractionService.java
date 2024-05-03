@@ -80,48 +80,48 @@ public class ScholarExtractionService implements ExtractionService {
                 .orElseThrow();
     }
 
-    @Scheduled(fixedDelay = 90, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = 3, timeUnit = TimeUnit.MINUTES)
     @Override
     public void extract() throws IOException {
-        Optional<Extraction> optionalExtraction = extractionRepository
-                .findByScientometricSystemAndIsFinished(scholarScientometricSystem, false);
-
-        if (optionalExtraction.isPresent()) {
-            Extraction extraction = optionalExtraction.get();
-            Optional<ExtractionProfile> optionalExtractionProfile = extractionProfileRepository
-                    .findFirstByExtractionAndIsFinished(extraction, false);
-            if (optionalExtractionProfile.isPresent()) {
-                ExtractionProfile extractionProfile = optionalExtractionProfile.get();
-                Profile profile = extractionProfile.getProfile();
-
-                List<ProfileFieldValue> profileFieldValues = extractScholarProfileFieldValues(profile);
-
-                solveConflicts(profileFieldValues);
-
-                List<Label> labels = labelService.getAllByExtraction(profileFieldValues.stream()
-                        .filter((x) -> x.getField().getRuleType().equals(
-                                fieldRuleTypeRepository.findByName(FieldRuleTypeName.LABELS)
-                                        .orElseThrow(() -> new EntityNotFoundException("Label", x.getValue())))
-                        )
-                        .map(ProfileFieldValue::getValue).toList());
-
-                profile.setLabels(new HashSet<>(labels));
-
-                labelRepository.saveAll(labels);
-
-                extractionProfile.setFinished(true);
-                extractionProfileRepository.save(extractionProfile);
-
-                profileRepository.save(profile);
-                profileFieldValueRepository.saveAll(profileFieldValues);
-            } else {
-                extraction.setFinished(true);
-                extractionRepository.save(extraction);
-                stopExtraction();
-            }
-        } else {
-            stopExtraction();
-        }
+//        Optional<Extraction> optionalExtraction = extractionRepository
+//                .findByScientometricSystemAndIsFinished(scholarScientometricSystem, false);
+//
+//        if (optionalExtraction.isPresent()) {
+//            Extraction extraction = optionalExtraction.get();
+//            Optional<ExtractionProfile> optionalExtractionProfile = extractionProfileRepository
+//                    .findFirstByExtractionAndIsFinished(extraction, false);
+//            if (optionalExtractionProfile.isPresent()) {
+//                ExtractionProfile extractionProfile = optionalExtractionProfile.get();
+//                Profile profile = extractionProfile.getProfile();
+//
+//                List<ProfileFieldValue> profileFieldValues = extractScholarProfileFieldValues(profile);
+//
+//                solveConflicts(profileFieldValues);
+//
+//                List<Label> labels = labelService.getAllByExtraction(profileFieldValues.stream()
+//                        .filter((x) -> x.getField().getRuleType().equals(
+//                                fieldRuleTypeRepository.findByName(FieldRuleTypeName.LABELS)
+//                                        .orElseThrow(() -> new EntityNotFoundException("Label", x.getValue())))
+//                        )
+//                        .map(ProfileFieldValue::getValue).toList());
+//
+//                profile.setLabels(new HashSet<>(labels));
+//
+//                labelRepository.saveAll(labels);
+//
+//                extractionProfile.setFinished(true);
+//                extractionProfileRepository.save(extractionProfile);
+//
+//                profileRepository.save(profile);
+//                profileFieldValueRepository.saveAll(profileFieldValues);
+//            } else {
+//                extraction.setFinished(true);
+//                extractionRepository.save(extraction);
+//                stopExtraction();
+//            }
+//        } else {
+//            stopExtraction();
+//        }
     }
 
     @Override
@@ -169,17 +169,6 @@ public class ScholarExtractionService implements ExtractionService {
     @Override
     public void stopExtraction() {
         postProcessor.postProcessBeforeDestruction(this, BEAN_NAME);
-    }
-
-    @Override
-    public boolean isExtractionRunning() {
-        return extractionRepository.existsByScientometricSystemAndIsFinished(scholarScientometricSystem,
-                false);
-    }
-
-    @Override
-    public boolean isExtractionPossible() {
-        return LocalDate.now().isAfter(scholarScientometricSystem.getNextMinImportDate());
     }
 
     private List<ProfileFieldValue> extractScholarProfileFieldValues(Profile profile) throws IOException {

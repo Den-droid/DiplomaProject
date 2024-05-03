@@ -6,8 +6,4 @@ public interface ExtractionService {
     void extract() throws Exception;
 
     void stopExtraction();
-
-    boolean isExtractionRunning();
-
-    boolean isExtractionPossible();
 }

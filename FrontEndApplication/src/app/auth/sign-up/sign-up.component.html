@@ -48,8 +48,7 @@
     <label class="col-sm-4 col-form-label" for="scientists">Select Scientist: </label>
     <div class="col-sm-8">
       <select id="scientists" name="scientist" [(ngModel)]="selectedScientist" class="form-control">
-        <option *ngFor="let scientist of scientists | search : searchQuery" [value]="scientist.id"
-          [selected]="selectedScientist === scientist.id">
+        <option *ngFor="let scientist of scientists | scientist_search : searchQuery" [value]="scientist.id">
           {{scientist.scientistName}}</option>
       </select>
     </div>

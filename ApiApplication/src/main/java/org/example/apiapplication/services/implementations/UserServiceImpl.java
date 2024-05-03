@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(createAdminDto.email());
         user.setEmail(createAdminDto.email());
         user.setApproved(false);
+        user.setActive(false);
         user.setInviteCode(UUID.randomUUID().toString());
 
         List<Role> roles = new ArrayList<>();
@@ -220,6 +221,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow();
 
         userPermission.setApproved(true);
+        userPermissionRepository.save(userPermission);
     }
 
     @Override

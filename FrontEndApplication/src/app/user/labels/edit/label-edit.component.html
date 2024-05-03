@@ -1,0 +1,28 @@
+<form (ngSubmit)="editLabel()" style="margin-top: 4%; overflow-x:hidden">
+
+  <div class="text-center" style="margin-bottom: 2%">
+    <h2>Edit Label</h2>
+  </div>
+
+  <div class="mb-3 row justify-content-center" style="width: 40%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="name">Name: </label>
+    <div class="col-sm-8">
+      <input [(ngModel)]="name" name="name" type="text" id="name" class="form-control" />
+    </div>
+  </div>
+
+  <div *ngIf="error.length > 0" class="row mb-4" style="color: red">
+    <div class="col d-flex justify-content-center">
+      <p>{{error}}</p>
+    </div>
+  </div>
+
+  <div class="row mb-4" style="width: 40%; margin-right:auto; margin-left: auto">
+    <div class="col d-flex justify-content-between">
+      <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
+        routerLink="/user/labels">Back</button>
+      <button type="submit" data-mdb-button-init data-mdb-ripple-init
+        class="btn btn-primary btn-block text-center">Edit</button>
+    </div>
+  </div>
+</form>

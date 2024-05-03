@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ChangePasswordDto, ForgotPasswordDto, RoleTokensDto, SignInDto, SignUpByInviteDto, SignUpDto, SignUpScientistDto } from "../models/auth.model";
-import { baseUrl } from "src/app/constants/url.constant";
+import { baseUrl } from "src/app/shared/constants/url.constant";
 import { Observable } from "rxjs";
 
 @Injectable()

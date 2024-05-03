@@ -3,5 +3,6 @@ package org.example.apiapplication.services.interfaces;
 import java.io.IOException;
 
 public interface ImportService {
-    void importFromFile() throws IOException;
+    void importFaculties() throws IOException;
+    void importScientists() throws IOException;
 }
