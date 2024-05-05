@@ -3,12 +3,17 @@ package org.example.apiapplication.services.interfaces;
 import org.example.apiapplication.dto.permissions.UserPermissionDto;
 import org.example.apiapplication.dto.user.CreateAdminDto;
 import org.example.apiapplication.dto.user.EditAdminDto;
+import org.example.apiapplication.dto.user.GetUsersDto;
 import org.example.apiapplication.entities.user.User;
 
 import java.util.List;
 
 public interface UserService {
     List<UserPermissionDto> getUserPermissions(User user);
+
+    List<GetUsersDto> getUsersByApprovalAndUser(User user);
+
+    List<GetUsersDto> getUsersByNotApprovedPermissions(User user);
 
     void createAdmin(CreateAdminDto createAdminDto);
 

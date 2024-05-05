@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { SignUpByInviteDto } from '../models/auth.model';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { SignUpByInviteDto } from 'src/app/shared/models/auth.model';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-auth-signUp-by-invite',

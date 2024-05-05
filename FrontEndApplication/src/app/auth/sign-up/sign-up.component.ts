@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { SignUpDto, SignUpScientistDto } from '../models/auth.model';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
 import { ValidateEmails } from '../../shared/validators/emails.validator';
 import { v4 as uuidv4 } from 'uuid';
+import { SignUpScientistDto, SignUpDto } from 'src/app/shared/models/auth.model';
+import { AuthService } from 'src/app/shared/services/auth.service';
+import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
 
 @Component({
   selector: 'app-auth-signUp',

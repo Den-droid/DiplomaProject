@@ -25,6 +25,32 @@ public class WebSecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
 
+    private final String[] sharedUrls = {
+            "/api/auth",
+            "/api/auth/**",
+            "/api/scientometricSystems",
+            "/api/chairs",
+            "/api/chairs/**",
+            "/api/faculties",
+            "/api/faculties/**",
+    };
+
+    private final String[] mainAdminUrls = {
+            "/api/labels",
+            "/api/labels/**",
+            "/api/extraction/**",
+            "/api/scientometricSystems/**"
+    };
+
+    private final String[] facultyChairMainAdminUrls = {
+            "/api/users",
+            "/api/users/**"
+    };
+
+    private final String[] userUrls = {
+
+    };
+
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
                              AuthEntryPointJwt unauthorizedHandler,
                              JwtUtils jwtUtils) {
@@ -64,15 +90,15 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/profiles").permitAll()
-                                .requestMatchers("/api/profiles/**").permitAll()
-                                .requestMatchers("/api/extraction/**").permitAll()
-                                .requestMatchers("/api/scientometricSystems").permitAll()
-                                .requestMatchers("/api/scientometricSystems/**").permitAll()
-                                .requestMatchers("/api/labels").permitAll()
-                                .requestMatchers("/api/labels/**").permitAll()
-                                .anyRequest().authenticated()
+                                auth.requestMatchers(sharedUrls).permitAll()
+                                        .requestMatchers(mainAdminUrls).permitAll()
+                                        .requestMatchers(facultyChairMainAdminUrls).permitAll()
+                                        .requestMatchers(userUrls).permitAll()
+//                                        .requestMatchers(mainAdminUrls).hasAuthority("ROLE_" + UserRole.MAIN_ADMIN.name())
+//                                .requestMatchers(facultyChairAdminUrls).hasAnyAuthority("ROLE_" + UserRole.FACULTY_ADMIN.name(),
+//                                        "ROLE_" + UserRole.CHAIR_ADMIN.name())
+//                                .requestMatchers(userUrls).hasAuthority("ROLE_" + UserRole.USER.name())
+                                        .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());

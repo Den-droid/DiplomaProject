@@ -23,13 +23,13 @@ public class ScientometricSystemController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/{id}/isRunning")
+    @GetMapping("/extraction/{id}/isRunning")
     public ResponseEntity<?> getScientometricSystemIsRunning(@PathVariable Integer id) {
         boolean isRunning = scientometricSystemService.isExtractionRunningById(id);
         return ResponseEntity.ok(isRunning);
     }
 
-    @GetMapping("/{id}/isPossible")
+    @GetMapping("/extraction/{id}/isPossible")
     public ResponseEntity<?> getScientometricSystemIsPossible(@PathVariable Integer id) {
         boolean isPossible = scientometricSystemService.isExtractionPossibleById(id);
         return ResponseEntity.ok(isPossible);

@@ -19,7 +19,7 @@ public class AuthController {
 
     @PostMapping("/signIn")
     public ResponseEntity<?> authenticateUser(@RequestBody SignInDto signInDto) {
-        RoleTokensDto jwtDto = authService.signIn(signInDto);
+        TokensDto jwtDto = authService.signIn(signInDto);
         return ResponseEntity.ok(jwtDto);
     }
 

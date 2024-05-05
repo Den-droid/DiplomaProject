@@ -9,7 +9,7 @@ public interface AuthService {
 
     void signUpAdminByInviteCode(String inviteCode, AdminSignUpDto adminSignUpDto);
 
-    RoleTokensDto signIn(SignInDto signInDto);
+    TokensDto signIn(SignInDto signInDto);
 
     List<SignUpScientistDto> getSignUpPageDto();
 

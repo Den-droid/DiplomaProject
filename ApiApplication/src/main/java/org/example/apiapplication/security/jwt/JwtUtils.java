@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
@@ -25,16 +28,20 @@ public class JwtUtils {
     @Value("${app.jwt.refresh-expiration-ms}")
     private long refreshTokenExpirationMs;
 
-    public String generateAccessToken(String username) {
-        return generateTokenFromUsername(username, accessTokenSecret, accessTokenExpirationMs);
+    public String generateAccessToken(String username, List<String> roles, String fullName) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roles);
+        claims.put("fullName", fullName);
+        return generateTokenFromUsername(username, claims, accessTokenSecret, accessTokenExpirationMs);
     }
 
     public String generateRefreshToken(String username) {
-        return generateTokenFromUsername(username, refreshTokenSecret, refreshTokenExpirationMs);
+        return generateTokenFromUsername(username, new HashMap<>(), refreshTokenSecret, refreshTokenExpirationMs);
     }
 
-    public String generateTokenFromUsername(String username, String secret, long expirationMs) {
+    public String generateTokenFromUsername(String username, Map<String, Object> claims, String secret, long expirationMs) {
         return Jwts.builder().setSubject(username).setIssuedAt(new Date())
+                .addClaims(claims)
                 .setExpiration(new Date((new Date()).getTime() + expirationMs))
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();

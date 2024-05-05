@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RoleTokensDto signIn(SignInDto signInDto) {
+    public TokensDto signIn(SignInDto signInDto) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(signInDto.email(), signInDto.password()));
 
@@ -69,16 +69,18 @@ public class AuthServiceImpl implements AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = jwtUtils.generateAccessToken(signInDto.email());
+        List<String> roles = user.getRoles().stream()
+                .map(x -> x.getName().name())
+                .toList();
+
+        String accessToken = jwtUtils.generateAccessToken(signInDto.email(), roles, user.getFullName());
         String refreshToken = jwtUtils.generateRefreshToken(signInDto.email());
 
         user.setRefreshToken(refreshToken);
 
         userRepository.save(user);
 
-        return new RoleTokensDto(user.getRoles().stream()
-                .map((x) -> x.getName().name())
-                .toList(), new TokensDto(accessToken, refreshToken));
+        return new TokensDto(accessToken, refreshToken);
     }
 
     @Override
@@ -94,7 +96,11 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
 
-        String accessToken = jwtUtils.generateAccessToken(user.getUsername());
+        List<String> roles = user.getRoles().stream()
+                .map(x -> x.getName().name())
+                .toList();
+
+        String accessToken = jwtUtils.generateAccessToken(user.getUsername(), roles, user.getFullName());
         String refreshToken = jwtUtils.generateRefreshToken(user.getUsername());
 
         user.setRefreshToken(refreshToken);
