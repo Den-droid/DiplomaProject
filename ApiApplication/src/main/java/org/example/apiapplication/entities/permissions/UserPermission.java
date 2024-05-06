@@ -11,7 +11,6 @@ public class UserPermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private boolean isApproved;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

@@ -4,7 +4,7 @@ import org.example.apiapplication.dto.fields.ProfileFieldDto;
 import org.example.apiapplication.dto.labels.LabelDto;
 import org.example.apiapplication.dto.profile.AddProfileDto;
 import org.example.apiapplication.dto.profile.EditProfileDto;
-import org.example.apiapplication.dto.profile.ProfilePreviewDto;
+import org.example.apiapplication.dto.profile.GetProfilesDto;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.ProfileService;
@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/profiles")
+@CrossOrigin
 public class ProfileController {
     private final ProfileService profileService;
     private final SessionUtil sessionUtil;
@@ -38,10 +39,24 @@ public class ProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getByUserAndScientometricSystem(@RequestParam Integer scientometricSystemId) {
+    public ResponseEntity<?> getByUserAndScientometricSystem(@RequestParam Integer scientometricSystemId,
+                                                             @RequestParam Integer currentPage) {
         User user = sessionUtil.getUserFromSession();
-        List<ProfilePreviewDto> profilePreviewDtos = profileService
-                .getByUserAndScientometricSystemId(user, scientometricSystemId);
+        GetProfilesDto profilePreviewDtos = profileService
+                .getByUserAndScientometricSystemId(user, scientometricSystemId, currentPage);
+        return ResponseEntity.ok(profilePreviewDtos);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> getByUserAndScientometricSystem(@RequestParam Integer scientometricSystemId,
+                                                             @RequestParam String fullName,
+                                                             @RequestParam Integer facultyId,
+                                                             @RequestParam Integer chairId,
+                                                             @RequestParam Integer currentPage) {
+        User user = sessionUtil.getUserFromSession();
+        GetProfilesDto profilePreviewDtos = profileService
+                .searchByUserAndScientometricSystemId(user, scientometricSystemId, fullName,
+                        facultyId, chairId, currentPage);
         return ResponseEntity.ok(profilePreviewDtos);
     }
 
@@ -58,25 +73,25 @@ public class ProfileController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/activate")
+    @GetMapping("/{id}/activate")
     public ResponseEntity<?> activateProfile(@PathVariable Integer id) {
         profileService.activate(id);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/deactivate")
+    @GetMapping("/{id}/deactivate")
     public ResponseEntity<?> deactivateProfile(@PathVariable Integer id) {
         profileService.deactivate(id);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/markDoubtful")
+    @GetMapping("/{id}/markDoubtful")
     public ResponseEntity<?> markDoubtful(@PathVariable Integer id) {
         profileService.markWorksDoubtful(id);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/unmarkDoubtful")
+    @GetMapping("/{id}/unmarkDoubtful")
     public ResponseEntity<?> unmarkDoubtful(@PathVariable Integer id) {
         profileService.unmarkWorksDoubtful(id);
         return ResponseEntity.ok().build();

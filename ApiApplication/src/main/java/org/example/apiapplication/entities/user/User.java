@@ -5,6 +5,7 @@ import lombok.Data;
 import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
 import org.example.apiapplication.entities.Scientist;
+import org.example.apiapplication.entities.permissions.Permission;
 import org.example.apiapplication.entities.permissions.UserPermission;
 
 import java.util.ArrayList;
@@ -62,9 +63,16 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "chair_id"))
     private Set<Chair> chairs = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_permissions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<Permission> permissions = new HashSet<>();
+
     // actually it is one to one relation but due to the system features it is one to many
     @OneToMany(mappedBy = "user")
-    private List<Scientist> user = new ArrayList<>();
+    private List<Scientist> scientists = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<UserPermission> userPermissions = new ArrayList<>();

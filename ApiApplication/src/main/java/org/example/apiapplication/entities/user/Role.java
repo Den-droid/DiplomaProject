@@ -2,6 +2,7 @@ package org.example.apiapplication.entities.user;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.example.apiapplication.entities.permissions.Permission;
 import org.example.apiapplication.enums.UserRole;
 
 import java.util.HashSet;
@@ -20,4 +21,18 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "role_possible_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<Permission> possiblePermissions = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "role_default_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<Permission> defaultPermissions = new HashSet<>();
 }

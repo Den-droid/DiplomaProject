@@ -1,0 +1,16 @@
+insert into role_possible_permissions(role_id, permission_id)
+values (2, 1),
+       (2, 2),
+       (2, 3),
+       (2, 4),
+       (2, 5),
+       (2, 6),
+       (3, 1),
+       (3, 2),
+       (3, 3),
+       (3, 4),
+       (3, 5),
+       (3, 6),
+       (4, 1),
+       (4, 2),
+       (4, 3);

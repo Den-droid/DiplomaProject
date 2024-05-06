@@ -20,8 +20,8 @@ public class Profile {
     @Column(name = "are_works_doubtful")
     private boolean areWorksDoubtful;
 
-    @Column(name = "is_deactivated")
-    private boolean isDeactivated;
+    @Column(name = "is_active")
+    private boolean isActive;
 
     @Column(name = "profile_user_id")
     private String profileUserId;

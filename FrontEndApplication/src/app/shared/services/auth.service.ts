@@ -4,7 +4,7 @@ import { ChangePasswordDto, ForgotPasswordDto, RefreshTokenDto, SignInDto, SignU
 import { baseUrl } from "src/app/shared/constants/url.constant";
 import { Observable } from "rxjs";
 import { JWTTokenService } from "./jwt-token.service";
-import { Roles } from "../constants/roles.constant";
+import { RoleName } from "../constants/roles.constant";
 
 @Injectable({
   providedIn: 'root'
@@ -56,16 +56,20 @@ export class AuthService {
   }
 
   isUser(): boolean {
-    return this.jwtService.getRoles()?.includes(Roles.USER) ?? false;
+    return this.jwtService.getRoles()?.includes(RoleName.USER) ?? false;
   }
 
-  isFacultyChairAdmin(): boolean {
-    return (this.jwtService.getRoles()?.includes(Roles.FACULTY_ADMIN)
-      || this.jwtService.getRoles()?.includes(Roles.CHAIR_ADMIN)) ?? false;
+  isChairAdmin(): boolean {
+    return this.jwtService.getRoles()?.includes(RoleName.CHAIR_ADMIN) ?? false;
+  }
+
+  isFacultyAdmin(): boolean {
+    return this.jwtService.getRoles()?.includes(RoleName.FACULTY_ADMIN)
+      ?? false;
   }
 
   isAdmin(): boolean {
-    return this.jwtService.getRoles()?.includes(Roles.MAIN_ADMIN) ?? false;
+    return this.jwtService.getRoles()?.includes(RoleName.MAIN_ADMIN) ?? false;
   }
 
   logout() {

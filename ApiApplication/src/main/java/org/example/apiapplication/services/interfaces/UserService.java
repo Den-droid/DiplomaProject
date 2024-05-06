@@ -1,19 +1,25 @@
 package org.example.apiapplication.services.interfaces;
 
-import org.example.apiapplication.dto.permissions.UserPermissionDto;
 import org.example.apiapplication.dto.user.CreateAdminDto;
 import org.example.apiapplication.dto.user.EditAdminDto;
 import org.example.apiapplication.dto.user.GetUsersDto;
+import org.example.apiapplication.dto.user.UserDto;
 import org.example.apiapplication.entities.user.User;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserPermissionDto> getUserPermissions(User user);
+    GetUsersDto getUsersByUser(User user, Integer page);
 
-    List<GetUsersDto> getUsersByApprovalAndUser(User user);
+    GetUsersDto searchUsersByUser(User user, String fullName, Integer roleId, Integer facultyId, Integer chairId, Integer page);
 
-    List<GetUsersDto> getUsersByNotApprovedPermissions(User user);
+    boolean existsById(Integer id);
+
+    UserDto getById(Integer id);
+
+    List<String> getUserRoles(Integer userId);
+
+    EditAdminDto getEditDto(Integer userId);
 
     void createAdmin(CreateAdminDto createAdminDto);
 
@@ -26,10 +32,4 @@ public interface UserService {
     void approveUser(Integer id);
 
     void rejectUser(Integer id);
-
-    void askPermission(Integer userId, Integer permissionId);
-
-    void approvePermission(Integer userId, Integer permissionId);
-
-    void rejectPermission(Integer userId, Integer permissionId);
 }

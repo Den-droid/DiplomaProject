@@ -11,7 +11,7 @@ import { Router } from "@angular/router";
   providedIn: 'root',
 })
 export class AuthorizeInterceptor implements HttpInterceptor {
-  constructor(private readonly jwtService: JWTTokenService, private readonly authService: AuthService, private readonly router: Router) { }
+  constructor(private readonly jwtService: JWTTokenService, private readonly authService: AuthService) { }
 
   // intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   //   return this.processRequestWithToken(req, next);
@@ -48,7 +48,7 @@ export class AuthorizeInterceptor implements HttpInterceptor {
   //   return next.handle(req);
   // }
 
-  refresh = false;
+  // refresh = false;
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const req = request.clone({
@@ -57,29 +57,31 @@ export class AuthorizeInterceptor implements HttpInterceptor {
       }
     });
 
-    return next.handle(req).pipe(catchError((err: HttpErrorResponse) => {
-      if (err.status === 401 && !this.refresh) {
-        this.refresh = true;
+    return next.handle(req);
 
-        console.log("refresh");
+    // return next.handle(req).pipe(catchError((err: HttpErrorResponse) => {
+    //   if (err.status === 401 && !this.refresh) {
+    //     this.refresh = true;
 
-        return this.authService.refreshToken(new RefreshTokenDto(this.jwtService.getRefreshToken())).pipe(
-          switchMap((res: TokensDto) => {
-            console.log(res);
+    //     console.log("refresh");
 
-            this.jwtService.setToken(res.accessToken);
-            this.jwtService.setRefreshToken(res.refreshToken);
+    //     return this.authService.refreshToken(new RefreshTokenDto(this.jwtService.getRefreshToken())).pipe(
+    //       switchMap((res: TokensDto) => {
+    //         console.log(res);
 
-            return next.handle(request.clone({
-              setHeaders: {
-                Authorization: `Bearer ${this.jwtService.getToken()}`
-              }
-            }));
-          })
-        );
-      }
-      this.refresh = false;
-      return throwError(() => err);
-    }));
+    //         this.jwtService.setToken(res.accessToken);
+    //         this.jwtService.setRefreshToken(res.refreshToken);
+
+    //         return next.handle(request.clone({
+    //           setHeaders: {
+    //             Authorization: `Bearer ${this.jwtService.getToken()}`
+    //           }
+    //         }));
+    //       })
+    //     );
+    //   }
+    //   this.refresh = false;
+    //   return throwError(() => err);
+    // }));
   }
 }

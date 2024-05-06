@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ScientometricSystem, mapStringToScientometricSystem } from '../../shared/models/scientometric.model';
+import { ScientometricSystem, mapStringToScientometricSystemLabel } from '../../shared/models/scientometric.model';
 import { ExtractionService } from '../../shared/services/extraction.service';
-import { ScientometricSystemName } from 'src/app/shared/constants/scientometric-system.constant';
+import { ScientometricSystemLabel, ScientometricSystemName } from 'src/app/shared/constants/scientometric-system.constant';
+import { ScientometricSystemService } from 'src/app/shared/services/scientometric-System.service';
 
 @Component({
   selector: 'app-administration-extraction',
@@ -12,23 +13,24 @@ export class ExtractionComponent implements OnInit {
   isRunning: boolean[] = [];
   isPossible: boolean[] = [];
   scientometricSystems: ScientometricSystem[] = [];
-  scientometricSystemsNames: ScientometricSystemName[] = [];
+  scientometricSystemsLabels: ScientometricSystemLabel[] = [];
   dateNow = Date.now();
 
-  constructor(private readonly extractionService: ExtractionService) {
+  constructor(private readonly extractionService: ExtractionService,
+    private readonly scientometricSystemService: ScientometricSystemService) {
 
   }
 
   ngOnInit(): void {
-    this.extractionService.getAllScientometricSystems().subscribe({
+    this.scientometricSystemService.getAllScientometricSystems().subscribe({
       next: (data: ScientometricSystem[]) => {
         this.scientometricSystems = data;
 
         for (let scientometricSystem of data) {
-          this.scientometricSystemsNames.push(mapStringToScientometricSystem(scientometricSystem.name));
+          this.scientometricSystemsLabels.push(mapStringToScientometricSystemLabel(scientometricSystem.name));
           this.isPossible.push(new Date(scientometricSystem.nextMinImportDate).getTime() < this.dateNow);
 
-          this.extractionService.getExtractionIsRunning(scientometricSystem.id).subscribe({
+          this.scientometricSystemService.getExtractionIsRunning(scientometricSystem.id).subscribe({
             next: (result: boolean) => {
               this.isRunning.push(result);
             }
@@ -39,9 +41,9 @@ export class ExtractionComponent implements OnInit {
   }
 
   launchExtraction(index: number, name: string) {
-    let enumName = mapStringToScientometricSystem(name);
+    let enumName = mapStringToScientometricSystemLabel(name);
     switch (enumName) {
-      case ScientometricSystemName.SCHOLAR:
+      case ScientometricSystemLabel.SCHOLAR:
         this.extractionService.launchScholarExtraction().subscribe({
           complete: () => {
             this.isRunning[index] = true;

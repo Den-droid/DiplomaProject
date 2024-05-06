@@ -33,6 +33,8 @@ public class WebSecurityConfig {
             "/api/chairs/**",
             "/api/faculties",
             "/api/faculties/**",
+            "/api/profiles",
+            "/api/profiles/**"
     };
 
     private final String[] mainAdminUrls = {

@@ -1,0 +1,47 @@
+<div style="margin-top: 4%; overflow-x:hidden">
+  <div class="text-center" style="margin-bottom: 2%">
+    <h2>Edit Admin</h2>
+  </div>
+
+  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+    <label class="col-sm-4 col-form-label" for="fullname">Full name: </label>
+    <div class="col-sm-8">
+      <input [(ngModel)]="fullName" name="fullname" type="text" id="fullname" class="form-control" />
+    </div>
+  </div>
+
+  <div *ngIf="errorFullname.length > 0" class="row mb-4" style="color: red">
+    <div class="col d-flex justify-content-center">
+      <p>{{errorFullname}}</p>
+    </div>
+  </div>
+
+  <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
+    <div class="col d-flex justify-content-between">
+      <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
+        routerLink="/user/users">Back</button>
+      <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
+        (click)="editFullname()">Save</button>
+    </div>
+  </div>
+
+  <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN'">
+    <div class="text-center" style="margin-bottom: 2%">
+      <h4>Default Permissions</h4>
+    </div>
+
+    <div class="mb-3 row d-flex justify-content-between"
+      style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
+
+    </div>
+
+    <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
+      <div class="col d-flex justify-content-between">
+        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
+          routerLink="/user/users">Back</button>
+        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center">
+          Save</button>
+      </div>
+    </div>
+  </ng-template>
+</div>

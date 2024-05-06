@@ -3,35 +3,83 @@
     <h2>Users</h2>
   </div>
 
-  <div class="mb-3 row d-flex justify-content-between" style="width: 50%; margin-right:auto; margin-left: auto">
-    <div class="col-sm-8 d-flex justify-content-start">
-      <input type="text" [(ngModel)]="searchQuery" name="searchLabel" id="searchLabel" style="width: 100%">
-      <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-        style="margin-left: 25px" (click)="search(1)">Search</button>
+  <div class="mb-3 row d-flex justify-content-between" style="width: 65%; margin-right:auto; margin-left: auto">
+    <div [ngClass]="{'col-sm-8': canAddUser, 'col-sm-12': !canAddUser}">
+      <div>
+        <div class="mb-3 d-flex justify-content-between">
+          <label class="col-sm-4 col-form-label" for="searchUser">Enter full name: </label>
+          <input class="col-sm-8" type="text" [(ngModel)]="searchQuery" name="searchUser" id="searchUser">
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <label class="col-sm-4 col-form-label" for="selectRole">Select user role: </label>
+          <select class="col-sm-8" name="role" [(ngModel)]="selectedRole" id="selectRole">
+            <option *ngFor="let role of roles" [value]="role.id">
+              {{role.name}}</option>
+          </select>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <label class="col-sm-4 col-form-label" for="selectFaculty">Select faculty: </label>
+          <select class="col-sm-8" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty"
+            [disabled]="selectedRole === 0 || isFacultyDisabled">
+            <option *ngFor="let faculty of faculties" [value]="faculty.id">
+              {{faculty.name}}</option>
+          </select>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <label class="col-sm-4 col-form-label" for="selectChair">Select chair: </label>
+          <select class="col-sm-8" id="chairs" name="selectChair" [(ngModel)]="selectedChair"
+            [disabled]="selectedFaculty === 0 || isChairDisabled">
+            <option *ngFor="let chair of displayedChairs" [value]="chair.id">
+              {{chair.name}}</option>
+          </select>
+        </div>
+        <div *ngIf="error.length > 0" class="row mb-4" style="color: red">
+          <div class="col d-flex justify-content-center">
+            <p>{{error}}</p>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between">
+          <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
+            (click)="clear()">Clear</button>
+          <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
+            (click)="search(1)">Search</button>
+        </div>
+      </div>
     </div>
-    <div class="col-sm-4 d-flex justify-content-end">
-      <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-        style="margin-left: 25px" (click)="goToAddPage()">Add Admin</button>
-    </div>
+    <ng-template [ngIf]="canAddUser">
+      <div class="col-sm-4 d-flex justify-content-end align-items-center">
+        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
+          (click)="goToAddPage()">Add Admin</button>
+      </div>
+    </ng-template>
   </div>
 
-  <!--
 
-  <div *ngIf="isEmpty" class="text-center" style="margin-bottom: 2%">
+  <div *ngIf="displayedUsers.length === 0" class="text-center" style="margin-bottom: 2%">
     <p>No records found</p>
   </div>
 
-  <ng-template [ngIf]="!isEmpty">
-    <div class="mb-3 row justify-content-center" style="width: 50%; margin-right:auto; margin-left: auto;
-    border: 2px solid lightblue; padding: 5px" *ngFor="let label of displayedLabels">
-      <label class="col-sm-4"> {{label.name}}</label>
-      <div class="col-sm-8 d-flex justify-content-around align-items-center">
-        <button type="submit" class="btn btn-primary btn-block" (click)="goToEditPage(label.id)">Edit</button>
-        <button type="submit" class="btn btn-primary btn-block" (click)="goToDeletePage(label.id)">Delete</button>
+  <ng-template [ngIf]="displayedUsers.length !== 0">
+    <div class="mb-3 row justify-content-center align-items-center" style="width: 65%; margin-right:auto; margin-left: auto;
+    border: 2px solid lightblue; padding: 5px" *ngFor="let user of displayedUsers">
+      <label class="col-sm-4"> {{user.email}}</label>
+      <label class="col-sm-4"> {{user.fullName == null || user.fullName == '' ?
+        'This user needs to complete sign up by following link in email' : user.fullName}}</label>
+      <div class="col-sm-4 d-flex align-items-center flex-column">
+        <button *ngIf="!user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
+          class="btn btn-primary btn-block" (click)="approve(user.id)">Approve</button>
+        <button *ngIf="!user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
+          class="btn btn-primary btn-block" (click)="reject(user.id)">Reject</button>
+        <button *ngIf="user.isActive" class="mb-3" style="margin-top: 10px; margin-bottom: 10pxx" type="button"
+          class="btn btn-primary btn-block" (click)="goToEditPage(user.id)">Edit</button>
+        <button *ngIf="!user.isActive && user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
+          type="button" class="btn btn-primary btn-block" (click)="activate(user.id)">Activate</button>
+        <button *ngIf="user.isActive && user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
+          type="button" class="btn btn-primary btn-block" (click)="deactivate(user.id)">Deactivate</button>
       </div>
     </div>
   </ng-template>
 
   <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
-    (pageChange)="pageChange($event)"></app-pagination> -->
+    (pageChange)="pageChange($event)"></app-pagination>
 </div>

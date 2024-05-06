@@ -4,5 +4,5 @@ import org.example.apiapplication.dto.page.PageDto;
 
 import java.util.List;
 
-public record GetUsersDto(List<UserDto> users, PageDto page) {
+public record GetUsersDto(List<UserDto> users, PageDto pageDto) {
 }

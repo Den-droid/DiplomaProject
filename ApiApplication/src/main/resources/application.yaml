@@ -26,8 +26,8 @@ app:
   jwt:
     access-token-secret: "==================ApiApplicationSecretAccessTokenKey====================="
     refresh-token-secret: "==================ApiApplicationSecretRefreshTokenKey====================="
-    expiration-ms: 60000
-    refresh-expiration-ms: 120000
+    expiration-ms: 3600000
+    refresh-expiration-ms: 86400000
 
 scholar:
   faculty_source: db/scholar_init/chairs-list-2024.xlsx

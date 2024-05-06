@@ -125,10 +125,10 @@ public class ExcelImportService implements ImportService {
                                 .orElseThrow(() -> new NoSuchElementException(finalSearchQuery
                                         + chairsFound.get(0).getFaculty().getUkrainianAbbreviation()));
 
-                        profile.setDeactivated(false);
+                        profile.setActive(true);
                     } else if (chairsFound.size() == 1) {
                         chair = chairsFound.get(0);
-                        profile.setDeactivated(false);
+                        profile.setActive(true);
                     } else {
                         // Either Faculty name or not existing chair/faculty name is written in Excel as chair
                         searchQuery = row.get(1);
@@ -138,9 +138,9 @@ public class ExcelImportService implements ImportService {
 
                         if (faculties.size() == 1) {
                             faculty = faculties.get(0);
-                            profile.setDeactivated(false);
+                            profile.setActive(true);
                         } else {
-                            profile.setDeactivated(true);
+                            profile.setActive(false);
                         }
                     }
                 }

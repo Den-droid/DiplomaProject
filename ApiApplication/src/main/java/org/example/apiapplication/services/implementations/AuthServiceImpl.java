@@ -129,6 +129,8 @@ public class AuthServiceImpl implements AuthService {
         roles.add(userRole);
         user.setRoles(roles);
 
+        user.setPermissions(userRole.getDefaultPermissions());
+
         Scientist scientist = scientistRepository
                 .findById(signUpDto.scientistId())
                 .orElseThrow(() -> new ScientistWithIdNotExistsException(signUpDto.scientistId()));
@@ -150,6 +152,7 @@ public class AuthServiceImpl implements AuthService {
         user.setFullName(adminSignUpDto.fullName());
         user.setPassword(passwordEncoder.encode(adminSignUpDto.password()));
         user.setInviteCode(null);
+        user.setPermissions(user.getRoles().get(0).getDefaultPermissions());
 
         userRepository.save(user);
     }

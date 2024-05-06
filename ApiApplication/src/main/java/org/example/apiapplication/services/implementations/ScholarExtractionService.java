@@ -1,16 +1,13 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
-import org.example.apiapplication.entities.Label;
 import org.example.apiapplication.entities.Profile;
 import org.example.apiapplication.entities.ScientometricSystem;
 import org.example.apiapplication.entities.extraction.Extraction;
 import org.example.apiapplication.entities.extraction.ExtractionProfile;
 import org.example.apiapplication.entities.fields.Field;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
-import org.example.apiapplication.enums.FieldRuleTypeName;
 import org.example.apiapplication.enums.ScientometricSystemName;
-import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.extraction.PreviousExtractionNotFinishedException;
 import org.example.apiapplication.exceptions.extraction.TooFrequentExtractionException;
 import org.example.apiapplication.helpers.ScholarExtractionHelper;
@@ -27,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -80,7 +76,7 @@ public class ScholarExtractionService implements ExtractionService {
                 .orElseThrow();
     }
 
-    @Scheduled(fixedDelay = 3, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.MINUTES)
     @Override
     public void extract() throws IOException {
 //        Optional<Extraction> optionalExtraction = extractionRepository
