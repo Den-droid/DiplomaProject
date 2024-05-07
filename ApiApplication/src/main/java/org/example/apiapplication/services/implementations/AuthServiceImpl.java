@@ -152,7 +152,6 @@ public class AuthServiceImpl implements AuthService {
         user.setFullName(adminSignUpDto.fullName());
         user.setPassword(passwordEncoder.encode(adminSignUpDto.password()));
         user.setInviteCode(null);
-        user.setPermissions(user.getRoles().get(0).getDefaultPermissions());
 
         userRepository.save(user);
     }

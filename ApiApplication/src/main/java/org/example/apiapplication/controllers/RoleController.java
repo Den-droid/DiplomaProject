@@ -1,12 +1,10 @@
 package org.example.apiapplication.controllers;
 
-import org.example.apiapplication.dto.roles.RoleDto;
+import org.example.apiapplication.dto.permissions.PermissionDto;
+import org.example.apiapplication.dto.roles.UpdateDefaultPermissionsDto;
 import org.example.apiapplication.services.interfaces.RoleService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,8 +19,30 @@ public class RoleController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllRoles() {
-        List<RoleDto> roleDtos = roleService.getRoles();
-        return ResponseEntity.ok(roleDtos);
+    public ResponseEntity<?> getAllRoles(@RequestParam(required = false) String roleName) {
+        if (roleName != null) {
+            return ResponseEntity.ok(roleService.getByName(roleName));
+        } else {
+            return ResponseEntity.ok(roleService.getRoles());
+        }
+    }
+
+    @GetMapping("/{id}/possiblePermissions")
+    public ResponseEntity<?> getPossiblePermissions(@PathVariable Integer id) {
+        List<PermissionDto> permissions = roleService.getPossiblePermissions(id);
+        return ResponseEntity.ok(permissions);
+    }
+
+    @GetMapping("/{id}/defaultPermissions")
+    public ResponseEntity<?> getDefaultPermissions(@PathVariable Integer id) {
+        List<PermissionDto> permissions = roleService.getDefaultPermissions(id);
+        return ResponseEntity.ok(permissions);
+    }
+
+    @PutMapping("/updateDefaultPermissions")
+    public ResponseEntity<?> updateDefaultPermissions(
+            @RequestBody List<UpdateDefaultPermissionsDto> updateDefaultPermissionsDtos) {
+        roleService.updateDefaultPermissions(updateDefaultPermissionsDtos);
+        return ResponseEntity.ok().build();
     }
 }

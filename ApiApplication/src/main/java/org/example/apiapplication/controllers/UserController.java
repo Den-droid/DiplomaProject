@@ -1,7 +1,10 @@
 package org.example.apiapplication.controllers;
 
+import org.example.apiapplication.dto.permissions.PermissionDto;
+import org.example.apiapplication.dto.roles.RoleDto;
 import org.example.apiapplication.dto.user.CreateAdminDto;
 import org.example.apiapplication.dto.user.EditAdminDto;
+import org.example.apiapplication.dto.user.EditUserDto;
 import org.example.apiapplication.dto.user.GetUsersDto;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.security.utils.SessionUtil;
@@ -63,14 +66,34 @@ public class UserController {
 
     @GetMapping("/{id}/roles")
     public ResponseEntity<?> getRoles(@PathVariable Integer id) {
-        List<String> roles = userService.getUserRoles(id);
+        List<RoleDto> roles = userService.getUserRoles(id);
         return ResponseEntity.ok(roles);
+    }
+
+    @GetMapping("/currentUser/permissions")
+    public ResponseEntity<?> getCurrentUserPermissions() {
+        User user = sessionUtil.getUserFromSession();
+        List<PermissionDto> permissions = userService.getUserPermissions(user);
+        return ResponseEntity.ok(permissions);
+    }
+
+    @GetMapping("/{id}/permissions")
+    public ResponseEntity<?> getPermissions(@PathVariable Integer id) {
+        List<PermissionDto> permissions = userService.getUserPermissionsById(id);
+        return ResponseEntity.ok(permissions);
     }
 
     @PutMapping("/admins/{id}")
     public ResponseEntity<?> editAdmin(@PathVariable Integer id,
                                        @RequestBody EditAdminDto editAdminDto) {
         userService.editAdmin(id, editAdminDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editUser(@PathVariable Integer id,
+                                      @RequestBody EditUserDto editUserDto) {
+        userService.editUser(id, editUserDto);
         return ResponseEntity.ok().build();
     }
 

@@ -10,55 +10,69 @@
     </div>
   </div>
 
+  <ng-template [ngIf]="userRole !== 'USER'">
+    <div class="text-center" style="margin-bottom: 2%">
+      <label class="col-sm-2 col-form-label" for="isEditedToMainAdmin"> Is Main Admin? </label>
+      <input type="checkbox" [(ngModel)]="isEditedToMainAdmin" id="" name="isEditedToMainAdmin">
+    </div>
+  </ng-template>
+
   <div *ngIf="errorFullname.length > 0" class="row mb-4" style="color: red">
     <div class="col d-flex justify-content-center">
       <p>{{errorFullname}}</p>
     </div>
   </div>
 
-  <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN' && userRole !== 'USER'">
-    <div class="text-center" style="margin-bottom: 2%">
-      <h4>Select Faculty And Chair</h4>
-    </div>
+  <ng-template [ngIf]="!isEditedToMainAdmin">
+    <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN' && userRole !== 'USER'">
+      <div class="text-center" style="margin-bottom: 2%">
+        <h4>Select Faculty And Chair</h4>
+      </div>
 
-    <div class="mb-3 row d-flex justify-content-between"
-      style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
-      <div class="mb-3 row d-flex justify-content-between">
-        <div class="col-sm-12 d-flex justify-content-between">
-          <label class="col-sm-2 col-form-label" for="selectFaculty">Select faculty: </label>
-          <select class="col-sm-4" id="selectFaculty" [(ngModel)]="selectedFaculty" name="selectFaculty">
-            <option *ngFor="let faculty of faculties" [value]="faculty.id">
-              {{faculty.name}}</option>
-          </select>
-          <label class="col-sm-2 col-form-label" style="margin-left: 15px" for="selectChair">Select chair: </label>
-          <select class="col-sm-4" id="chairs" name="selectChair" [disabled]="wholeFaculty" [(ngModel)]="selectedChair">
-            <option *ngFor="let chair of chairs | chairs_by_faculty : selectedFaculty" [value]="chair.id">
-              {{chair.name}}</option>
-          </select>
+      <div class="mb-3 row d-flex justify-content-between"
+        style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
+        <div class="mb-3 row d-flex justify-content-between">
+          <div class="col-sm-12 d-flex justify-content-between">
+            <label class="col-sm-2 col-form-label" for="selectFaculty">Select faculty: </label>
+            <select class="col-sm-4" id="selectFaculty" [(ngModel)]="selectedFaculty" name="selectFaculty">
+              <option *ngFor="let faculty of faculties" [value]="faculty.id">
+                {{faculty.name}}</option>
+            </select>
+            <label class="col-sm-2 col-form-label" style="margin-left: 15px" for="selectChair">Select chair: </label>
+            <select class="col-sm-4" id="chairs" name="selectChair" [disabled]="wholeFaculty"
+              [(ngModel)]="selectedChair">
+              <option *ngFor="let chair of chairs | chairs_by_faculty : selectedFaculty" [value]="chair.id">
+                {{chair.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3 d-flex justify-content-start">
+          <label class="col-sm-2 col-form-label" for="wholeFaculty"> Whole Faculty? </label>
+          <input type="checkbox" [checked]="wholeFaculty" (click)="updateWholeFaculty()" name="wholeFaculty"
+            id="wholeFaculty">
         </div>
       </div>
-      <div class="mb-3 d-flex justify-content-start">
-        <label class="col-sm-2 col-form-label" for="wholeFaculty"> Whole Faculty? </label>
-        <input type="checkbox" [(ngModel)]="wholeFaculty" name="wholeFaculty" id="wholeFaculty">
-      </div>
-    </div>
 
-    <div *ngIf="errorFaculty.length > 0" class="row mb-4" style="color: red">
-      <div class="col d-flex justify-content-center">
-        <p>{{errorFaculty}}</p>
+      <div *ngIf="errorFaculty.length > 0" class="row mb-4" style="color: red">
+        <div class="col d-flex justify-content-center">
+          <p>{{errorFaculty}}</p>
+        </div>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
 
-  <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN' ||
-              currentUserRole === 'FACULTY_ADMIN' || currentUserRole === 'CHAIR_ADMIN'">
     <div class="text-center" style="margin-bottom: 2%">
       <h4>Permissions</h4>
     </div>
 
-    <div class="mb-3 row d-flex justify-content-between"
+    <div class="mb-3 row d-flex justify-content-center"
       style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
-
+      <div class="col-sm-4 d-flex justify-content-start flex-column">
+        <div class="mb-3 d-flex justify-content-start" *ngFor="let permission of userPermissions; index as i">
+          <label class="col-sm-10 col-form-label" [attr.for]="permission.name + i"> {{permission.name}}</label>
+          <input type="checkbox" [checked]="selectedUserPermissions[i]" [attr.name]="permission.name + i"
+            [attr.id]="permission.name + i" (click)="updateSelectedPermission(i)">
+        </div>
+      </div>
     </div>
   </ng-template>
 

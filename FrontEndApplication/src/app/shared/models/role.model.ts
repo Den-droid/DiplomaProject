@@ -11,3 +11,7 @@ export function mapStringToRoleName(name: string): RoleName {
 export function mapStringToRoleLabel(name: string): RoleLabel {
   return RoleLabel[name as keyof typeof RoleLabel];
 }
+
+export class UpdateDefaultPermissions {
+  constructor(public roleId: number, public defaultPermissionsIds: number[]) { }
+}

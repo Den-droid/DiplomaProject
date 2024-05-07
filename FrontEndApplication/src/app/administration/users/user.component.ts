@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../../shared/services/user.service';
-import { Label, GetLabelsDto } from 'src/app/shared/models/label.model';
-import { Role, mapStringToRoleLabel, mapStringToRoleName } from 'src/app/shared/models/role.model';
+import { Role, mapStringToRoleLabel } from 'src/app/shared/models/role.model';
 import { RoleService } from 'src/app/shared/services/role.service';
-import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
 import { FacultyService } from 'src/app/shared/services/faculty.service';
 import { ChairService } from 'src/app/shared/services/chair.service';
 import { Chair } from 'src/app/shared/models/chair.model';
@@ -12,6 +10,8 @@ import { Faculty } from 'src/app/shared/models/faculty.model';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { RoleLabel, RoleName } from 'src/app/shared/constants/roles.constant';
 import { GetUsersDto, User } from 'src/app/shared/models/user.model';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
 
 @Component({
   selector: 'app-administration-user',
@@ -21,11 +21,11 @@ import { GetUsersDto, User } from 'src/app/shared/models/user.model';
 export class UserComponent implements OnInit {
   constructor(private readonly router: Router, private readonly userService: UserService,
     private readonly roleService: RoleService, private readonly facultyService: FacultyService,
-    private readonly chairService: ChairService, private readonly authService: AuthService) { }
+    private readonly chairService: ChairService, private readonly authService: AuthService,
+    private readonly jwtService: JWTTokenService) { }
 
   currentPage = 1;
   totalPages = 1;
-  isEmpty = false;
 
   searchQuery = '';
   isSearchMode = false;
@@ -45,6 +45,9 @@ export class UserComponent implements OnInit {
   displayedUsers: User[] = [];
 
   canAddUser = false;
+
+  userPermissions: Permission[] = [];
+  userRole: string = this.jwtService.getRoles()[0];
 
   public get selectedFaculty(): number {
     return this._selectedFaculty;
@@ -106,6 +109,18 @@ export class UserComponent implements OnInit {
         this.chairs = data;
       }
     })
+    // this.roleService.getByName(this.jwtService.getRoles()[0]).subscribe({
+    //   next: (role: Role) => {
+    //     this.userRole = role;
+    //   },
+    //   complete: () => {
+    this.userService.getCurrentUserPermissions().subscribe({
+      next: (data: Permission[]) => {
+        this.userPermissions = data;
+      }
+    })
+    //   }
+    // })
 
     if (this.authService.isAdmin()) {
       this.canAddUser = true;

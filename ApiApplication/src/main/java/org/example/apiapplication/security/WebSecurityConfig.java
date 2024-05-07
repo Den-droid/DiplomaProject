@@ -46,7 +46,8 @@ public class WebSecurityConfig {
 
     private final String[] facultyChairMainAdminUrls = {
             "/api/users",
-            "/api/users/**"
+            "/api/users/**",
+            "/api/permissions"
     };
 
     private final String[] userUrls = {

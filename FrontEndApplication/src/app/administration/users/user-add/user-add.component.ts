@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { RoleName } from 'src/app/shared/constants/roles.constant';
 
 import { Chair } from 'src/app/shared/models/chair.model';
 import { Faculty } from 'src/app/shared/models/faculty.model';
+import { Permission, mapStringToPermissionLabel } from 'src/app/shared/models/permission.model';
+import { Role } from 'src/app/shared/models/role.model';
 import { AddAdminDto } from 'src/app/shared/models/user.model';
 import { ChairService } from 'src/app/shared/services/chair.service';
 import { FacultyService } from 'src/app/shared/services/faculty.service';
+import { PermissionService } from 'src/app/shared/services/permission.service';
+import { RoleService } from 'src/app/shared/services/role.service';
 import { UserService } from 'src/app/shared/services/user.service';
 import { ValidateEmails } from 'src/app/shared/validators/emails.validator';
 
@@ -16,7 +21,8 @@ import { ValidateEmails } from 'src/app/shared/validators/emails.validator';
 })
 export class UserAddComponent implements OnInit {
   constructor(private readonly router: Router, private readonly userService: UserService,
-    private readonly facultyService: FacultyService, private readonly chairService: ChairService) { }
+    private readonly facultyService: FacultyService, private readonly chairService: ChairService,
+    private readonly roleService: RoleService, private readonly permissionService: PermissionService) { }
 
   email = '';
   errorEmail = '';
@@ -31,6 +37,17 @@ export class UserAddComponent implements OnInit {
 
   isMainAdminCreated = false;
 
+  allRoles: Role[] = [];
+  allPermissions: Permission[] = [];
+
+  userPermissions: Permission[] = [];
+  selectedUserPermissions: boolean[] = [];
+
+  possiblePermissions: Permission[][] = [];
+  defaultPermissions: boolean[][] = [];
+
+  userRole: string = RoleName.CHAIR_ADMIN;
+
   ngOnInit(): void {
     this.facultyService.getAll().subscribe({
       next: (data: Faculty[]) => {
@@ -42,6 +59,88 @@ export class UserAddComponent implements OnInit {
         this.chairs = data;
       }
     })
+    this.roleService.getAll().subscribe({
+      next: (data: Role[]) => {
+        this.allRoles = data.filter(x => x.name != RoleName.MAIN_ADMIN);
+      },
+      complete: () => {
+        this.permissionService.getAll().subscribe({
+          next: (allPermissions: Permission[]) => {
+            this.allPermissions = allPermissions;
+          },
+          complete: () => {
+            for (let role of this.allRoles) {
+              this.possiblePermissions.push([]);
+            }
+
+            for (let role of this.allRoles) {
+              this.defaultPermissions.push([]);
+            }
+
+            for (let role of this.allRoles) {
+              this.roleService.getPossiblePermissions(role.id).subscribe({
+                next: (possiblePermissions: Permission[]) => {
+                  let tmpRole = this.allRoles.filter(x => x.id == role.id)[0];
+                  let index = this.allRoles.indexOf(tmpRole);
+
+                  for (let possiblePermission of possiblePermissions) {
+                    possiblePermission.name = mapStringToPermissionLabel(possiblePermission.name);
+                    this.possiblePermissions[index].push(possiblePermission);
+
+                    this.defaultPermissions[index].push(false);
+                  }
+
+                  this.roleService.getDefaultPermissions(role.id).subscribe({
+                    next: (defaultPermissions: Permission[]) => {
+                      for (let i = 0; i < this.possiblePermissions[index].length; i++) {
+                        this.defaultPermissions[index][i] = defaultPermissions
+                          .filter(x => x.id == this.possiblePermissions[index][i].id)
+                          .length > 0;
+                      }
+
+                      if (role.name === this.userRole) {
+                        this.updatePermissionsAndDefaultPermissions();
+                      }
+                    }
+                  })
+                }
+              })
+            }
+          }
+        })
+      }
+    })
+  }
+
+  updateWholeFaculty() {
+    this.wholeFaculty = !this.wholeFaculty;
+    if (this.wholeFaculty) {
+      this.userRole = RoleName.FACULTY_ADMIN;
+    } else {
+      this.userRole = RoleName.CHAIR_ADMIN;
+    }
+
+    this.updatePermissionsAndDefaultPermissions();
+  }
+
+  updateSelectedPermission(index: number) {
+    this.selectedUserPermissions[index] = !this.selectedUserPermissions[index];
+  }
+
+  updatePermissionsAndDefaultPermissions() {
+    let tmpRole = this.allRoles.filter(x => x.name == this.userRole)[0];
+    let roleIndex = this.allRoles.indexOf(tmpRole);
+
+    let newUserPermissions = [];
+    let newSelectedUserPermissions = [];
+
+    for (let i = 0; i < this.possiblePermissions[roleIndex].length; i++) {
+      newUserPermissions.push(this.possiblePermissions[roleIndex][i]);
+      newSelectedUserPermissions.push(this.defaultPermissions[roleIndex][i]);
+    }
+
+    this.userPermissions = newUserPermissions;
+    this.selectedUserPermissions = newSelectedUserPermissions;
   }
 
   addAdmin() {
@@ -64,10 +163,22 @@ export class UserAddComponent implements OnInit {
     }
 
     let addAdminDto;
-    if (this.wholeFaculty) {
-      addAdminDto = new AddAdminDto(this.email, [this.selectedFaculty], [], this.isMainAdminCreated);
+    if (!this.isMainAdminCreated) {
+      let permissionList = [];
+
+      for (let i = 0; i < this.selectedUserPermissions.length; i++) {
+        if (this.selectedUserPermissions[i]) {
+          permissionList.push(this.userPermissions[i].id);
+        }
+      }
+
+      if (this.wholeFaculty) {
+        addAdminDto = new AddAdminDto(this.email, [this.selectedFaculty], [], this.isMainAdminCreated, permissionList);
+      } else {
+        addAdminDto = new AddAdminDto(this.email, [], [this.selectedChair], this.isMainAdminCreated, permissionList);
+      }
     } else {
-      addAdminDto = new AddAdminDto(this.email, [], [this.selectedChair], this.isMainAdminCreated);
+      addAdminDto = new AddAdminDto(this.email, [], [], this.isMainAdminCreated, []);
     }
 
     this.userService.addAdmin(addAdminDto).subscribe({

@@ -2,13 +2,13 @@ package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
 import org.example.apiapplication.dto.page.PageDto;
-import org.example.apiapplication.dto.user.CreateAdminDto;
-import org.example.apiapplication.dto.user.EditAdminDto;
-import org.example.apiapplication.dto.user.GetUsersDto;
-import org.example.apiapplication.dto.user.UserDto;
+import org.example.apiapplication.dto.permissions.PermissionDto;
+import org.example.apiapplication.dto.roles.RoleDto;
+import org.example.apiapplication.dto.user.*;
 import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
 import org.example.apiapplication.entities.Scientist;
+import org.example.apiapplication.entities.permissions.Permission;
 import org.example.apiapplication.entities.user.Role;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.enums.UserRole;
@@ -20,6 +20,7 @@ import org.example.apiapplication.services.interfaces.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -77,12 +78,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<String> getUserRoles(Integer userId) {
+    public List<PermissionDto> getUserPermissions(User user) {
+        return user.getPermissions().stream()
+                .map(permission -> new PermissionDto(permission.getId(), permission.getName().name()))
+                .toList();
+    }
+
+    @Override
+    public List<PermissionDto> getUserPermissionsById(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("User", id));
+
+        return getUserPermissions(user);
+    }
+
+    @Override
+    public List<RoleDto> getUserRoles(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", userId));
 
         return user.getRoles().stream()
-                .map(x -> x.getName().name())
+                .map(x -> new RoleDto(x.getId(), x.getName().name()))
                 .toList();
     }
 
@@ -98,7 +114,12 @@ public class UserServiceImpl implements UserService {
                 .map(Chair::getId)
                 .toList();
 
-        return new EditAdminDto(user.getFullName(), facultyIds, chairIds);
+        List<Integer> permissionsIds = user.getPermissions().stream()
+                .map(Permission::getId)
+                .toList();
+
+        return new EditAdminDto(user.getFullName(), facultyIds, chairIds, user.getRoles().get(0)
+                .getName().equals(UserRole.MAIN_ADMIN), permissionsIds);
     }
 
     @Override
@@ -120,7 +141,6 @@ public class UserServiceImpl implements UserService {
         user.setApproved(false);
         user.setActive(false);
         user.setInviteCode(UUID.randomUUID().toString());
-
 
         if (!createAdminDto.isMainAdmin()) {
             List<Role> roles = new ArrayList<>();
@@ -156,6 +176,12 @@ public class UserServiceImpl implements UserService {
             user.setRoles(List.of(role));
         }
 
+        List<Integer> permissionIds = createAdminDto.permissions();
+        Set<Permission> permissions = permissionIds.stream()
+                .map(x -> permissionRepository.findById(x).orElseThrow(() -> new EntityWithIdNotExistsException("Permission", x)))
+                .collect(Collectors.toSet());
+        user.setPermissions(permissions);
+
         // send email
 
         userRepository.save(user);
@@ -173,44 +199,67 @@ public class UserServiceImpl implements UserService {
         Role chairAdmin = roleRepository.findByName(UserRole.CHAIR_ADMIN)
                 .orElseThrow(() -> new RoleNotFoundException(UserRole.CHAIR_ADMIN.name()));
 
-        if (!editAdminDto.facultyIds().isEmpty()) {
-            if (!user.getRoles().contains(facultyAdmin)) {
-                user.getRoles().add(facultyAdmin);
+        if (!editAdminDto.isMainAdmin()) {
+            if (!editAdminDto.facultyIds().isEmpty()) {
+                if (!user.getRoles().contains(facultyAdmin)) {
+                    user.getRoles().add(facultyAdmin);
+                }
+
+                List<Faculty> facultyList = new ArrayList<>();
+                for (Integer facultyId : editAdminDto.facultyIds()) {
+                    Faculty faculty = facultyRepository.findById(facultyId)
+                            .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", facultyId));
+
+                    user.getFaculties().add(faculty);
+                    facultyList.add(faculty);
+                }
+
+                user.getFaculties().retainAll(facultyList);
+            } else {
+                user.getFaculties().clear();
+                user.getRoles().remove(facultyAdmin);
             }
 
-            List<Faculty> facultyList = new ArrayList<>();
-            for (Integer facultyId : editAdminDto.facultyIds()) {
-                Faculty faculty = facultyRepository.findById(facultyId)
-                        .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", facultyId));
+            if (!editAdminDto.chairIds().isEmpty()) {
+                if (!user.getRoles().contains(chairAdmin)) {
+                    user.getRoles().add(chairAdmin);
+                }
+                List<Chair> chairList = new ArrayList<>();
+                for (Integer chairId : editAdminDto.chairIds()) {
+                    Chair chair = chairRepository.findById(chairId)
+                            .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", chairId));
 
-                user.getFaculties().add(faculty);
-                facultyList.add(faculty);
+                    user.getChairs().add(chair);
+                    chairList.add(chair);
+                }
+
+                user.getChairs().retainAll(chairList);
+            } else {
+                user.getChairs().clear();
+                user.getRoles().remove(chairAdmin);
             }
-
-            user.getFaculties().retainAll(facultyList);
         } else {
-            user.getFaculties().clear();
-            user.getRoles().remove(facultyAdmin);
+            Role role = roleRepository.findByName(UserRole.MAIN_ADMIN)
+                    .orElseThrow(() -> new RoleNotFoundException(UserRole.MAIN_ADMIN.name()));
+
+            user.setRoles(List.of(role));
         }
 
-        if (!editAdminDto.chairIds().isEmpty()) {
-            if (!user.getRoles().contains(chairAdmin)) {
-                user.getRoles().add(chairAdmin);
-            }
-            List<Chair> chairList = new ArrayList<>();
-            for (Integer chairId : editAdminDto.chairIds()) {
-                Chair chair = chairRepository.findById(chairId)
-                        .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", chairId));
+        List<Integer> permissionIds = editAdminDto.permissions();
+        Set<Permission> permissions = permissionIds.stream()
+                .map(x -> permissionRepository.findById(x).orElseThrow(() -> new EntityWithIdNotExistsException("Permission", x)))
+                .collect(Collectors.toSet());
+        user.setPermissions(permissions);
 
-                user.getChairs().add(chair);
-                chairList.add(chair);
-            }
+        userRepository.save(user);
+    }
 
-            user.getChairs().retainAll(chairList);
-        } else {
-            user.getChairs().clear();
-            user.getRoles().remove(chairAdmin);
-        }
+    @Override
+    public void editUser(Integer id, EditUserDto editUserDto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("User", id));
+
+        user.setFullName(editUserDto.fullName());
 
         userRepository.save(user);
     }

@@ -6,7 +6,6 @@ import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
 import org.example.apiapplication.entities.Scientist;
 import org.example.apiapplication.entities.permissions.Permission;
-import org.example.apiapplication.entities.permissions.UserPermission;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,7 +72,4 @@ public class User {
     // actually it is one to one relation but due to the system features it is one to many
     @OneToMany(mappedBy = "user")
     private List<Scientist> scientists = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<UserPermission> userPermissions = new ArrayList<>();
 }

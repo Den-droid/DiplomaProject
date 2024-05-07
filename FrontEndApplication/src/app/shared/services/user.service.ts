@@ -1,8 +1,10 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { baseUrl } from "src/app/shared/constants/url.constant";
-import { AddAdminDto, EditAdminDto, GetUsersDto } from "../models/user.model";
+import { AddAdminDto, EditAdminDto, EditUserDto, GetUsersDto } from "../models/user.model";
 import { Observable } from "rxjs/internal/Observable";
+import { Permission } from "../models/permission.model";
+import { Role } from "../models/role.model";
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +26,16 @@ export class UserService {
     return this.httpClient.get<EditAdminDto>(this.url + "/" + id + "/editDto");
   }
 
-  getRoles(id: number): Observable<string[]> {
-    return this.httpClient.get<string[]>(this.url + "/" + id + "/roles");
+  getRoles(id: number): Observable<Role[]> {
+    return this.httpClient.get<Role[]>(this.url + "/" + id + "/roles");
+  }
+
+  getCurrentUserPermissions(): Observable<Permission[]> {
+    return this.httpClient.get<Permission[]>(this.url + "/currentUser/permissions");
+  }
+
+  getUserPermissionsById(id: number): Observable<Permission[]> {
+    return this.httpClient.get<Permission[]>(this.url + "/" + id + "/permissions");
   }
 
   searchUsers(page: number, fullName: string, roleId: number, facultyId: number, chairId: number) {
@@ -43,11 +53,15 @@ export class UserService {
   }
 
   addAdmin(addAdminDto: AddAdminDto): Observable<any> {
-    return this.httpClient.post(this.url, addAdminDto);
+    return this.httpClient.post(this.url + "/admins", addAdminDto);
   }
 
   editAdmin(id: number, editAdmin: EditAdminDto): Observable<any> {
-    return this.httpClient.put(this.url + "/" + id, editAdmin);
+    return this.httpClient.put(this.url + "/admins/" + id, editAdmin);
+  }
+
+  editUser(id: number, editUser: EditUserDto): Observable<any> {
+    return this.httpClient.put(this.url + "/" + id, editUser);
   }
 
   existsById(id: number): Observable<boolean> {

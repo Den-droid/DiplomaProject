@@ -1,6 +1,6 @@
 <div style="margin-top: 4%; overflow-x:hidden">
   <div class="text-center" style="margin-bottom: 2%">
-    <h2>Edit Admin</h2>
+    <h4>Edit Your Profile</h4>
   </div>
 
   <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
@@ -32,15 +32,22 @@
 
     <div class="mb-3 row d-flex justify-content-between"
       style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
-
+      <div class="col-sm-4 d-flex justify-content-start flex-column" *ngFor="let role of allRoles; index as i">
+        <label class="text-center col-form-label" for="selectFaculty">{{role.name}} </label>
+        <div class="mb-3 d-flex justify-content-start" *ngFor="let permission of possiblePermissions[i]; index as j">
+          <label class="col-sm-10 col-form-label" [attr.for]="permission.name + i + j"> {{permission.name}}</label>
+          <input type="checkbox" [(ngModel)]="defaultPermissions[i][j]" [attr.name]="permission.name + i + j"
+            [attr.id]="permission.name + i + j">
+        </div>
+      </div>
     </div>
 
     <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
       <div class="col d-flex justify-content-between">
         <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
           routerLink="/user/users">Back</button>
-        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center">
-          Save</button>
+        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
+          (click)="updateDefaultPermissions()"> Save</button>
       </div>
     </div>
   </ng-template>

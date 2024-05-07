@@ -11,9 +11,17 @@ export class GetUsersDto {
 }
 
 export class AddAdminDto {
-  constructor(public email: string, public facultyIds: number[], public chairIds: number[], public isMainAdmin : boolean) { }
+  constructor(public email: string, public facultyIds: number[], public chairIds: number[],
+    public isMainAdmin: boolean, public permissions: number[]
+  ) { }
 }
 
 export class EditAdminDto {
-  constructor(public fullName: string, public facultyIds: number[], public chairIds: number[]) { }
+  constructor(public fullName: string, public facultyIds: number[], public chairIds: number[],
+    public isMainAdmin: boolean, public permissions: number[]
+  ) { }
+}
+
+export class EditUserDto {
+  constructor(public fullName: string) { }
 }
