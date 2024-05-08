@@ -17,6 +17,8 @@ import { UserAddComponent } from './users/user-add/user-add.component';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { ProfileComponent } from './profiles/profile.component';
 import { SettingsComponent } from './settings/settings.component';
+import { ProfileAddComponent } from './profiles/profile-add/profile-add.component';
+import { ProfileEditComponent } from './profiles/profile-edit/profile-edit.component';
 
 const userRoutes: Routes = [
   { path: "extraction", component: ExtractionComponent },
@@ -28,7 +30,9 @@ const userRoutes: Routes = [
   { path: "users/add", component: UserAddComponent },
   { path: "users/edit/:id", component: UserEditComponent },
   { path: "profiles", component: ProfileComponent },
-  { path: "settings", component: SettingsComponent }
+  { path: "profiles/add", component: ProfileAddComponent },
+  { path: "profiles/edit/:id", component: ProfileEditComponent },
+  { path: "settings", component: SettingsComponent },
 ]
 
 @NgModule({
@@ -36,7 +40,7 @@ const userRoutes: Routes = [
     AdministrationComponent, ExtractionComponent,
     LabelComponent, LabelAddComponent, LabelDeleteComponent, LabelEditComponent,
     UserComponent, UserAddComponent, UserEditComponent,
-    ProfileComponent,
+    ProfileComponent, ProfileAddComponent, ProfileEditComponent,
     SettingsComponent
   ],
   imports: [

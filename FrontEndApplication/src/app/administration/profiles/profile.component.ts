@@ -4,12 +4,13 @@ import { FacultyService } from 'src/app/shared/services/faculty.service';
 import { ChairService } from 'src/app/shared/services/chair.service';
 import { Chair } from 'src/app/shared/models/chair.model';
 import { Faculty } from 'src/app/shared/models/faculty.model';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { GetUsersDto, User } from 'src/app/shared/models/user.model';
 import { ProfileService } from 'src/app/shared/services/profile.service';
 import { GetProfilesDto, ProfilePreview } from 'src/app/shared/models/profile.model';
 import { ScientometricSystemService } from 'src/app/shared/services/scientometric-System.service';
 import { ScientometricSystem, mapStringToScientometricSystemLabel } from 'src/app/shared/models/scientometric.model';
+import { Permission } from 'src/app/shared/models/permission.model';
+import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
+import { UserService } from 'src/app/shared/services/user.service';
 
 @Component({
   selector: 'app-administration-profile',
@@ -19,11 +20,11 @@ import { ScientometricSystem, mapStringToScientometricSystemLabel } from 'src/ap
 export class ProfileComponent implements OnInit {
   constructor(private readonly router: Router, private readonly profileService: ProfileService,
     private readonly facultyService: FacultyService, private readonly chairService: ChairService,
-    private readonly authService: AuthService, private readonly scientometricSystemService: ScientometricSystemService) { }
+    private readonly scientometricSystemService: ScientometricSystemService, private readonly jwtService: JWTTokenService,
+    private readonly userService: UserService) { }
 
   currentPage = 1;
   totalPages = 1;
-  isEmpty = false;
 
   searchQuery = '';
   isSearchMode = false;
@@ -42,7 +43,8 @@ export class ProfileComponent implements OnInit {
 
   displayedProfiles: ProfilePreview[] = [];
 
-  canMarkAsDoubtful = false;
+  userPermissions: Permission[] = [];
+  currentUserRole: string = this.jwtService.getRoles()[0];
 
   public get selectedFaculty(): number {
     return this._selectedFaculty;
@@ -77,10 +79,15 @@ export class ProfileComponent implements OnInit {
         this.chairs = data;
       }
     })
+    this.userService.getCurrentUserPermissions().subscribe({
+      next: (data: Permission[]) => {
+        this.userPermissions = data;
+      }
+    })
+  }
 
-    if (this.authService.isAdmin()) {
-      this.canMarkAsDoubtful = true;
-    }
+  hasPermissionForAction(permissionName: string): boolean {
+    return this.userPermissions.filter(x => x.name === permissionName).length > 0;
   }
 
   setDisplayedChairs() {
@@ -170,11 +177,11 @@ export class ProfileComponent implements OnInit {
   }
 
   goToEditPage(id: number) {
-    this.router.navigateByUrl("/user/users/edit/" + id);
+    this.router.navigateByUrl("/user/profiles/edit/" + id);
   }
 
   goToAddPage() {
-    this.router.navigateByUrl("/user/users/add");
+    this.router.navigateByUrl("/user/profiles/add");
   }
 
   markAsDoubtful(id: number) {

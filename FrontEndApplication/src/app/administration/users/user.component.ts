@@ -44,10 +44,8 @@ export class UserComponent implements OnInit {
 
   displayedUsers: User[] = [];
 
-  canAddUser = false;
-
   userPermissions: Permission[] = [];
-  userRole: string = this.jwtService.getRoles()[0];
+  currentUserRole: string = this.jwtService.getRoles()[0];
 
   public get selectedFaculty(): number {
     return this._selectedFaculty;
@@ -109,24 +107,17 @@ export class UserComponent implements OnInit {
         this.chairs = data;
       }
     })
-    // this.roleService.getByName(this.jwtService.getRoles()[0]).subscribe({
-    //   next: (role: Role) => {
-    //     this.userRole = role;
-    //   },
-    //   complete: () => {
     this.userService.getCurrentUserPermissions().subscribe({
       next: (data: Permission[]) => {
         this.userPermissions = data;
       }
     })
-    //   }
-    // })
-
-    if (this.authService.isAdmin()) {
-      this.canAddUser = true;
-    }
 
     this.getPageElements(this.currentPage);
+  }
+
+  hasPermissionForAction(permissionName: string): boolean {
+    return this.userPermissions.filter(x => x.name === permissionName).length > 0;
   }
 
   setDisplayedChairs() {
@@ -139,30 +130,8 @@ export class UserComponent implements OnInit {
   }
 
   validate(): string {
-    for (let role of this.roles) {
-      if (role.name === RoleLabel.FACULTY_ADMIN && role.id == this.selectedRole) {
-        if (this.selectedRole == 0) {
-          return 'Select Role';
-        } else if (this.selectedFaculty == 0) {
-          return 'Select Faculty';
-        }
-      } else if (role.name === RoleLabel.CHAIR_ADMIN && role.id == this.selectedRole) {
-        if (this.selectedRole == 0) {
-          return 'Select Role';
-        } else if (this.selectedFaculty == 0) {
-          return 'Select Faculty';
-        } else if (this.selectedChair == 0) {
-          return 'Select Chair';
-        }
-      } else if (role.name === RoleLabel.USER && role.id == this.selectedRole) {
-        if (this.selectedRole == 0) {
-          return 'Select Role';
-        } else if (this.selectedFaculty == 0) {
-          return 'Select Faculty';
-        } else if (this.selectedChair == 0) {
-          return 'Select Chair';
-        }
-      }
+    if (this.selectedRole == 0) {
+      return 'Select Role';
     }
     return '';
   }

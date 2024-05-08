@@ -122,6 +122,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(signUpDto.password()));
         user.setApproved(false);
         user.setActive(false);
+        user.setSignedUp(true);
 
         List<Role> roles = new ArrayList<>();
         Role userRole = roleRepository.findByName(UserRole.USER)
@@ -149,6 +150,7 @@ public class AuthServiceImpl implements AuthService {
 
         user.setApproved(true);
         user.setActive(true);
+        user.setSignedUp(true);
         user.setFullName(adminSignUpDto.fullName());
         user.setPassword(passwordEncoder.encode(adminSignUpDto.password()));
         user.setInviteCode(null);

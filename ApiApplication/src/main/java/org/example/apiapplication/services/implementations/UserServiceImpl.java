@@ -54,10 +54,10 @@ public class UserServiceImpl implements UserService {
             users = filterByName(users, fullName);
         }
         if (roleId != 0) {
-            if (facultyId != 0 && chairId == 0)
-                users = filterByRoleAndFaculty(users, facultyId, roleId);
-            else if (facultyId == 0 && chairId != 0)
+            if (facultyId != 0 && chairId != 0)
                 users = filterByRoleAndChair(users, chairId, roleId);
+            else if (facultyId != 0)
+                users = filterByRoleAndFaculty(users, facultyId, roleId);
             else
                 users = filterByRole(users, roleId);
         }
@@ -74,7 +74,8 @@ public class UserServiceImpl implements UserService {
     public UserDto getById(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", id));
-        return new UserDto(user.getId(), user.getEmail(), user.getFullName(), user.isApproved(), user.isActive());
+        return new UserDto(user.getId(), user.getEmail(), user.getFullName(),
+                user.isApproved(), user.isActive(), user.isSignedUp());
     }
 
     @Override
@@ -140,6 +141,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(createAdminDto.email());
         user.setApproved(false);
         user.setActive(false);
+        user.setSignedUp(false);
         user.setInviteCode(UUID.randomUUID().toString());
 
         if (!createAdminDto.isMainAdmin()) {
@@ -336,11 +338,20 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Role", roleId));
 
         Role roleFacultyAdmin = roleRepository.findByName(UserRole.FACULTY_ADMIN).orElseThrow();
+        Role roleChairAdmin = roleRepository.findByName(UserRole.CHAIR_ADMIN).orElseThrow();
 
         if (role.equals(roleFacultyAdmin)) {
             return users.stream()
                     .filter(user -> (user.getRoles().contains(roleFacultyAdmin)
                             && user.getFaculties().contains(faculty)))
+                    .toList();
+        } else if (role.equals(roleChairAdmin)) {
+            return users.stream()
+                    .filter(user -> {
+                        boolean containsChairWithinFaculty = user.getChairs().stream()
+                                .anyMatch(x -> x.getFaculty().equals(faculty));
+                        return user.getRoles().contains(roleChairAdmin) && containsChairWithinFaculty;
+                    })
                     .toList();
         } else {
             // Role User
@@ -367,8 +378,10 @@ public class UserServiceImpl implements UserService {
 
         if (role.equals(roleChairAdmin)) {
             return users.stream()
-                    .filter(user -> (user.getRoles().contains(roleChairAdmin)
-                            && user.getChairs().contains(chair)))
+                    .filter(user -> {
+                        boolean containsChair = user.getChairs().contains(chair);
+                        return user.getRoles().contains(roleChairAdmin) && containsChair;
+                    })
                     .toList();
         } else {
             // Role User
@@ -439,7 +452,7 @@ public class UserServiceImpl implements UserService {
 
         List<UserDto> userDtos = users.stream()
                 .map(x -> new UserDto(x.getId(), x.getEmail(), x.getFullName(),
-                        x.isApproved(), x.isActive()))
+                        x.isApproved(), x.isActive(), x.isSignedUp()))
                 .toList();
 
         return new GetUsersDto(userDtos, new PageDto(page, totalPages));

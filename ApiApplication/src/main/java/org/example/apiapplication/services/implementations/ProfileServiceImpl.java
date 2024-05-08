@@ -38,10 +38,10 @@ public class ProfileServiceImpl implements ProfileService {
     private final FieldRepository fieldRepository;
     private final ProfileFieldValueRepository profileFieldValueRepository;
     private final RoleRepository roleRepository;
-
-    private final LabelService labelService;
     private final ChairRepository chairRepository;
     private final FacultyRepository facultyRepository;
+
+    private final LabelService labelService;
 
     public ProfileServiceImpl(ScientometricSystemRepository scientometricSystemRepository,
                               ProfileRepository profileRepository,
@@ -254,7 +254,10 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", chairId));
 
         return profiles.stream()
-                .filter(profile -> profile.getScientist().getChair().equals(chair))
+                .filter(profile -> {
+                    Chair innerChair = profile.getScientist().getChair();
+                    return innerChair != null && innerChair.equals(chair);
+                })
                 .toList();
     }
 
@@ -263,8 +266,13 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", facultyId));
 
         return profiles.stream()
-                .filter(profile -> profile.getScientist().getFaculty().equals(faculty)
-                        || profile.getScientist().getChair().getFaculty().equals(faculty))
+                .filter(profile -> {
+                    Faculty innerFaculty =
+                            profile.getScientist().getFaculty();
+                    Chair innerChair = profile.getScientist().getChair();
+                    return (innerFaculty != null && innerFaculty.equals(faculty))
+                            || (innerChair != null && innerChair.getFaculty().equals(faculty));
+                })
                 .toList();
     }
 
@@ -333,8 +341,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .toList();
 
         List<ProfilePreviewDto> profilePreviewDtos = profiles.stream()
-                .map(x -> new ProfilePreviewDto(x.getId(), x.getScientist().getFullName(),
-                        x.isAreWorksDoubtful(), x.isActive()))
+                .map(this::getProfilePreviewDtoByProfile)
                 .toList();
 
         return new GetProfilesDto(profilePreviewDtos, new PageDto(page, totalPages));

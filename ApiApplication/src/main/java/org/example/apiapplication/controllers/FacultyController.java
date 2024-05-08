@@ -33,7 +33,7 @@ public class FacultyController {
         return ResponseEntity.ok(facultyDto);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/currentUser")
     public ResponseEntity<?> getChairsForUser() {
         User user = sessionUtil.getUserFromSession();
         List<FacultyDto> facultyDtos = facultyService.getByUser(user);

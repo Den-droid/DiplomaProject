@@ -18,6 +18,6 @@ export class FacultyService {
   }
 
   getByUser(): Observable<Faculty[]> {
-    return this.httpClient.get<Faculty[]>(this.url + "/user");
+    return this.httpClient.get<Faculty[]>(this.url + "/currentUser");
   }
 }

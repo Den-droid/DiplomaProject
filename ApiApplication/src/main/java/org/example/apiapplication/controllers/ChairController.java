@@ -35,7 +35,7 @@ public class ChairController {
         return ResponseEntity.ok(chairDtos);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/currentUser")
     public ResponseEntity<?> getChairsForUser() {
         User user = sessionUtil.getUserFromSession();
         List<ChairDto> chairDtos = chairService.getByUser(user);

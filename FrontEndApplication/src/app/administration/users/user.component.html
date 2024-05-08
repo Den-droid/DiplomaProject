@@ -4,7 +4,7 @@
   </div>
 
   <div class="mb-3 row d-flex justify-content-between" style="width: 65%; margin-right:auto; margin-left: auto">
-    <div [ngClass]="{'col-sm-8': canAddUser, 'col-sm-12': !canAddUser}">
+    <div [ngClass]="{'col-sm-8': currentUserRole === 'MAIN_ADMIN', 'col-sm-12': currentUserRole !== 'MAIN_ADMIN'}">
       <div>
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="searchUser">Enter full name: </label>
@@ -46,7 +46,7 @@
         </div>
       </div>
     </div>
-    <ng-template [ngIf]="canAddUser">
+    <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN'">
       <div class="col-sm-4 d-flex justify-content-end align-items-center">
         <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
           (click)="goToAddPage()">Add Admin</button>
@@ -63,18 +63,21 @@
     <div class="mb-3 row justify-content-center align-items-center" style="width: 65%; margin-right:auto; margin-left: auto;
     border: 2px solid lightblue; padding: 5px" *ngFor="let user of displayedUsers">
       <label class="col-sm-4"> {{user.email}}</label>
-      <label class="col-sm-4"> {{user.fullName == null || user.fullName == '' ?
+      <label [ngClass]="{'col-sm-4' : user.isSignedUp, 'col-sm-8' : !user.isSignedUp}"> {{!user.isSignedUp ?
         'This user needs to complete sign up by following link in email' : user.fullName}}</label>
       <div class="col-sm-4 d-flex align-items-center flex-column">
-        <button *ngIf="!user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
-          class="btn btn-primary btn-block" (click)="approve(user.id)">Approve</button>
-        <button *ngIf="!user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
-          class="btn btn-primary btn-block" (click)="reject(user.id)">Reject</button>
-        <button *ngIf="user.isActive" class="mb-3" style="margin-top: 10px; margin-bottom: 10pxx" type="button"
-          class="btn btn-primary btn-block" (click)="goToEditPage(user.id)">Edit</button>
-        <button *ngIf="!user.isActive && user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
+        <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
+          type="button" class="btn btn-primary btn-block" (click)="approve(user.id)">Approve</button>
+        <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
+          type="button" class="btn btn-primary btn-block" (click)="reject(user.id)">Reject</button>
+        <button *ngIf="user.isActive && (hasPermissionForAction('EDIT_USERS') || currentUserRole === 'MAIN_ADMIN')"
+          class="mb-3" style="margin-top: 10px; margin-bottom: 10pxx" type="button" class="btn btn-primary btn-block"
+          (click)="goToEditPage(user.id)">Edit</button>
+        <button *ngIf="!user.isActive && user.isApproved && (hasPermissionForAction('DEACTIVATE_USERS')
+          || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
           type="button" class="btn btn-primary btn-block" (click)="activate(user.id)">Activate</button>
-        <button *ngIf="user.isActive && user.isApproved" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
+        <button *ngIf="user.isActive && user.isApproved && (hasPermissionForAction('DEACTIVATE_USERS')
+          || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
           type="button" class="btn btn-primary btn-block" (click)="deactivate(user.id)">Deactivate</button>
       </div>
     </div>

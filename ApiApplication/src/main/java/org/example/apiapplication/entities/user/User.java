@@ -38,6 +38,9 @@ public class User {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Column(name = "is_signed_up")
+    private boolean isSignedUp;
+
     @Column(name = "refresh_token")
     private String refreshToken;
 

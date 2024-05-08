@@ -2,7 +2,7 @@ import { Page } from "./page.model";
 
 export class User {
   constructor(public id: number, public email: string, public fullName: string,
-    public isApproved: boolean, public isActive: boolean) { }
+    public isApproved: boolean, public isActive: boolean, public isSignedUp : boolean) { }
 }
 
 export class GetUsersDto {
