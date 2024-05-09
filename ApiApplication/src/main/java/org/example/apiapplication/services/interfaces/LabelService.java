@@ -11,13 +11,13 @@ public interface LabelService {
 
     GetLabelsDto getAllLabels();
 
-    GetLabelsDto getAllLabelsByName(int page, String name);
+    GetLabelsDto searchLabelsByName(int page, String name);
 
     LabelDto getById(Integer id);
 
     void add(AddLabelDto addLabelDto);
 
-    void update(Integer id, EditLabelDto editLabelDto);
+    void edit(Integer id, EditLabelDto editLabelDto);
 
     void delete(Integer id, DeleteLabelDto deleteLabelDto);
 

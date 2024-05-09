@@ -5,6 +5,7 @@ import org.example.apiapplication.dto.scientometric_system.ScientometricSystemDt
 import org.example.apiapplication.entities.ScientometricSystem;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
 import org.example.apiapplication.repositories.ExtractionRepository;
+import org.example.apiapplication.repositories.FieldRepository;
 import org.example.apiapplication.repositories.ScientometricSystemRepository;
 import org.example.apiapplication.services.interfaces.ScientometricSystemService;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ import java.util.List;
 public class ScientometricSystemServiceImpl implements ScientometricSystemService {
     private final ScientometricSystemRepository scientometricSystemRepository;
     private final ExtractionRepository extractionRepository;
+    private final FieldRepository fieldRepository;
 
     public ScientometricSystemServiceImpl(ScientometricSystemRepository scientometricSystemRepository,
-                                          ExtractionRepository extractionRepository) {
+                                          ExtractionRepository extractionRepository,
+                                          FieldRepository fieldRepository) {
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.extractionRepository = extractionRepository;
+        this.fieldRepository = fieldRepository;
     }
 
     @Override

@@ -19,19 +19,27 @@ import { ProfileComponent } from './profiles/profile.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ProfileAddComponent } from './profiles/profile-add/profile-add.component';
 import { ProfileEditComponent } from './profiles/profile-edit/profile-edit.component';
+import { FieldComponent } from './fields/field.component';
+import { FieldAddComponent } from './fields/add/field-add.component';
+import { FieldEditComponent } from './fields/edit/field-edit.component';
+import { FieldDeleteComponent } from './fields/delete/field-delete.component';
 
 const userRoutes: Routes = [
   { path: "extraction", component: ExtractionComponent },
   { path: "labels", component: LabelComponent },
   { path: "labels/add", component: LabelAddComponent },
-  { path: "labels/edit/:id", component: LabelEditComponent },
-  { path: "labels/delete/:id", component: LabelDeleteComponent },
+  { path: "labels/:id/edit", component: LabelEditComponent },
+  { path: "labels/:id/delete", component: LabelDeleteComponent },
   { path: "users", component: UserComponent },
   { path: "users/add", component: UserAddComponent },
-  { path: "users/edit/:id", component: UserEditComponent },
+  { path: "users/:id/edit", component: UserEditComponent },
   { path: "profiles", component: ProfileComponent },
   { path: "profiles/add", component: ProfileAddComponent },
-  { path: "profiles/edit/:id", component: ProfileEditComponent },
+  { path: "profiles/:id/edit", component: ProfileEditComponent },
+  { path: "fields", component: FieldComponent },
+  { path: "fields/add", component: FieldAddComponent },
+  { path: "fields/:id/edit", component: FieldEditComponent },
+  { path: "fields/:id/delete", component: FieldDeleteComponent },
   { path: "settings", component: SettingsComponent },
 ]
 
@@ -41,6 +49,7 @@ const userRoutes: Routes = [
     LabelComponent, LabelAddComponent, LabelDeleteComponent, LabelEditComponent,
     UserComponent, UserAddComponent, UserEditComponent,
     ProfileComponent, ProfileAddComponent, ProfileEditComponent,
+    FieldComponent, FieldAddComponent, FieldEditComponent, FieldDeleteComponent,
     SettingsComponent
   ],
   imports: [

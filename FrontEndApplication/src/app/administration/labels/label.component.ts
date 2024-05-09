@@ -82,14 +82,10 @@ export class LabelComponent implements OnInit {
   }
 
   goToEditPage(id: number) {
-    this.router.navigateByUrl("/user/labels/edit/" + id);
+    this.router.navigateByUrl("/user/labels/" + id + "/edit");
   }
 
   goToDeletePage(id: number) {
-    this.router.navigateByUrl("/user/labels/delete/" + id);
-  }
-
-  goToAddPage() {
-    this.router.navigateByUrl("/user/labels/add");
+    this.router.navigateByUrl("/user/labels/" + id + "/delete");
   }
 }

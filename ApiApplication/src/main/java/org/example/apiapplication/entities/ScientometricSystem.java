@@ -28,9 +28,6 @@ public class ScientometricSystem {
     private Integer profileImportPeriodicity;
 
     @OneToMany(mappedBy = "scientometricSystem")
-    private List<Field> fields = new ArrayList<>();
-
-    @OneToMany(mappedBy = "scientometricSystem")
     private List<Extraction> extractions = new ArrayList<>();
 
     @OneToMany(mappedBy = "scientometricSystem")

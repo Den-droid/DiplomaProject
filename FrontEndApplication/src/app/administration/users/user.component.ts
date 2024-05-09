@@ -210,11 +210,7 @@ export class UserComponent implements OnInit {
   }
 
   goToEditPage(id: number) {
-    this.router.navigateByUrl("/user/users/edit/" + id);
-  }
-
-  goToAddPage() {
-    this.router.navigateByUrl("/user/users/add");
+    this.router.navigateByUrl("/user/users/" + id + "/edit");
   }
 
   approve(id: number) {

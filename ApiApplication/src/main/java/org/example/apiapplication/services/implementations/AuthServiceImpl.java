@@ -7,8 +7,8 @@ import org.example.apiapplication.entities.user.Role;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.enums.UserRole;
 import org.example.apiapplication.exceptions.auth.*;
-import org.example.apiapplication.exceptions.scientist.ScientistWithIdNotExistsException;
-import org.example.apiapplication.exceptions.user.RoleNotFoundException;
+import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
+import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
 import org.example.apiapplication.repositories.RoleRepository;
 import org.example.apiapplication.repositories.ScientistRepository;
 import org.example.apiapplication.repositories.UserRepository;
@@ -126,7 +126,7 @@ public class AuthServiceImpl implements AuthService {
 
         List<Role> roles = new ArrayList<>();
         Role userRole = roleRepository.findByName(UserRole.USER)
-                .orElseThrow(() -> new RoleNotFoundException(UserRole.USER.name()));
+                .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.USER.name()));
         roles.add(userRole);
         user.setRoles(roles);
 
@@ -134,7 +134,7 @@ public class AuthServiceImpl implements AuthService {
 
         Scientist scientist = scientistRepository
                 .findById(signUpDto.scientistId())
-                .orElseThrow(() -> new ScientistWithIdNotExistsException(signUpDto.scientistId()));
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientist", signUpDto.scientistId()));
         scientist.setUser(user);
 
         user.setFullName(scientist.getFullName());

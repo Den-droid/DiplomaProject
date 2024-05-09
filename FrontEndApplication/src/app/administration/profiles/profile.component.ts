@@ -177,7 +177,7 @@ export class ProfileComponent implements OnInit {
   }
 
   goToEditPage(id: number) {
-    this.router.navigateByUrl("/user/profiles/edit/" + id);
+    this.router.navigateByUrl("/user/profiles/" + id + "/edit");
   }
 
   goToAddPage() {

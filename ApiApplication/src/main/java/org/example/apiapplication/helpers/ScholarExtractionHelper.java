@@ -1,6 +1,6 @@
 package org.example.apiapplication.helpers;
 
-import org.example.apiapplication.entities.fields.Field;
+import org.example.apiapplication.entities.extraction.FieldExtraction;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,19 +16,20 @@ import java.util.TreeMap;
 
 @Component
 public class ScholarExtractionHelper {
-    public List<ProfileFieldValue> extractScholarProfile(String url, List<Field> fields) throws IOException {
+    public List<ProfileFieldValue> extractScholarProfile(String url,
+                                                         List<FieldExtraction> fieldsExtraction) throws IOException {
         List<ProfileFieldValue> allProfileFieldValues = new ArrayList<>();
         Document document = Jsoup.connect(url).get();
 
         List<ProfileFieldValue> profileFieldValues = new ArrayList<>();
-        for (Field field : fields) {
-            if (field.getRule() != null && !field.getRule().isEmpty()) {
-                switch (field.getRuleType().getName()) {
-                    case TEXT -> allProfileFieldValues.add(extractText(document, field));
-                    case ORDERED -> allProfileFieldValues.add(extractOrdered(document, field));
-                    case PROPERTY -> allProfileFieldValues.add(extractProperty(document, field));
-                    case LABELS -> profileFieldValues = extractLabels(document, field);
-                    case YEAR_CITATIONS -> profileFieldValues = extractYearCitations(document, field);
+        for (FieldExtraction fieldExtraction : fieldsExtraction) {
+            if (fieldExtraction.getRule() != null && !fieldExtraction.getRule().isEmpty()) {
+                switch (fieldExtraction.getRuleType().getName()) {
+                    case TEXT -> allProfileFieldValues.add(extractText(document, fieldExtraction));
+                    case ORDERED -> allProfileFieldValues.add(extractOrdered(document, fieldExtraction));
+                    case PROPERTY -> allProfileFieldValues.add(extractProperty(document, fieldExtraction));
+                    case LABELS -> profileFieldValues = extractLabels(document, fieldExtraction);
+                    case YEAR_CITATIONS -> profileFieldValues = extractYearCitations(document, fieldExtraction);
                 }
 
                 allProfileFieldValues.addAll(profileFieldValues);
@@ -39,12 +40,12 @@ public class ScholarExtractionHelper {
         return allProfileFieldValues;
     }
 
-    private ProfileFieldValue extractText(Document document, Field field) {
+    private ProfileFieldValue extractText(Document document, FieldExtraction fieldExtraction) {
         ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-        profileFieldValue.setField(field);
+        profileFieldValue.setField(fieldExtraction.getField());
 
         Elements fieldElements = document
-                .select(field.getRule());
+                .select(fieldExtraction.getRule());
 
         if (!fieldElements.isEmpty()) {
             profileFieldValue.setValue(fieldElements.get(0).text());
@@ -55,16 +56,16 @@ public class ScholarExtractionHelper {
         return profileFieldValue;
     }
 
-    private ProfileFieldValue extractOrdered(Document document, Field field) {
+    private ProfileFieldValue extractOrdered(Document document, FieldExtraction fieldExtraction) {
         ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-        profileFieldValue.setField(field);
-        profileFieldValue.setKey(field.getKey());
+        profileFieldValue.setField(fieldExtraction.getField());
+        profileFieldValue.setKey(fieldExtraction.getKey());
 
         Elements fieldElements = document
-                .select(field.getRule());
+                .select(fieldExtraction.getRule());
 
         if (!fieldElements.isEmpty()) {
-            int index = Integer.parseInt(field.getKey());
+            int index = Integer.parseInt(fieldExtraction.getKey());
 
             profileFieldValue.setValue(fieldElements.get(index).text());
         } else {
@@ -74,16 +75,16 @@ public class ScholarExtractionHelper {
         return profileFieldValue;
     }
 
-    private ProfileFieldValue extractProperty(Document document, Field field) {
+    private ProfileFieldValue extractProperty(Document document, FieldExtraction fieldExtraction) {
         ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-        profileFieldValue.setField(field);
-        profileFieldValue.setKey(field.getKey());
+        profileFieldValue.setField(fieldExtraction.getField());
+        profileFieldValue.setKey(fieldExtraction.getKey());
 
         Elements fieldElements = document
-                .select(field.getRule());
+                .select(fieldExtraction.getRule());
 
         if (!fieldElements.isEmpty()) {
-            String property = field.getKey();
+            String property = fieldExtraction.getKey();
 
             profileFieldValue.setValue(fieldElements.get(0).attribute(property).getValue());
         } else {
@@ -93,20 +94,20 @@ public class ScholarExtractionHelper {
         return profileFieldValue;
     }
 
-    private List<ProfileFieldValue> extractLabels(Document document, Field field) {
-        return extractList(document, field);
+    private List<ProfileFieldValue> extractLabels(Document document, FieldExtraction fieldExtraction) {
+        return extractList(document, fieldExtraction);
     }
 
-    private List<ProfileFieldValue> extractList(Document document, Field field) {
+    private List<ProfileFieldValue> extractList(Document document, FieldExtraction fieldExtraction) {
         List<ProfileFieldValue> profileFieldValues = new ArrayList<>();
 
         Elements fieldElements = document
-                .select(field.getRule());
+                .select(fieldExtraction.getRule());
 
         if (!fieldElements.isEmpty()) {
             for (Element fieldElement : fieldElements) {
                 ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-                profileFieldValue.setField(field);
+                profileFieldValue.setField(fieldExtraction.getField());
                 profileFieldValue.setValue(fieldElement.text());
 
                 profileFieldValues.add(profileFieldValue);
@@ -116,11 +117,11 @@ public class ScholarExtractionHelper {
         return profileFieldValues;
     }
 
-    private List<ProfileFieldValue> extractYearCitations(Document document, Field field) {
+    private List<ProfileFieldValue> extractYearCitations(Document document, FieldExtraction fieldExtraction) {
         List<ProfileFieldValue> profileFieldValues = new ArrayList<>();
 
         Elements fieldElements = document
-                .select(field.getRule());
+                .select(fieldExtraction.getRule());
         Elements yearsElements = fieldElements.select(".gsc_g_t");
         Elements citationElements = fieldElements.select(".gsc_g_a");
 
@@ -154,7 +155,7 @@ public class ScholarExtractionHelper {
 
             for (Map.Entry<String, Integer> entry : map.entrySet()) {
                 ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-                profileFieldValue.setField(field);
+                profileFieldValue.setField(fieldExtraction.getField());
                 profileFieldValue.setKey(entry.getKey());
                 profileFieldValue.setValue(String.valueOf(entry.getValue()));
 

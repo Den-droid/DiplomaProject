@@ -1,6 +1,6 @@
 <div style="margin-top: 4%; overflow-x:hidden">
   <div class="text-center" style="margin-bottom: 2%">
-    <h2>Users</h2>
+    <h2>Profiles</h2>
   </div>
 
   <div class="mb-3 row d-flex justify-content-between" style="width: 65%; margin-right:auto; margin-left: auto">
@@ -51,8 +51,8 @@
     </div>
     <ng-template [ngIf]="hasPermissionForAction('ADD_PROFILES') || currentUserRole === 'MAIN_ADMIN'">
       <div class="col-sm-4 d-flex justify-content-end align-items-center">
-        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-          (click)="goToAddPage()">Add Profile</button>
+        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block">Add
+          Profile</button>
       </div>
     </ng-template>
   </div>
@@ -73,7 +73,7 @@
           style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="markAsDoubtful(profile.id)">Mark Works Doubtful</button>
         <button *ngIf="profile.isActive && (hasPermissionForAction('EDIT_PROFILES')
-        || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10pxx" type="button"
+        || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
           class="btn btn-primary btn-block" (click)="goToEditPage(profile.id)">Edit</button>
         <button *ngIf="!profile.isActive && (hasPermissionForAction('DEACTIVATE_PROFILES')
         || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"

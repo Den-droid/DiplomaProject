@@ -1,12 +1,23 @@
 package org.example.apiapplication.services.interfaces;
 
-import org.example.apiapplication.dto.fields.FieldDto;
-import org.example.apiapplication.dto.fields.FieldTypeDto;
+import org.example.apiapplication.dto.fields.*;
 
 import java.util.List;
 
 public interface FieldService {
-    List<FieldTypeDto> getFieldTypes();
+    List<FieldTypeDto> getAllFieldTypes();
 
-    List<FieldDto> getFieldsByScientometricSystemId(Integer scientometricSystemId);
+    GetFieldsDto getAllFields(Integer currentPage);
+
+    GetFieldsDto getAllFields();
+
+    GetFieldsDto searchFieldsByName(Integer currentPage, String name);
+
+    FieldDto getById(Integer id);
+
+    void add(AddFieldDto addFieldDto);
+
+    void edit(Integer id, EditFieldDto editFieldDto);
+
+    void delete(Integer id, DeleteFieldDto deleteFieldDto);
 }

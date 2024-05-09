@@ -58,7 +58,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public GetLabelsDto getAllLabelsByName(int page, String name) {
+    public GetLabelsDto searchLabelsByName(int page, String name) {
         Page<Label> labelPage = labelRepository.findByNameContainsIgnoreCase(name.trim(),
                 PageRequest.of(page - 1, 5));
 
@@ -90,7 +90,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public void update(Integer id, EditLabelDto editLabelDto) {
+    public void edit(Integer id, EditLabelDto editLabelDto) {
         Label label = labelRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Label", id));
 

@@ -12,9 +12,9 @@
   </div>
 
   <div class="mb-3 row justify-content-center" style="width: 50%; margin-right:auto; margin-left: auto">
-    <label class="col-sm-4 col-form-label" for="scientists">Select Replacement Label: </label>
+    <label class="col-sm-4 col-form-label" for="replacementLabels">Select Replacement Label: </label>
     <div class="col-sm-8">
-      <select id="scientists" name="scientist" [(ngModel)]="selectedLabel" class="form-control">
+      <select id="replacementLabels" name="replacementLabels" [(ngModel)]="selectedLabel" class="form-control">
         <option *ngFor="let label of labels | label_search : searchQuery" [value]="label.id">
           {{label.name}}</option>
       </select>

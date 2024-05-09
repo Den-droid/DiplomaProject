@@ -49,7 +49,7 @@
     <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN'">
       <div class="col-sm-4 d-flex justify-content-end align-items-center">
         <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-          (click)="goToAddPage()">Add Admin</button>
+          routerLink="/user/users/add">Add Admin</button>
       </div>
     </ng-template>
   </div>
@@ -71,7 +71,7 @@
         <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
           type="button" class="btn btn-primary btn-block" (click)="reject(user.id)">Reject</button>
         <button *ngIf="user.isActive && (hasPermissionForAction('EDIT_USERS') || currentUserRole === 'MAIN_ADMIN')"
-          class="mb-3" style="margin-top: 10px; margin-bottom: 10pxx" type="button" class="btn btn-primary btn-block"
+          class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="goToEditPage(user.id)">Edit</button>
         <button *ngIf="!user.isActive && user.isApproved && (hasPermissionForAction('DEACTIVATE_USERS')
           || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"

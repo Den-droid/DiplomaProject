@@ -36,7 +36,7 @@ public class LabelController {
 
     @GetMapping("/search")
     public ResponseEntity<?> getAllLabelsByName(@RequestParam String name, @RequestParam Integer currentPage) {
-        GetLabelsDto labels = labelService.getAllLabelsByName(currentPage, name);
+        GetLabelsDto labels = labelService.searchLabelsByName(currentPage, name);
         return ResponseEntity.ok(labels);
     }
 
@@ -49,7 +49,7 @@ public class LabelController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editLabel(@PathVariable Integer id,
                                        @RequestBody EditLabelDto editLabelDto) {
-        labelService.update(id, editLabelDto);
+        labelService.edit(id, editLabelDto);
         return ResponseEntity.ok().build();
     }
 

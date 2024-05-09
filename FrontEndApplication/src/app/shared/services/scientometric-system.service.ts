@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { baseUrl } from "../constants/url.constant";
 import { ScientometricSystem } from "../models/scientometric.model";
+import { Field } from "../models/field.model";
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +24,9 @@ export class ScientometricSystemService {
 
   getExtractionIsPossible(id: number): Observable<boolean> {
     return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/extraction/" + id + "/isPossible")
+  }
+
+  getFieldsById(id: number): Observable<Field[]> {
+    return this.httpClient.get<Field[]>(this.scientometricSystemUrl + "/" + id + "/fields");
   }
 }

@@ -1,85 +1,98 @@
-<form (ngSubmit)="editAdmin()" style="margin-top: 4%; overflow-x:hidden">
+<form (ngSubmit)="editProfile()" style="margin-top: 4%; overflow-x:hidden">
   <div class="text-center" style="margin-bottom: 2%">
-    <h2>Edit Admin</h2>
+    <h2>Edit Profile</h2>
   </div>
 
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
-    <label class="col-sm-4 col-form-label" for="fullname">Full name: </label>
-    <div class="col-sm-8">
-      <input [(ngModel)]="fullName" name="fullname" type="text" id="fullname" class="form-control" />
-    </div>
+  <div class="text-center" style="margin-bottom: 2%">
+    <h4>Edit Fields</h4>
   </div>
 
-  <ng-template [ngIf]="userRole !== 'USER'">
-    <div class="text-center" style="margin-bottom: 2%">
-      <label class="col-sm-2 col-form-label" for="isEditedToMainAdmin"> Is Main Admin? </label>
-      <input type="checkbox" [(ngModel)]="isEditedToMainAdmin" id="" name="isEditedToMainAdmin">
-    </div>
-  </ng-template>
-
-  <div *ngIf="errorFullname.length > 0" class="row mb-4" style="color: red">
-    <div class="col d-flex justify-content-center">
-      <p>{{errorFullname}}</p>
-    </div>
-  </div>
-
-  <ng-template [ngIf]="!isEditedToMainAdmin">
-    <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN' && userRole !== 'USER'">
-      <div class="text-center" style="margin-bottom: 2%">
-        <h4>Select Faculty And Chair</h4>
+  <div class="mb-3 row d-flex justify-content-center"
+    style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
+    <div class="mb-3 row d-flex justify-content-center" *ngFor="let profileField of profileFields; index as i">
+      <div class="col-sm-4 d-flex flex-column">
+        <label class="col-form-label" [attr.for]="'fieldName' + i">{{profileField.field.name}}</label>
+        <small class="row" *ngIf="profileField.field.fieldType.name === 'CITATION' ||
+        profileField.field.fieldType.name === 'H_INDEX'" class="text-muted"
+          style="font-size: 13px">{{profileField.field.fieldType.name === 'CITATION' ?
+          'This value is counted as citations on graphs' : 'This value is counted as H_Index on graphs'}}</small>
       </div>
-
-      <div class="mb-3 row d-flex justify-content-between"
-        style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
-        <div class="mb-3 row d-flex justify-content-between">
-          <div class="col-sm-12 d-flex justify-content-between">
-            <label class="col-sm-2 col-form-label" for="selectFaculty">Select faculty: </label>
-            <select class="col-sm-4" id="selectFaculty" [(ngModel)]="selectedFaculty" name="selectFaculty">
-              <option *ngFor="let faculty of faculties" [value]="faculty.id">
-                {{faculty.name}}</option>
-            </select>
-            <label class="col-sm-2 col-form-label" style="margin-left: 15px" for="selectChair">Select chair: </label>
-            <select class="col-sm-4" id="chairs" name="selectChair" [disabled]="wholeFaculty"
-              [(ngModel)]="selectedChair">
-              <option *ngFor="let chair of chairs | chairs_by_faculty : selectedFaculty" [value]="chair.id">
-                {{chair.name}}</option>
+      <div class="col-sm-6">
+        <input name="fieldName" [attr.type]="profileField.field.fieldType.name == 'BOOLEAN' ? 'checkbox' :
+            profileField.field.fieldType.name == 'DATE' ? 'date' : 'text'" [attr.id]="'fieldName' + i"
+          [ngClass]="{'form-control' : profileField.field.fieldType.name != 'BOOLEAN'}" [value]="profileField.value" />
+      </div>
+      <div class="col-sm-2 text-center">
+        <button class="btn btn-primary btn-block" (click)="removeFieldFromProfile(i)"> Remove </button>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-between" style="border: 2px solid lightblue; padding: 10px;">
+      <div class="col-sm-8">
+        <div>
+          <div class="mb-3 d-flex justify-content-between">
+            <label class="col-sm-4 col-form-label" for="searchField">Search Field: </label>
+            <input class="col-sm-8" type="text" [(ngModel)]="fieldSearchQuery" name="searchField" id="searchField">
+          </div>
+          <div class="d-flex justify-content-center">
+            <label class="col-sm-4 col-form-label" for="selectField">Select Field: </label>
+            <select class="col-sm-8" id="chairs" name="selectField" [(ngModel)]="selectedField">
+              <option *ngFor="let field of allFields | field_search : fieldSearchQuery" [value]="field.id">
+                {{field.name}}</option>
             </select>
           </div>
         </div>
-        <div class="mb-3 d-flex justify-content-start">
-          <label class="col-sm-2 col-form-label" for="wholeFaculty"> Whole Faculty? </label>
-          <input type="checkbox" [checked]="wholeFaculty" (click)="updateWholeFaculty()" name="wholeFaculty"
-            id="wholeFaculty">
-        </div>
       </div>
-
-      <div *ngIf="errorFaculty.length > 0" class="row mb-4" style="color: red">
-        <div class="col d-flex justify-content-center">
-          <p>{{errorFaculty}}</p>
-        </div>
-      </div>
-    </ng-template>
-
-    <div class="text-center" style="margin-bottom: 2%">
-      <h4>Permissions</h4>
-    </div>
-
-    <div class="mb-3 row d-flex justify-content-center"
-      style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
-      <div class="col-sm-4 d-flex justify-content-start flex-column">
-        <div class="mb-3 d-flex justify-content-start" *ngFor="let permission of userPermissions; index as i">
-          <label class="col-sm-10 col-form-label" [attr.for]="permission.name + i"> {{permission.name}}</label>
-          <input type="checkbox" [checked]="selectedUserPermissions[i]" [attr.name]="permission.name + i"
-            [attr.id]="permission.name + i" (click)="updateSelectedPermission(i)">
-        </div>
+      <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
+        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
+          (click)="addFieldToProfile()">Add Field</button>
+        <span *ngIf="selectedFieldError.length > 0" style="color: red"> {{selectedFieldError}} </span>
       </div>
     </div>
-  </ng-template>
+  </div>
+
+  <div class="text-center" style="margin-top: 2%; margin-bottom: 2%">
+    <h4>Labels</h4>
+  </div>
+
+  <div class="mb-3 row d-flex justify-content-center"
+    style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
+    <div class="mb-3 row d-flex justify-content-center">
+      <div class="col-sm-4 d-flex justify-content-center align-items-center"
+        *ngFor="let label of profileLabels; index as i" style="border: 2px solid lightblue; margin: 5px; padding: 10px">
+        <label class="col-sm-8 col-form-label" [attr.for]="label.name + i"> {{label.name}}</label>
+        <button class="col-sm-4" type="button" class="btn btn-primary btn-block text-center"
+          (click)="removeLabel(label.id)">Remove</button>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-between" style="border: 2px solid lightblue; padding: 10px;">
+      <div class="col-sm-8">
+        <div>
+          <div class="mb-3 d-flex justify-content-center">
+            <label class="col-sm-4 col-form-label" for="searchLabel">Search Label: </label>
+            <input class="col-sm-8" type="text" [(ngModel)]="labelSearchQuery" name="searchLabel" id="searchLabel">
+          </div>
+          <div class="d-flex justify-content-center">
+            <label class="col-sm-4 col-form-label" for="selectLabel">Select Label: </label>
+            <select class="col-sm-8" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
+              <option *ngFor="let label of possibleLabels | label_search : labelSearchQuery" [value]="label.id">
+                {{label.name}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
+        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
+          (click)="addLabel()">Add
+          Label</button>
+        <span *ngIf="selectedLabelError.length > 0" style="color: red"> {{selectedLabelError}} </span>
+      </div>
+    </div>
+  </div>
 
   <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
     <div class="col d-flex justify-content-between">
       <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
-        routerLink="/user/users">Back</button>
+        routerLink="/user/profiles">Back</button>
       <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center">
         Edit</button>
     </div>

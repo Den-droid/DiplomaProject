@@ -6,16 +6,14 @@ import org.example.apiapplication.dto.fields.FieldTypeDto;
 import org.example.apiapplication.dto.fields.ProfileFieldDto;
 import org.example.apiapplication.dto.labels.LabelDto;
 import org.example.apiapplication.dto.page.PageDto;
-import org.example.apiapplication.dto.profile.AddProfileDto;
-import org.example.apiapplication.dto.profile.EditProfileDto;
-import org.example.apiapplication.dto.profile.GetProfilesDto;
-import org.example.apiapplication.dto.profile.ProfilePreviewDto;
+import org.example.apiapplication.dto.profile.*;
 import org.example.apiapplication.entities.*;
 import org.example.apiapplication.entities.fields.Field;
+import org.example.apiapplication.entities.fields.FieldType;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
 import org.example.apiapplication.entities.user.Role;
 import org.example.apiapplication.entities.user.User;
-import org.example.apiapplication.enums.FieldType;
+import org.example.apiapplication.enums.FieldTypeName;
 import org.example.apiapplication.enums.UserRole;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
 import org.example.apiapplication.exceptions.profile.ProfileScientistScientometricSystemExists;
@@ -40,6 +38,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final RoleRepository roleRepository;
     private final ChairRepository chairRepository;
     private final FacultyRepository facultyRepository;
+    private final FieldTypeRepository fieldTypeRepository;
 
     private final LabelService labelService;
 
@@ -48,20 +47,22 @@ public class ProfileServiceImpl implements ProfileService {
                               ScientistRepository scientistRepository,
                               FieldRepository fieldRepository,
                               ProfileFieldValueRepository profileFieldValueRepository,
-                              LabelService labelService,
                               RoleRepository roleRepository,
                               ChairRepository chairRepository,
-                              FacultyRepository facultyRepository) {
+                              FacultyRepository facultyRepository,
+                              FieldTypeRepository fieldTypeRepository,
+                              LabelService labelService) {
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.profileRepository = profileRepository;
         this.scientistRepository = scientistRepository;
         this.fieldRepository = fieldRepository;
         this.profileFieldValueRepository = profileFieldValueRepository;
         this.roleRepository = roleRepository;
-
-        this.labelService = labelService;
         this.chairRepository = chairRepository;
         this.facultyRepository = facultyRepository;
+        this.fieldTypeRepository = fieldTypeRepository;
+
+        this.labelService = labelService;
     }
 
     @Override
@@ -107,13 +108,24 @@ public class ProfileServiceImpl implements ProfileService {
 
         return profile.getProfileFieldValues().stream()
                 .map(x -> {
-                    FieldTypeDto fieldTypeDto = new FieldTypeDto(x.getField().getType().name());
-                    FieldDto fieldDto = new FieldDto(x.getField().getId(),
-                            x.getField().getName(), fieldTypeDto);
+                    Field field = x.getField();
+                    FieldType fieldType = x.getField().getType();
+                    FieldTypeDto fieldTypeDto = new FieldTypeDto(fieldType.getId(),
+                            fieldType.getName().name());
+                    FieldDto fieldDto = new FieldDto(field.getId(),
+                            field.getName(), fieldTypeDto);
                     return new ProfileFieldDto(x.getId(), x.getValue(),
                             fieldDto);
                 })
                 .toList();
+    }
+
+    @Override
+    public ProfileFullDto getProfileFullById(Integer id) {
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Profile", id));
+
+        return getProfileFullDtoByProfile(profile);
     }
 
     @Override
@@ -136,11 +148,12 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ProfileFieldValue> profileFieldValues = addProfileDto.profileFields().stream()
                 .map(x -> {
-                    ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-                    profileFieldValue.setField(fieldRepository
-                            .findById(x.fieldDto().id())
+                    Field field = fieldRepository.findById(x.field().id())
                             .orElseThrow(() ->
-                                    new EntityWithIdNotExistsException("Field", x.fieldDto().id())));
+                                    new EntityWithIdNotExistsException("Field", x.field().id()));
+
+                    ProfileFieldValue profileFieldValue = new ProfileFieldValue();
+                    profileFieldValue.setField(field);
                     profileFieldValue.setValue(x.value());
                     return profileFieldValue;
                 })
@@ -170,22 +183,19 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ProfileFieldValue> profileFieldValues = editProfileDto.fields().stream()
                 .map(x -> {
-                    if (x.fieldDto().id() == null) {
-                        Field field = new Field();
-                        field.setName(x.fieldDto().name());
-                        field.setType(getFieldTypeByString(x.fieldDto().fieldType().name()));
-                        fields.add(field);
+                    if (x.id() == -1) {
+                        Field field = fieldRepository.findById(x.field().id())
+                                .orElseThrow(() ->
+                                        new EntityWithIdNotExistsException("Field", x.field().id()));
 
                         ProfileFieldValue profileFieldValue = new ProfileFieldValue();
                         profileFieldValue.setField(field);
                         profileFieldValue.setValue(x.value());
                         return profileFieldValue;
                     } else {
-                        ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-                        profileFieldValue.setField(fieldRepository
-                                .findById(x.fieldDto().id())
-                                .orElseThrow(() ->
-                                        new EntityWithIdNotExistsException("Field", x.fieldDto().id())));
+                        ProfileFieldValue profileFieldValue = profileFieldValueRepository
+                                .findById(x.id()).orElseThrow(() -> new
+                                        EntityWithIdNotExistsException("ProfileFieldValue", x.id()));
                         profileFieldValue.setValue(x.value());
                         return profileFieldValue;
                     }
@@ -195,7 +205,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setProfileFieldValues(profileFieldValues);
         profileFieldValues.forEach(x -> x.setProfile(profile));
 
-        labelService.addLabelsToProfile(editProfileDto.labelsId(), profile);
+        labelService.addLabelsToProfile(editProfileDto.labelsIds(), profile);
 
         fieldRepository.saveAll(fields);
         profileRepository.save(profile);
@@ -276,13 +286,34 @@ public class ProfileServiceImpl implements ProfileService {
                 .toList();
     }
 
-    private FieldType getFieldTypeByString(String stringFieldType) {
-        return FieldType.valueOf(stringFieldType);
+    private FieldTypeName getFieldTypeByString(String stringFieldType) {
+        return FieldTypeName.valueOf(stringFieldType);
     }
 
     private ProfilePreviewDto getProfilePreviewDtoByProfile(Profile profile) {
         return new ProfilePreviewDto(profile.getId(), profile.getScientist().getFullName(),
                 profile.isAreWorksDoubtful(), profile.isActive());
+    }
+
+    private ProfileFullDto getProfileFullDtoByProfile(Profile profile) {
+        List<ProfileFieldDto> profileFieldDtos = profile.getProfileFieldValues()
+                .stream()
+                .map(x -> {
+                    Field field = x.getField();
+                    FieldType fieldType = x.getField().getType();
+                    FieldDto fieldDto = new FieldDto(field.getId(), field.getName(),
+                            new FieldTypeDto(fieldType.getId(), fieldType.getName().name()));
+                    return new ProfileFieldDto(x.getId(), x.getValue(), fieldDto);
+                })
+                .toList();
+
+        List<LabelDto> labelDtos = profile.getLabels()
+                .stream()
+                .map(x -> new LabelDto(x.getId(), x.getName()))
+                .toList();
+
+        return new ProfileFullDto(profile.getId(),
+                profile.isAreWorksDoubtful(), profile.isActive(), profileFieldDtos, labelDtos);
     }
 
     private List<Profile> getProfilesByUserAndScientometricSystem(User user, Integer scientometricSystemId) {

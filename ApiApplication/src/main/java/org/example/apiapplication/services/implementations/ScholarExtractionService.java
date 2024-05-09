@@ -5,7 +5,7 @@ import org.example.apiapplication.entities.Profile;
 import org.example.apiapplication.entities.ScientometricSystem;
 import org.example.apiapplication.entities.extraction.Extraction;
 import org.example.apiapplication.entities.extraction.ExtractionProfile;
-import org.example.apiapplication.entities.fields.Field;
+import org.example.apiapplication.entities.extraction.FieldExtraction;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
 import org.example.apiapplication.enums.ScientometricSystemName;
 import org.example.apiapplication.exceptions.extraction.PreviousExtractionNotFinishedException;
@@ -44,6 +44,7 @@ public class ScholarExtractionService implements ExtractionService {
     private final ScientometricSystemRepository scientometricSystemRepository;
     private final FieldRuleTypeRepository fieldRuleTypeRepository;
     private final LabelRepository labelRepository;
+    private final FieldExtractionRepository fieldExtractionRepository;
 
     private final ScholarExtractionHelper scholarExtractionHelper;
 
@@ -56,8 +57,12 @@ public class ScholarExtractionService implements ExtractionService {
                                     ProfileRepository profileRepository,
                                     ScientometricSystemRepository scientometricSystemRepository,
                                     ProfileFieldValueRepository profileFieldValueRepository,
-                                    FieldRepository fieldRepository, FieldRuleTypeRepository fieldRuleTypeRepository, LabelRepository labelRepository,
-                                    ScholarExtractionHelper scholarExtractionHelper, LabelService labelService) {
+                                    FieldRepository fieldRepository,
+                                    FieldRuleTypeRepository fieldRuleTypeRepository,
+                                    LabelRepository labelRepository,
+                                    FieldExtractionRepository fieldExtractionRepository,
+                                    ScholarExtractionHelper scholarExtractionHelper,
+                                    LabelService labelService) {
         this.extractionRepository = extractionRepository;
         this.extractionProfileRepository = extractionProfileRepository;
         this.profileRepository = profileRepository;
@@ -66,6 +71,7 @@ public class ScholarExtractionService implements ExtractionService {
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.fieldRuleTypeRepository = fieldRuleTypeRepository;
         this.labelRepository = labelRepository;
+        this.fieldExtractionRepository = fieldExtractionRepository;
 
         this.scholarExtractionHelper = scholarExtractionHelper;
 
@@ -168,9 +174,6 @@ public class ScholarExtractionService implements ExtractionService {
     }
 
     private List<ProfileFieldValue> extractScholarProfileFieldValues(Profile profile) throws IOException {
-        List<Field> fields = fieldRepository
-                .findByScientometricSystem(scholarScientometricSystem);
-
         String userId = profile.getProfileUserId();
 
         ScholarQueryBuilder scholarQueryBuilder = ScholarQueryBuilder.builder()
@@ -184,8 +187,11 @@ public class ScholarExtractionService implements ExtractionService {
 
         List<ProfileFieldValue> profileFieldValues;
 
+        List<FieldExtraction> fieldExtractions = fieldExtractionRepository.
+                findByScientometricSystem(scholarScientometricSystem);
+
         profileFieldValues = scholarExtractionHelper
-                .extractScholarProfile(scholarQueryBuilder.toString(), fields);
+                .extractScholarProfile(scholarQueryBuilder.toString(), fieldExtractions);
         profileFieldValues.forEach((x) -> x.setProfile(profile));
 
         return profileFieldValues;

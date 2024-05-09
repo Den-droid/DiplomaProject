@@ -13,8 +13,8 @@ import org.example.apiapplication.entities.user.Role;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.enums.UserRole;
 import org.example.apiapplication.exceptions.auth.UserWithUsernameExistsException;
+import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
-import org.example.apiapplication.exceptions.user.RoleNotFoundException;
 import org.example.apiapplication.repositories.*;
 import org.example.apiapplication.services.interfaces.UserService;
 import org.springframework.stereotype.Service;
@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
 
             if (!createAdminDto.facultyIds().isEmpty()) {
                 Role role = roleRepository.findByName(UserRole.FACULTY_ADMIN)
-                        .orElseThrow(() -> new RoleNotFoundException(UserRole.FACULTY_ADMIN.name()));
+                        .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.FACULTY_ADMIN.name()));
                 roles.add(role);
 
                 for (Integer facultyId : createAdminDto.facultyIds()) {
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
 
             if (!createAdminDto.chairIds().isEmpty()) {
                 Role role = roleRepository.findByName(UserRole.CHAIR_ADMIN)
-                        .orElseThrow(() -> new RoleNotFoundException(UserRole.CHAIR_ADMIN.name()));
+                        .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.CHAIR_ADMIN.name()));
                 roles.add(role);
 
                 for (Integer chairId : createAdminDto.chairIds()) {
@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
             user.setRoles(roles);
         } else {
             Role role = roleRepository.findByName(UserRole.MAIN_ADMIN)
-                    .orElseThrow(() -> new RoleNotFoundException(UserRole.MAIN_ADMIN.name()));
+                    .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.MAIN_ADMIN.name()));
             user.setRoles(List.of(role));
         }
 
@@ -197,9 +197,9 @@ public class UserServiceImpl implements UserService {
         user.setFullName(editAdminDto.fullName());
 
         Role facultyAdmin = roleRepository.findByName(UserRole.FACULTY_ADMIN)
-                .orElseThrow(() -> new RoleNotFoundException(UserRole.FACULTY_ADMIN.name()));
+                .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.FACULTY_ADMIN.name()));
         Role chairAdmin = roleRepository.findByName(UserRole.CHAIR_ADMIN)
-                .orElseThrow(() -> new RoleNotFoundException(UserRole.CHAIR_ADMIN.name()));
+                .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.CHAIR_ADMIN.name()));
 
         if (!editAdminDto.isMainAdmin()) {
             if (!editAdminDto.facultyIds().isEmpty()) {
@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
             }
         } else {
             Role role = roleRepository.findByName(UserRole.MAIN_ADMIN)
-                    .orElseThrow(() -> new RoleNotFoundException(UserRole.MAIN_ADMIN.name()));
+                    .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.MAIN_ADMIN.name()));
 
             user.setRoles(List.of(role));
         }

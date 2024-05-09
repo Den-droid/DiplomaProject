@@ -5,6 +5,7 @@ import org.example.apiapplication.dto.labels.LabelDto;
 import org.example.apiapplication.dto.profile.AddProfileDto;
 import org.example.apiapplication.dto.profile.EditProfileDto;
 import org.example.apiapplication.dto.profile.GetProfilesDto;
+import org.example.apiapplication.dto.profile.ProfileFullDto;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.ProfileService;
@@ -64,6 +65,12 @@ public class ProfileController {
     public ResponseEntity<?> addProfile(@RequestBody AddProfileDto addProfileDto) {
         profileService.add(addProfileDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProfileFullById(@PathVariable Integer id) {
+        ProfileFullDto profileFullDto = profileService.getProfileFullById(id);
+        return ResponseEntity.ok(profileFullDto);
     }
 
     @PutMapping("/{id}")

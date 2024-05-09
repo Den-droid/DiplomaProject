@@ -3,6 +3,8 @@ import { baseUrl } from "../constants/url.constant";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { GetProfilesDto } from "../models/profile.model";
 import { Observable } from "rxjs";
+import { ProfileField } from "../models/field.model";
+import { Label } from "../models/label.model";
 
 @Injectable({
   providedIn: 'root'
@@ -52,5 +54,13 @@ export class ProfileService {
 
   deactivate(id: number): Observable<any> {
     return this.httpClient.get(this.url + "/" + id + "/deactivate");
+  }
+
+  getProfileFields(id: number): Observable<ProfileField[]> {
+    return this.httpClient.get<ProfileField[]>(this.url + "/" + id + "/fields");
+  }
+
+  getProfileLabels(id: number): Observable<Label[]> {
+    return this.httpClient.get<Label[]>(this.url + "/" + id + "/labels");
   }
 }
