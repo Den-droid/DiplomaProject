@@ -27,7 +27,7 @@ export class FieldEditComponent implements OnInit {
           this.name = result.name;
         },
         error: (error: any) => {
-          this.router.navigateByUrl("/auth/signin");
+          this.router.navigateByUrl("/error/404");
         }
       });
     });

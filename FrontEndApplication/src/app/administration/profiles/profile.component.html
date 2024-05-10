@@ -51,7 +51,8 @@
     </div>
     <ng-template [ngIf]="hasPermissionForAction('ADD_PROFILES') || currentUserRole === 'MAIN_ADMIN'">
       <div class="col-sm-4 d-flex justify-content-end align-items-center">
-        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block">Add
+        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
+          routerLink="/user/profiles/add">Add
           Profile</button>
       </div>
     </ng-template>

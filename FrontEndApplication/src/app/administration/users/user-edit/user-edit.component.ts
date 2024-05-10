@@ -55,6 +55,7 @@ export class UserEditComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
       this.userId = data['id'];
+
       this.userService.getEditDto(this.userId).subscribe({
         next: (result: EditAdminDto) => {
           this.facultyService.getAll().subscribe({
@@ -108,7 +109,7 @@ export class UserEditComponent implements OnInit {
           this.fullName = result.fullName;
         },
         error: (error: any) => {
-          this.router.navigateByUrl("/user/users");
+          this.router.navigateByUrl("/error/404");
         }
       });
     });

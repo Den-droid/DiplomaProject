@@ -36,7 +36,8 @@ public class WebSecurityConfig {
             "/api/profiles",
             "/api/profiles/**",
             "/api/fields",
-            "/api/fields/**"
+            "/api/fields/**",
+            "/api/scientists/**"
     };
 
     private final String[] mainAdminUrls = {

@@ -41,7 +41,7 @@
     <div class="col-sm-8">
       <select id="scientists" name="scientist" [(ngModel)]="selectedScientist" class="form-control">
         <option *ngFor="let scientist of scientists | scientist_search : searchQuery" [value]="scientist.id">
-          {{scientist.scientistName}}</option>
+          {{scientist.name}}</option>
       </select>
     </div>
   </div>

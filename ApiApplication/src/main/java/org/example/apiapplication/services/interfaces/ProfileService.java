@@ -22,6 +22,8 @@ public interface ProfileService {
 
     ProfileFullDto getProfileFullById(Integer id);
 
+    boolean canProfileBeAddedToSystemAndScientist(Integer scientistId, Integer scientometricSystemId);
+
     void add(AddProfileDto addProfileDto);
 
     void edit(Integer id, EditProfileDto editProfileDto);

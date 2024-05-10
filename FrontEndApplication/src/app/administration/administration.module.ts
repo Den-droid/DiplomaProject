@@ -23,24 +23,28 @@ import { FieldComponent } from './fields/field.component';
 import { FieldAddComponent } from './fields/add/field-add.component';
 import { FieldEditComponent } from './fields/edit/field-edit.component';
 import { FieldDeleteComponent } from './fields/delete/field-delete.component';
+import { MainAdminGuard } from '../shared/guards/main-admin.guard';
+import { AnyAdminGuard } from '../shared/guards/any-admin.guard';
+import { AuthenticatedGuard } from '../shared/guards/authenticated.guard';
 
 const userRoutes: Routes = [
-  { path: "extraction", component: ExtractionComponent },
-  { path: "labels", component: LabelComponent },
-  { path: "labels/add", component: LabelAddComponent },
-  { path: "labels/:id/edit", component: LabelEditComponent },
-  { path: "labels/:id/delete", component: LabelDeleteComponent },
-  { path: "users", component: UserComponent },
-  { path: "users/add", component: UserAddComponent },
-  { path: "users/:id/edit", component: UserEditComponent },
-  { path: "profiles", component: ProfileComponent },
-  { path: "profiles/add", component: ProfileAddComponent },
-  { path: "profiles/:id/edit", component: ProfileEditComponent },
-  { path: "fields", component: FieldComponent },
-  { path: "fields/add", component: FieldAddComponent },
-  { path: "fields/:id/edit", component: FieldEditComponent },
-  { path: "fields/:id/delete", component: FieldDeleteComponent },
-  { path: "settings", component: SettingsComponent },
+  { path: "extraction", component: ExtractionComponent, canActivate: [MainAdminGuard] },
+  { path: "labels", component: LabelComponent, canActivate: [MainAdminGuard] },
+  { path: "labels/add", component: LabelAddComponent, canActivate: [MainAdminGuard] },
+  { path: "labels/:id/edit", component: LabelEditComponent, canActivate: [MainAdminGuard] },
+  { path: "labels/:id/delete", component: LabelDeleteComponent, canActivate: [MainAdminGuard] },
+  { path: "users", component: UserComponent, canActivate: [AnyAdminGuard] },
+  { path: "users/add", component: UserAddComponent, canActivate: [MainAdminGuard] },
+  { path: "users/:id/edit", component: UserEditComponent, canActivate: [AnyAdminGuard] },
+  { path: "profiles", component: ProfileComponent, canActivate: [AuthenticatedGuard] },
+  { path: "profiles/add", component: ProfileAddComponent, canActivate: [AuthenticatedGuard] },
+  { path: "profiles/:id/edit", component: ProfileEditComponent, canActivate: [AuthenticatedGuard] },
+  { path: "fields", component: FieldComponent, canActivate: [MainAdminGuard] },
+  { path: "fields/add", component: FieldAddComponent, canActivate: [MainAdminGuard] },
+  { path: "fields/:id/edit", component: FieldEditComponent, canActivate: [MainAdminGuard] },
+  { path: "fields/:id/delete", component: FieldDeleteComponent, canActivate: [MainAdminGuard] },
+  { path: "settings", component: SettingsComponent, canActivate: [AuthenticatedGuard] },
+  { path: "**", redirectTo: "/error/404" }
 ]
 
 @NgModule({

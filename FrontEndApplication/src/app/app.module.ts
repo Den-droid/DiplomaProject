@@ -6,13 +6,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AuthModule } from './auth/auth.module';
 import { HttpClientModule } from '@angular/common/http';
 import { AdministrationModule } from './administration/administration.module';
+import { ErrorModule } from './error/error.module';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    BrowserModule, AppRoutingModule, AuthModule, AdministrationModule, HttpClientModule
+    BrowserModule, AppRoutingModule, AuthModule, ErrorModule, AdministrationModule, HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

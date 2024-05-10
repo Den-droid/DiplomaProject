@@ -151,7 +151,5 @@ public class LabelServiceImpl implements LabelService {
         }
 
         profile.getLabels().retainAll(labels);
-
-        profileRepository.save(profile);
     }
 }

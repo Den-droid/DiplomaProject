@@ -1,7 +1,9 @@
 export enum ScientometricSystemLabel {
-  SCHOLAR = "Scholar"
+  SCHOLAR = "Scholar",
+  TEST = "Test"
 }
 
 export enum ScientometricSystemName {
-  SCHOLAR = "SCHOLAR"
+  SCHOLAR = "SCHOLAR",
+  TEST = "TEST"
 }

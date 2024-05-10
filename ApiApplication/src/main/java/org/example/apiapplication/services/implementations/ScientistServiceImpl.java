@@ -1,6 +1,7 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.dto.scientist.ScientistPreviewDto;
 import org.example.apiapplication.dto.scientist.EditScientistDto;
 import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
@@ -11,6 +12,8 @@ import org.example.apiapplication.repositories.FacultyRepository;
 import org.example.apiapplication.repositories.ScientistRepository;
 import org.example.apiapplication.services.interfaces.ScientistService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -50,5 +53,13 @@ public class ScientistServiceImpl implements ScientistService {
         }
 
         scientistRepository.save(scientist);
+    }
+
+    @Override
+    public List<ScientistPreviewDto> getAllScientistPreview() {
+        List<Scientist> scientists = scientistRepository.findAllByUserNull();
+        return scientists.stream()
+                .map((x) -> new ScientistPreviewDto(x.getId(), x.getFullName()))
+                .toList();
     }
 }

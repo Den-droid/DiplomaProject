@@ -1,4 +1,4 @@
-package org.example.apiapplication.dto.auth;
+package org.example.apiapplication.dto.scientist;
 
-public record ScientistPreviewDto(Integer id, String scientistName) {
+public record ScientistPreviewDto(Integer id, String name) {
 }

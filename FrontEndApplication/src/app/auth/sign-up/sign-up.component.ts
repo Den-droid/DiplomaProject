@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ValidateEmails } from '../../shared/validators/emails.validator';
 import { v4 as uuidv4 } from 'uuid';
-import { SignUpScientistDto, SignUpDto } from 'src/app/shared/models/auth.model';
+import { SignUpDto } from 'src/app/shared/models/auth.model';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
+import { ScientistPreview } from 'src/app/shared/models/scientist.model';
+import { ScientistService } from 'src/app/shared/services/scientist.service';
 
 @Component({
   selector: 'app-auth-signUp',
@@ -15,7 +16,7 @@ export class SignUpComponent implements OnInit {
   email = '';
   password = '';
   confirmPassword = '';
-  scientists: SignUpScientistDto[] = [];
+  scientists: ScientistPreview[] = [];
   selectedScientist = 0;
 
   _searchQuery = '';
@@ -32,13 +33,15 @@ export class SignUpComponent implements OnInit {
   error = '';
   uuid = '';
 
-  constructor(private readonly router: Router, private readonly authService: AuthService) {
+  constructor(private readonly router: Router, private readonly authService: AuthService,
+    private readonly scientistService: ScientistService
+  ) {
   }
 
   ngOnInit(): void {
     this.uuid = uuidv4();
-    this.authService.getSignUp().subscribe({
-      next: (result: SignUpScientistDto[]) => {
+    this.scientistService.getAllScientistPreview().subscribe({
+      next: (result: ScientistPreview[]) => {
         this.scientists = result;
         this.selectedScientist = this.scientists[0].id;
       }

@@ -9,22 +9,27 @@
 
   <div class="mb-3 row d-flex justify-content-center"
     style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
-    <div class="mb-3 row d-flex justify-content-center" *ngFor="let profileField of profileFields; index as i">
+    <div class="mb-3 row d-flex justify-content-center" *ngFor="let profileField of updatedProfileFields; index as i">
       <div class="col-sm-4 d-flex flex-column">
-        <label class="col-form-label" [attr.for]="'fieldName' + i">{{profileField.field.name}}</label>
+        <label class="col-form-label" [attr.for]="'fieldValue' + i">{{profileField.field.name}}</label>
         <small class="row" *ngIf="profileField.field.fieldType.name === 'CITATION' ||
         profileField.field.fieldType.name === 'H_INDEX'" class="text-muted"
           style="font-size: 13px">{{profileField.field.fieldType.name === 'CITATION' ?
           'This value is counted as citations on graphs' : 'This value is counted as H_Index on graphs'}}</small>
       </div>
       <div class="col-sm-6">
-        <input name="fieldName" [attr.type]="profileField.field.fieldType.name == 'BOOLEAN' ? 'checkbox' :
-            profileField.field.fieldType.name == 'DATE' ? 'date' : 'text'" [attr.id]="'fieldName' + i"
-          [ngClass]="{'form-control' : profileField.field.fieldType.name != 'BOOLEAN'}" [value]="profileField.value" />
+        <input name="fieldValue" class="fieldValue" [attr.type]="profileField.field.fieldType.name == 'BOOLEAN' ? 'checkbox' :
+            profileField.field.fieldType.name == 'DATE' ? 'date' : 'text'" [attr.id]="'fieldValue' + i"
+          [ngClass]="{'form-control' : profileField.field.fieldType.name != 'BOOLEAN'}"
+          [value]="profileField.field.fieldType.name === 'BOOLEAN' ? '' : profileField.value"
+          [checked]="profileField.field.fieldType.name === 'BOOLEAN' ? profileField.value == 'true' : ''"
+          (input)="changeProfileFieldValue(i, $event.target)" />
       </div>
       <div class="col-sm-2 text-center">
         <button class="btn btn-primary btn-block" (click)="removeFieldFromProfile(i)"> Remove </button>
       </div>
+      <div *ngIf="profileFieldsError[i].length > 0" class="row d-flex justify-content-center" style="color:red;">
+        {{profileFieldsError[i]}}</div>
     </div>
     <div class="row d-flex justify-content-between" style="border: 2px solid lightblue; padding: 10px;">
       <div class="col-sm-8">

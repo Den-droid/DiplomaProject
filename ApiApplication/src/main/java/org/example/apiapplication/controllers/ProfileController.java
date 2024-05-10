@@ -80,6 +80,14 @@ public class ProfileController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/canAddProfile")
+    public ResponseEntity<?> canBeAdded(@RequestParam Integer scientistId,
+                                        @RequestParam Integer scientometricSystemId) {
+        boolean canBeAdded = profileService.canProfileBeAddedToSystemAndScientist(scientistId,
+                scientometricSystemId);
+        return ResponseEntity.ok(canBeAdded);
+    }
+
     @GetMapping("/{id}/activate")
     public ResponseEntity<?> activateProfile(@PathVariable Integer id) {
         profileService.activate(id);

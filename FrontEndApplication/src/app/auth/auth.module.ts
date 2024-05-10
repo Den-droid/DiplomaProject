@@ -19,7 +19,8 @@ const authRoutes: Routes = [
   { path: "forgotpassword", component: ForgotPasswordComponent },
   { path: "forgotpassword/success/:dummy", component: ForgotPasswordSuccessComponent },
   { path: "forgotpassword/:token", component: SetNewPasswordComponent },
-  { path: "signupbyinvitecode/:inviteCode", component: SignUpByInviteComponent }
+  { path: "signupbyinvitecode/:inviteCode", component: SignUpByInviteComponent },
+  { path: "**", redirectTo: "/error/404" }
 ]
 
 @NgModule({

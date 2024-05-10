@@ -19,10 +19,6 @@ export class AuthService {
     return this.httpClient.post<TokensDto>(this.url + "/signIn", signInDto);
   }
 
-  getSignUp(): Observable<SignUpScientistDto[]> {
-    return this.httpClient.get<SignUpScientistDto[]>(this.url + "/signUp");
-  }
-
   signUp(signUpDto: SignUpDto): Observable<any> {
     return this.httpClient.post(this.url + "/signUp", signUpDto);
   }

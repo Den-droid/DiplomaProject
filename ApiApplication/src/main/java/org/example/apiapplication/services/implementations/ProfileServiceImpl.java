@@ -129,6 +129,23 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public boolean canProfileBeAddedToSystemAndScientist(Integer scientistId, Integer scientometricSystemId) {
+        Scientist scientist = scientistRepository.findById(scientistId)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientist",
+                        scientistId));
+
+        ScientometricSystem scientometricSystem = scientometricSystemRepository
+                .findById(scientometricSystemId)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientometric System",
+                        scientometricSystemId));
+
+        Optional<Profile> isExistsProfile = profileRepository
+                .findByScientometricSystemAndScientist(scientometricSystem, scientist);
+
+        return isExistsProfile.isEmpty();
+    }
+
+    @Override
     public void add(AddProfileDto addProfileDto) {
         Scientist scientist = scientistRepository.findById(addProfileDto.scientistId())
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Scientist",
@@ -165,10 +182,9 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setScientist(scientist);
         profile.setScientometricSystem(scientometricSystem);
 
-        profile.setProfileFieldValues(profileFieldValues);
         profileFieldValues.forEach(x -> x.setProfile(profile));
 
-        labelService.addLabelsToProfile(addProfileDto.labelsId(), profile);
+        labelService.addLabelsToProfile(addProfileDto.labelsIds(), profile);
 
         profileRepository.save(profile);
         profileFieldValueRepository.saveAll(profileFieldValues);
@@ -178,8 +194,6 @@ public class ProfileServiceImpl implements ProfileService {
     public void edit(Integer id, EditProfileDto editProfileDto) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Profile", id));
-
-        List<Field> fields = new ArrayList<>();
 
         List<ProfileFieldValue> profileFieldValues = editProfileDto.fields().stream()
                 .map(x -> {
@@ -191,6 +205,7 @@ public class ProfileServiceImpl implements ProfileService {
                         ProfileFieldValue profileFieldValue = new ProfileFieldValue();
                         profileFieldValue.setField(field);
                         profileFieldValue.setValue(x.value());
+                        profileFieldValue.setProfile(profile);
                         return profileFieldValue;
                     } else {
                         ProfileFieldValue profileFieldValue = profileFieldValueRepository
@@ -202,14 +217,22 @@ public class ProfileServiceImpl implements ProfileService {
                 })
                 .toList();
 
-        profile.setProfileFieldValues(profileFieldValues);
-        profileFieldValues.forEach(x -> x.setProfile(profile));
+        List<ProfileFieldValue> originalProfileFieldValues = profile.getProfileFieldValues();
+        List<ProfileFieldValue> toRemove = new ArrayList<>();
+
+        for (ProfileFieldValue profileFieldValue : originalProfileFieldValues) {
+            if (!profileFieldValues.contains(profileFieldValue) &&
+                    (profileFieldValue.getField().getType().getName() != FieldTypeName.YEAR_CITATION
+                            && profileFieldValue.getField().getType().getName() != FieldTypeName.LABEL)) {
+                toRemove.add(profileFieldValue);
+            }
+        }
 
         labelService.addLabelsToProfile(editProfileDto.labelsIds(), profile);
 
-        fieldRepository.saveAll(fields);
-        profileRepository.save(profile);
+        profileFieldValueRepository.deleteAll(toRemove);
         profileFieldValueRepository.saveAll(profileFieldValues);
+        profileRepository.save(profile);
     }
 
     @Override

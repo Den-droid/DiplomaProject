@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { UserService } from 'src/app/shared/services/user.service';
-import { Faculty } from 'src/app/shared/models/faculty.model';
-import { Chair } from 'src/app/shared/models/chair.model';
-import { EditAdminDto, EditUserDto } from 'src/app/shared/models/user.model';
-import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
-import { ChairService } from 'src/app/shared/services/chair.service';
-import { FacultyService } from 'src/app/shared/services/faculty.service';
-import { RoleName } from 'src/app/shared/constants/roles.constant';
-import { RoleService } from 'src/app/shared/services/role.service';
-import { Permission, mapStringToPermissionLabel } from 'src/app/shared/models/permission.model';
-import { Role } from 'src/app/shared/models/role.model';
-import { PermissionService } from 'src/app/shared/services/permission.service';
+import { FieldTypeName } from 'src/app/shared/constants/field-type.constant';
+import { FieldType, Field, ProfileField, GetFieldsDto } from 'src/app/shared/models/field.model';
+import { Label, GetLabelsDto } from 'src/app/shared/models/label.model';
+import { AddProfileDto } from 'src/app/shared/models/profile.model';
+import { ScientistPreview } from 'src/app/shared/models/scientist.model';
+import { ScientometricSystem, mapStringToScientometricSystemLabel } from 'src/app/shared/models/scientometric.model';
+import { FieldService } from 'src/app/shared/services/field.service';
+import { LabelService } from 'src/app/shared/services/label.service';
+import { ProfileService } from 'src/app/shared/services/profile.service';
+import { ScientistService } from 'src/app/shared/services/scientist.service';
+import { ScientometricSystemService } from 'src/app/shared/services/scientometric-System.service';
 
 @Component({
   selector: 'app-administration-profile-add',
@@ -20,249 +19,246 @@ import { PermissionService } from 'src/app/shared/services/permission.service';
 })
 export class ProfileAddComponent implements OnInit {
   constructor(private readonly router: Router, private readonly activatedRoute: ActivatedRoute,
-    private readonly userService: UserService, private readonly facultyService: FacultyService,
-    private readonly chairService: ChairService, private readonly jwtService: JWTTokenService,
-    private readonly roleService: RoleService, private readonly permissionService: PermissionService
+    private readonly fieldService: FieldService, private readonly profileService: ProfileService,
+    private readonly labelService: LabelService, private readonly scientometricSystemService: ScientometricSystemService,
+    private readonly scientistService: ScientistService
   ) {
   }
+  selectedScientist = 0;
 
-  fullName = '';
-  userId!: number;
-  errorFullname = '';
-  errorFaculty = '';
+  scientometricSystems: ScientometricSystem[] = [];
+  selectedScientometricSystem = 0;
 
-  faculties: Faculty[] = [];
-  chairs: Chair[] = [];
+  scientistSearchQuery = '';
+  scientists: ScientistPreview[] = [];
 
-  selectedFaculty = 0;
-  selectedChair = 0;
-  wholeFaculty = false;
+  errorCanAddProfile = '';
 
-  isEditedToMainAdmin = false;
+  profileCanBeAdded = false;
+  addProfileButtonClicked = false;
 
-  userRole = '';
-  currentUserRole = '';
+  allLabels: Label[] = [];
+  possibleLabels: Label[] = [];
+  profileLabels: Label[] = [];
 
-  allRoles: Role[] = [];
-  allPermissions: Permission[] = [];
+  allFieldTypes: FieldType[] = [];
+  allFields: Field[] = [];
 
-  userPermissions: Permission[] = [];
-  selectedUserPermissions: boolean[] = [];
+  profileFields: ProfileField[] = [];
 
-  possiblePermissions: Permission[][] = [];
-  defaultPermissions: boolean[][] = [];
+  labelSearchQuery = '';
+  selectedLabel = 0;
+
+  fieldSearchQuery = '';
+  selectedField = 0;
+
+  selectedFieldError = '';
+  selectedLabelError = '';
+  profileFieldsError: string[] = [];
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
-      this.userId = data['id'];
-      this.userService.getEditDto(this.userId).subscribe({
-        next: (result: EditAdminDto) => {
-          this.facultyService.getAll().subscribe({
-            next: (data: Faculty[]) => {
-              this.faculties = data;
+      this.labelService.getAllLabels().subscribe({
+        next: (allLabels: GetLabelsDto) => {
+          this.allLabels = allLabels.labels;
+          this.possibleLabels = this.allLabels;
 
-              this.chairService.getAll().subscribe({
-                next: (data: Chair[]) => {
-                  this.chairs = data;
-
-                  this.userService.getRoles(this.userId).subscribe({
-                    next: (data: Role[]) => {
-                      this.userRole = data[0].name;
-
-                      if (this.userRole != RoleName.USER) {
-                        if (result.facultyIds[0] === undefined) {
-                          let chair = this.chairs.filter(x => x.id === result.chairIds[0])[0];
-                          this.selectedFaculty = this.faculties.filter(x => x.id == chair.facultyId)[0].id;
-                          this.selectedChair = result.chairIds[0];
-                        } else if (result.chairIds[0] === undefined) {
-                          this.selectedFaculty = this.faculties.filter(x => x.id == result.facultyIds[0])[0].id;
-                          this.wholeFaculty = true;
-                        }
-                      }
-
-                      this.roleService.getPossiblePermissions(data[0].id).subscribe({
-                        next: (possiblePermissions: Permission[]) => {
-                          possiblePermissions.forEach(x => x.name = mapStringToPermissionLabel(x.name));
-                          this.userPermissions = possiblePermissions;
-
-                          this.userService.getUserPermissionsById(this.userId).subscribe({
-                            next: (userPermissions: Permission[]) => {
-                              this.selectedUserPermissions = [];
-
-                              for (let possiblePermission of this.userPermissions) {
-                                this.selectedUserPermissions.push(
-                                  userPermissions.filter(x => x.id === possiblePermission.id).length > 0
-                                );
-                              }
-                            }
-                          })
-                        }
-                      })
-                    }
-                  });
-                }
-              })
-            }
-          });
-
-          this.fullName = result.fullName;
-        },
-        error: (error: any) => {
-          this.router.navigateByUrl("/user/users");
+          for (let profileLabel of this.profileLabels) {
+            this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+          }
         }
-      });
+      })
+
+      this.fieldService.getAllFields().subscribe({
+        next: (allFields: GetFieldsDto) => {
+          this.allFields = allFields.fields;
+
+          this.allFields = this.allFields.filter(x => {
+            return x.fieldType.name != FieldTypeName.LABEL &&
+              x.fieldType.name != FieldTypeName.YEAR_CITATION
+          });
+        }
+      })
     });
 
-    this.roleService.getAll().subscribe({
-      next: (data: Role[]) => {
-        this.allRoles = data.filter(x => x.name != RoleName.MAIN_ADMIN);
-      },
-      complete: () => {
-        this.permissionService.getAll().subscribe({
-          next: (allPermissions: Permission[]) => {
-            this.allPermissions = allPermissions;
-          },
-          complete: () => {
-            for (let role of this.allRoles) {
-              this.possiblePermissions.push([]);
-            }
+    this.fieldService.getAllFieldTypes().subscribe({
+      next: (allFieldTypes: FieldType[]) => {
+        this.allFieldTypes = allFieldTypes;
 
-            for (let role of this.allRoles) {
-              this.defaultPermissions.push([]);
-            }
-
-            for (let role of this.allRoles) {
-              this.roleService.getPossiblePermissions(role.id).subscribe({
-                next: (possiblePermissions: Permission[]) => {
-                  let tmpRole = this.allRoles.filter(x => x.id == role.id)[0];
-                  let index = this.allRoles.indexOf(tmpRole);
-
-                  for (let possiblePermission of possiblePermissions) {
-                    possiblePermission.name = mapStringToPermissionLabel(possiblePermission.name);
-                    this.possiblePermissions[index].push(possiblePermission);
-
-                    this.defaultPermissions[index].push(false);
-                  }
-
-                  this.roleService.getDefaultPermissions(role.id).subscribe({
-                    next: (defaultPermissions: Permission[]) => {
-                      for (let i = 0; i < this.possiblePermissions[index].length; i++) {
-                        this.defaultPermissions[index][i] = defaultPermissions
-                          .filter(x => x.id == this.possiblePermissions[index][i].id)
-                          .length > 0;
-                      }
-                    }
-                  })
-                }
-              })
-            }
-          }
-        })
+        this.allFieldTypes = this.allFieldTypes.filter(x => {
+          return x.name != FieldTypeName.CITATION && x.name != FieldTypeName.H_INDEX
+            && x.name != FieldTypeName.LABEL && x.name != FieldTypeName.YEAR_CITATION
+        });
       }
     })
 
-    this.currentUserRole = this.jwtService.getRoles()[0];
-  }
-
-  updateWholeFaculty() {
-    this.wholeFaculty = !this.wholeFaculty;
-    if (this.wholeFaculty) {
-      this.userRole = RoleName.FACULTY_ADMIN;
-    } else {
-      this.userRole = RoleName.CHAIR_ADMIN;
-    }
-
-    this.updatePermissionsAndDefaultPermissions();
-  }
-
-  updatePermissionsAndDefaultPermissions() {
-    let tmpRole = this.allRoles.filter(x => x.name == this.userRole)[0];
-    let roleIndex = this.allRoles.indexOf(tmpRole);
-
-    let newUserPermissions = [];
-    let newSelectedUserPermissions = [];
-
-    for (let i = 0; i < this.possiblePermissions[roleIndex].length; i++) {
-      newUserPermissions.push(this.possiblePermissions[roleIndex][i]);
-      newSelectedUserPermissions.push(this.defaultPermissions[roleIndex][i]);
-    }
-
-    this.userPermissions = newUserPermissions;
-    this.selectedUserPermissions = newSelectedUserPermissions;
-  }
-
-  updateSelectedPermission(index: number) {
-    this.selectedUserPermissions[index] = !this.selectedUserPermissions[index];
-  }
-
-  editAdmin() {
-    let fullNameCorrect = this.validateFullName();
-    if (fullNameCorrect.length > 0) {
-      this.errorFullname = fullNameCorrect
-      return;
-    } else {
-      this.errorFullname = '';
-    }
-
-    let facultyChairCorrect = this.validateFacultyChair();
-    if (facultyChairCorrect.length > 0) {
-      this.errorFaculty = facultyChairCorrect;
-      return;
-    } else {
-      this.errorFaculty = '';
-    }
-
-    let editAdminDto;
-
-    if (this.userRole === RoleName.FACULTY_ADMIN || this.userRole === RoleName.CHAIR_ADMIN) {
-      if (!this.isEditedToMainAdmin) {
-        let permissionList = [];
-
-        for (let i = 0; i < this.selectedUserPermissions.length; i++) {
-          if (this.selectedUserPermissions[i]) {
-            permissionList.push(this.userPermissions[i].id);
-          }
-        }
-
-        if (this.wholeFaculty) {
-          editAdminDto = new EditAdminDto(this.fullName, [this.selectedFaculty], [], this.isEditedToMainAdmin, permissionList);
-        } else {
-          editAdminDto = new EditAdminDto(this.fullName, [], [this.selectedChair], this.isEditedToMainAdmin, permissionList);
-        }
-      } else {
-        editAdminDto = new EditAdminDto(this.fullName, [], [], this.isEditedToMainAdmin, []);
+    this.scientistService.getAllScientistPreview().subscribe({
+      next: (data: ScientistPreview[]) => {
+        this.scientists = data;
       }
+    })
 
-      this.userService.editAdmin(this.userId, editAdminDto).subscribe({
-        complete: () => {
-          this.router.navigateByUrl('/user/users');
-        }
-      });
-    } else {
-      let editUserDto = new EditUserDto(this.fullName);
-
-      this.userService.editUser(this.userId, editUserDto).subscribe({
-        complete: () => {
-          this.router.navigateByUrl('/user/users');
-        }
-      });
-    }
-
+    this.scientometricSystemService.getAllScientometricSystems().subscribe({
+      next: (data: ScientometricSystem[]) => {
+        this.scientometricSystems = data;
+        this.scientometricSystems.forEach(x => x.name = mapStringToScientometricSystemLabel(x.name));
+      }
+    })
   }
 
-  validateFacultyChair(): string {
-    if (this.selectedFaculty === 0) {
-      return 'Select Faculty';
+  canAddProfile() {
+    let validate = this.validateCanAddProfile();
+    if (validate.length > 0) {
+      this.errorCanAddProfile = validate;
+      return;
+    } else {
+      this.errorCanAddProfile = '';
     }
-    if (this.selectedChair === 0 && !this.wholeFaculty) {
-      return 'Select Chair';
+
+    this.profileService.canAddProfile(this.selectedScientist, this.selectedScientometricSystem).subscribe({
+      next: (result: boolean) => {
+        if (result) {
+          this.profileCanBeAdded = true;
+        } else {
+          this.errorCanAddProfile = 'Profile for this scientist and scientometric system already exists!';
+        }
+      }
+    })
+  }
+
+  changeProfileFieldValue(index: number, newValue: EventTarget | null) {
+    if (this.profileFields[index].field.fieldType.name === FieldTypeName.BOOLEAN) {
+      this.profileFields[index].value = (newValue as HTMLInputElement).checked ? 'true' : 'false';
+    } else {
+      this.profileFields[index].value = (newValue as HTMLInputElement).value;
     }
+  }
+
+  addFieldToProfile() {
+    let selectedFieldError = this.validateSelectedField();
+    if (selectedFieldError.length !== 0) {
+      this.selectedFieldError = selectedFieldError;
+      return;
+    } else {
+      this.selectedFieldError = '';
+    }
+
+    let field = this.allFields.filter(x => x.id == this.selectedField)[0];
+
+    this.profileFields.push(new ProfileField(-1, '', field));
+
+    this.allFields = this.allFields.filter(x => x.id != field.id);
+
+    this.selectedField = 0;
+    this.profileFieldsError.push('');
+  }
+
+  removeFieldFromProfile(index: number) {
+    let profileField = this.profileFields.filter((x, ind) => ind == index)[0];
+
+    this.allFields.push(profileField.field);
+    this.profileFields = this.profileFields.filter(x => x.id != profileField.id);
+
+    this.profileFieldsError = this.profileFieldsError.filter((x, ind) => ind != index);
+  }
+
+  removeLabel(id: number) {
+    this.profileLabels = this.profileLabels.filter(x => x.id != id);
+
+    this.possibleLabels = this.allLabels;
+
+    for (let profileLabel of this.profileLabels) {
+      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+    }
+  }
+
+  addLabel() {
+    let selectedLabelError = this.validateSelectedLabel();
+    if (selectedLabelError.length !== 0) {
+      this.selectedLabelError = selectedLabelError;
+      return;
+    } else {
+      this.selectedLabelError = '';
+    }
+
+    this.profileLabels.push(this.possibleLabels.filter(x => x.id == this.selectedLabel)[0]);
+
+    this.possibleLabels = this.allLabels;
+
+    for (let profileLabel of this.profileLabels) {
+      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+    }
+
+    this.selectedLabel = 0;
+  }
+
+  addProfile() {
+    this.validateFields();
+    if (this.profileFieldsError.filter(x => x !== '').length > 0) {
+      return;
+    }
+
+    let addProfileDto = new AddProfileDto(this.selectedScientist, this.selectedScientometricSystem,
+      this.profileFields, this.profileLabels.map(x => x.id));
+
+    this.profileService.addProfile(addProfileDto).subscribe({
+      complete: () => {
+        this.router.navigateByUrl("/user/profiles");
+      }
+    });
+  }
+
+  validateSelectedField() {
+    if (this.selectedField === 0)
+      return 'Select Field';
     return '';
   }
 
-  validateFullName(): string {
-    if (this.fullName.length === 0) {
-      return 'Enter Fullname';
+  validateSelectedLabel() {
+    if (this.selectedLabel === 0)
+      return 'Select Label';
+    return '';
+  }
+
+  validateFields() {
+    for (let i = 0; i < this.profileFields.length; i++) {
+      if (this.profileFields[i].value === '') {
+        this.profileFieldsError[i] = 'Enter field!';
+        break;
+      }
+
+      if (this.profileFields[i].field.fieldType.name === FieldTypeName.NUMBER) {
+        try {
+          if (isNaN(parseInt(this.profileFields[i].value))
+            || isNaN(parseFloat(this.profileFields[i].value))) {
+            throw new Error()
+          }
+          this.profileFieldsError[i] = '';
+        } catch (e) {
+          this.profileFieldsError[i] = 'Enter number here!';
+        }
+      }
+      else if (this.profileFields[i].field.fieldType.name === FieldTypeName.CITATION ||
+        this.profileFields[i].field.fieldType.name === FieldTypeName.H_INDEX
+      ) {
+        try {
+          if (isNaN(parseInt(this.profileFields[i].value))) {
+            throw new Error()
+          }
+          this.profileFieldsError[i] = '';
+        } catch (e) {
+          this.profileFieldsError[i] = 'Enter integer here!';
+        }
+      }
+    }
+  }
+
+  validateCanAddProfile() {
+    if (this.selectedScientometricSystem == 0) {
+      return 'Select Scientometric System'
+    }
+    if (this.selectedScientist == 0) {
+      return 'Select Scientist';
     }
     return '';
   }

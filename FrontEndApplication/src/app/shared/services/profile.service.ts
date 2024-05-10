@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { baseUrl } from "../constants/url.constant";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { GetProfilesDto } from "../models/profile.model";
+import { AddProfileDto, EditProfileDto, GetProfilesDto } from "../models/profile.model";
 import { Observable } from "rxjs";
 import { ProfileField } from "../models/field.model";
 import { Label } from "../models/label.model";
@@ -38,6 +38,25 @@ export class ProfileService {
       } : {};
 
     return this.httpClient.get<GetProfilesDto>(this.url + "/search", options);
+  }
+
+  editProfile(id: number, editProfileDto: EditProfileDto): Observable<any> {
+    return this.httpClient.put(this.url + "/" + id, editProfileDto);
+  }
+
+  addProfile(addProfileDto: AddProfileDto): Observable<any> {
+    return this.httpClient.post(this.url, addProfileDto);
+  }
+
+  canAddProfile(scientistId: number, scientometricSystemId: number): Observable<boolean> {
+    const options =
+    {
+      params: new HttpParams()
+        .set('scientistId', scientistId)
+        .set('scientometricSystemId', scientometricSystemId)
+    };
+
+    return this.httpClient.get<boolean>(this.url + "/canAddProfile", options);
   }
 
   markAsDoubtful(id: number): Observable<any> {

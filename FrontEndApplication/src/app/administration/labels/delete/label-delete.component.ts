@@ -43,7 +43,7 @@ export class LabelDeleteComponent implements OnInit{
           })
         },
         error: (error: any) => {
-          this.router.navigateByUrl("/auth/signin");
+          this.router.navigateByUrl("/error/404");
         }
       });
     });

@@ -5,8 +5,6 @@ import org.example.apiapplication.services.interfaces.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin
@@ -28,12 +26,6 @@ public class AuthController {
         TokensDto tokensDto =
                 authService.refreshToken(refreshTokenDto);
         return ResponseEntity.ok(tokensDto);
-    }
-
-    @GetMapping("/signUp")
-    public ResponseEntity<?> getSignUpPage() {
-        List<SignUpScientistDto> scientists = authService.getSignUpPageDto();
-        return ResponseEntity.ok(scientists);
     }
 
     @PostMapping("/signUp")

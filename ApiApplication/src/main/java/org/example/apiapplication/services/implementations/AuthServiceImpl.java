@@ -159,14 +159,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public List<SignUpScientistDto> getSignUpPageDto() {
-        List<Scientist> scientists = scientistRepository.findAllByUserNull();
-        return scientists.stream()
-                .map((x) -> new SignUpScientistDto(x.getId(), x.getFullName()))
-                .toList();
-    }
-
-    @Override
     public void changeForgotPassword(String token, ChangePasswordDto changePasswordDto) {
         User user = userRepository
                 .findByForgotPasswordToken(token)

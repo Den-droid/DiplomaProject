@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ValidateEmails } from '../../shared/validators/emails.validator';
 import { SignInDto, TokensDto } from 'src/app/shared/models/auth.model';

@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ScientometricSystem, mapStringToScientometricSystemLabel } from '../../shared/models/scientometric.model';
 import { ExtractionService } from '../../shared/services/extraction.service';
-import { ScientometricSystemLabel, ScientometricSystemName } from 'src/app/shared/constants/scientometric-system.constant';
-import { ScientometricSystemService } from 'src/app/shared/services/scientometric-System.service';
-
+import { ScientometricSystemLabel } from 'src/app/shared/constants/scientometric-system.constant';
+import { ScientometricSystemService } from 'src/app/shared/services/scientometric-system.service';
 @Component({
   selector: 'app-administration-extraction',
   templateUrl: './extraction.component.html',

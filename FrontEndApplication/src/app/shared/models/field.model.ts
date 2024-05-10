@@ -13,10 +13,6 @@ export class ProfileField {
   constructor(public id: number, public value: string, public field: Field) { }
 }
 
-export class EditProfileDto {
-  constructor(public id: number, public fields: ProfileField, public labelsIds: number[]) { }
-}
-
 export class GetFieldsDto {
   constructor(public fields: Field[], public pageDto: Page) { }
 }

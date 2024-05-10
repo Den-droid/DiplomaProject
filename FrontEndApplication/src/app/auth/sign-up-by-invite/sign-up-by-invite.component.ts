@@ -22,11 +22,10 @@ export class SignUpByInviteComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
       this.inviteCode = data['inviteCode'];
-      console.log(this.inviteCode);
       this.authService.existsByInviteCode(this.inviteCode).subscribe({
         next: (result: boolean) => {
           if (!result) {
-            this.router.navigateByUrl("/auth/signin");
+            this.router.navigateByUrl("/error/404");
           }
         }
       });
