@@ -124,6 +124,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getCurrent(User user) {
+        return new UserDto(user.getId(), user.getEmail(), user.getFullName(),
+                user.isApproved(), user.isActive(), user.isSignedUp());
+    }
+
+    @Override
     public GetUsersDto getUsersByUser(User user, Integer page) {
         List<User> users = getUsersByUser(user);
         return getUserPageByListAndPage(users, page);
@@ -261,6 +267,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", id));
 
+        user.setFullName(editUserDto.fullName());
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public void editCurrentUser(User user, EditUserDto editUserDto) {
         user.setFullName(editUserDto.fullName());
 
         userRepository.save(user);

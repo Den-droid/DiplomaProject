@@ -4,9 +4,9 @@ import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
 import { PermissionService } from 'src/app/shared/services/permission.service';
 import { RoleService } from 'src/app/shared/services/role.service';
 import { Role, UpdateDefaultPermissions, mapStringToRoleLabel } from 'src/app/shared/models/role.model';
-import { Permission, mapStringToPermissionLabel, mapStringToPermissionName } from 'src/app/shared/models/permission.model';
+import { Permission, mapStringToPermissionLabel } from 'src/app/shared/models/permission.model';
 import { RoleName } from 'src/app/shared/constants/roles.constant';
-import { EditUserDto } from 'src/app/shared/models/user.model';
+import { EditUserDto, User } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'app-administration-user-settings',
@@ -33,6 +33,11 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUserRole = this.jwtService.getRoles()[0];
+    this.userService.getCurrentUser().subscribe({
+      next: (user : User) => {
+        this.fullName = user.fullName;
+      }
+    })
     this.roleService.getAll().subscribe({
       next: (data: Role[]) => {
         this.allRoles = data.filter(x => x.name != RoleName.MAIN_ADMIN);
@@ -94,11 +99,7 @@ export class SettingsComponent implements OnInit {
 
     let editUserDto = new EditUserDto(this.fullName);
 
-    // this.userService.editUser(this.userId, editUserDto).subscribe({
-    //   complete: () => {
-    //     this.router.navigateByUrl('/user/users');
-    //   }
-    // });
+    this.userService.editCurrentUser(editUserDto).subscribe();
   }
 
   updateDefaultPermissions() {

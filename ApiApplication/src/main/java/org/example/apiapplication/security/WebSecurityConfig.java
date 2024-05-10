@@ -26,35 +26,46 @@ public class WebSecurityConfig {
     private final JwtUtils jwtUtils;
 
     private final String[] sharedUrls = {
-            "/api/auth",
             "/api/auth/**",
-            "/api/scientometricSystems",
             "/api/chairs",
-            "/api/chairs/**",
+            "/api/chairs/{id}",
             "/api/faculties",
-            "/api/faculties/**",
-            "/api/profiles",
-            "/api/profiles/**",
+            "/api/faculties/{id}",
             "/api/fields",
-            "/api/fields/**",
-            "/api/scientists/**"
+            "/api/fields/types",
+            "/api/fields/{id}",
+            "/api/fields/search",
+            "/api/labels",
+            "/api/labels/{id}",
+            "/api/labels/search",
+            "/api/scientists/preview"
     };
 
     private final String[] mainAdminUrls = {
-            "/api/labels",
-            "/api/labels/**",
-            "/api/extraction/**",
-            "/api/scientometricSystems/**"
+            "/api/fields/delete/{id}",
+            "/api/labels/delete/{id}",
+            "/api/roles/updateDefaultPermissions",
+            "/api/scientometricSystems/extraction/{id}/isRunning",
+            "/api/scientometricSystems/extraction/{id}/isPossible",
+            "/api/profiles/{id}/markDoubtful",
+            "/api/profiles/{id}/unmarkDoubtful"
     };
 
     private final String[] facultyChairMainAdminUrls = {
-            "/api/users",
-            "/api/users/**",
-            "/api/permissions"
+            "/api/permissions",
+            "/api/roles/",
+            "/api/roles/{id}/possiblePermissions",
+            "/api/roles/{id}/defaultPermissions",
+            "/api/profiles/{id}/activate",
+            "/api/profiles/{id}/deactivate",
     };
 
     private final String[] userUrls = {
-
+            "/api/chairs/currentUser",
+            "/api/faculties/currentUser",
+            "/api/scientists/currentUser",
+            "/api/profiles/canAddProfile",
+            "/api/users/current"
     };
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
@@ -102,8 +113,10 @@ public class WebSecurityConfig {
                                         .requestMatchers(userUrls).permitAll()
 //                                        .requestMatchers(mainAdminUrls).hasAuthority("ROLE_" + UserRole.MAIN_ADMIN.name())
 //                                .requestMatchers(facultyChairAdminUrls).hasAnyAuthority("ROLE_" + UserRole.FACULTY_ADMIN.name(),
-//                                        "ROLE_" + UserRole.CHAIR_ADMIN.name())
-//                                .requestMatchers(userUrls).hasAuthority("ROLE_" + UserRole.USER.name())
+//                                        "ROLE_" + UserRole.CHAIR_ADMIN.name(), "ROLE_" + UserRole.MAIN_ADMIN.name()")
+//                                .requestMatchers(userUrls).hasAnyAuthority("ROLE_" + UserRole.USER.name(),
+//                                "ROLE_" + UserRole.FACULTY_ADMIN.name(), "ROLE_" + UserRole.CHAIR_ADMIN.name(),
+////                                        "ROLE_" + UserRole.MAIN_ADMIN.name()")
                                         .anyRequest().authenticated()
                 );
 

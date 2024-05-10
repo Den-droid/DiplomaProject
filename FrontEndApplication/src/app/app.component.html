@@ -1,1 +1,90 @@
-<router-outlet></router-outlet>
+<div class="wrapper">
+  <aside id="sidebar">
+    <div class="d-flex">
+      <button class="toggle-btn" type="button">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="sidebar-logo">
+        <a routerLink="/">System</a>
+      </div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#home"
+          aria-expanded="false" aria-controls="auth">
+          <i class="fa-solid fa-house"></i>
+          <span>Home</span>
+        </a>
+        <ul id="home" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+          <li class="sidebar-item">
+            <a routerLink="/auth/signin" class="sidebar-link">Faculty</a>
+          </li>
+          <li class="sidebar-item">
+            <a routerLink="/auth/signup" class="sidebar-link">Chair</a>
+          </li>
+        </ul>
+      </li>
+      <li class="sidebar-item" *ngIf="!isAuthenticated">
+        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+          aria-expanded="false" aria-controls="auth">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Auth</span>
+        </a>
+        <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+          <li class="sidebar-item">
+            <a routerLink="/auth/signin" class="sidebar-link">Login</a>
+          </li>
+          <li class="sidebar-item">
+            <a routerLink="/auth/signup" class="sidebar-link">Register</a>
+          </li>
+        </ul>
+      </li>
+      <li class="sidebar-item" *ngIf="isAuthenticated">
+        <a routerLink="/user/profiles" class="sidebar-link">
+          <i class="fa-solid fa-id-card"></i>
+          <span>Profiles</span>
+        </a>
+      </li>
+      <li class="sidebar-item" *ngIf="isAuthenticated && (role === 'MAIN_ADMIN' ||
+      role === 'CHAIR_ADMIN' || role === 'FACULTY_ADMIN')">
+        <a routerLink="/user/users" class="sidebar-link">
+          <i class="fa-solid fa-user"></i>
+          <span>Users</span>
+        </a>
+      </li>
+      <li class="sidebar-item" *ngIf="isAuthenticated && role === 'MAIN_ADMIN'">
+        <a routerLink="/user/labels" class="sidebar-link">
+          <i class="fa-solid fa-tag"></i>
+          <span>Labels</span>
+        </a>
+      </li>
+      <li class="sidebar-item" *ngIf="isAuthenticated && role === 'MAIN_ADMIN'">
+        <a routerLink="/user/fields" class="sidebar-link">
+          <i class="fa-solid fa-pen"></i>
+          <span>Fields</span>
+        </a>
+      </li>
+      <li class="sidebar-item" *ngIf="isAuthenticated && role === 'MAIN_ADMIN'">
+        <a routerLink="/user/extraction" class="sidebar-link">
+          <i class="fa-solid fa-magnet"></i>
+          <span>System Extraction</span>
+        </a>
+      </li>
+      <li class="sidebar-item" *ngIf="isAuthenticated">
+        <a routerLink="/user/settings" class="sidebar-link">
+          <i class="fa-solid fa-gear"></i>
+          <span>Profile and Settings</span>
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar-footer" *ngIf="isAuthenticated">
+      <a class="sidebar-link" (click)="logout()" style="cursor: pointer">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Log Out</span>
+      </a>
+    </div>
+  </aside>
+  <div class="main main-not-expand p-3">
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -2,10 +2,7 @@ package org.example.apiapplication.controllers;
 
 import org.example.apiapplication.dto.permissions.PermissionDto;
 import org.example.apiapplication.dto.roles.RoleDto;
-import org.example.apiapplication.dto.user.CreateAdminDto;
-import org.example.apiapplication.dto.user.EditAdminDto;
-import org.example.apiapplication.dto.user.EditUserDto;
-import org.example.apiapplication.dto.user.GetUsersDto;
+import org.example.apiapplication.dto.user.*;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.UserService;
@@ -119,5 +116,19 @@ public class UserController {
     public ResponseEntity<?> rejectUser(@PathVariable Integer id) {
         userService.rejectUser(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/current")
+    public ResponseEntity<?> editCurrentUser(@RequestBody EditUserDto editUserDto) {
+        User user = sessionUtil.getUserFromSession();
+        userService.editCurrentUser(user, editUserDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/current")
+    public ResponseEntity<?> getCurrentUser(){
+        User user = sessionUtil.getUserFromSession();
+        UserDto userDto = userService.getCurrent(user);
+        return ResponseEntity.ok(userDto);
     }
 }

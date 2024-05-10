@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { baseUrl } from "src/app/shared/constants/url.constant";
-import { AddAdminDto, EditAdminDto, EditUserDto, GetUsersDto } from "../models/user.model";
+import { AddAdminDto, EditAdminDto, EditUserDto, GetUsersDto, User } from "../models/user.model";
 import { Observable } from "rxjs/internal/Observable";
 import { Permission } from "../models/permission.model";
 import { Role } from "../models/role.model";
@@ -62,6 +62,14 @@ export class UserService {
 
   editUser(id: number, editUser: EditUserDto): Observable<any> {
     return this.httpClient.put(this.url + "/" + id, editUser);
+  }
+
+  getCurrentUser():Observable<User> {
+    return this.httpClient.get<User>(this.url + "/current");
+  }
+
+  editCurrentUser(editUser: EditUserDto): Observable<any> {
+    return this.httpClient.put(this.url + "/current", editUser);
   }
 
   existsById(id: number): Observable<boolean> {

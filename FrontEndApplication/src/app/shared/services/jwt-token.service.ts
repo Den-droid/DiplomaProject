@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { LocalStorageService } from "./local-storage.service";
 import { jwtDecode } from 'jwt-decode';
+import { BehaviorSubject, Subject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,8 @@ export class JWTTokenService {
     private readonly localStorage: LocalStorageService
   ) {
   }
+
+  tokenChange: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(this.jwtToken);
 
   get jwtToken(): string | null {
     return this.localStorage.get('access_token');
@@ -30,6 +33,7 @@ export class JWTTokenService {
   setToken(token: string) {
     if (token) {
       this.localStorage.set('access_token', token);
+      this.tokenChange.next(token);
     }
   }
 
@@ -73,6 +77,8 @@ export class JWTTokenService {
 
   clearTokens() {
     this.localStorage.clear();
+    this.tokenChange.next('');
+
   }
 }
 

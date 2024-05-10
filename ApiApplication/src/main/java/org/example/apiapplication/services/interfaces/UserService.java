@@ -22,6 +22,8 @@ public interface UserService {
 
     EditAdminDto getEditDto(Integer userId);
 
+    UserDto getCurrent(User user);
+
     boolean existsById(Integer id);
 
     void createAdmin(CreateAdminDto createAdminDto);
@@ -29,6 +31,8 @@ public interface UserService {
     void editAdmin(Integer id, EditAdminDto editAdminDto);
 
     void editUser(Integer id, EditUserDto editUserDto);
+
+    void editCurrentUser(User user, EditUserDto editUserDto);
 
     void activateUser(Integer userId);
 
