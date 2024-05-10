@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FieldTypeName } from 'src/app/shared/constants/field-type.constant';
 import { FieldType, Field, ProfileField, GetFieldsDto } from 'src/app/shared/models/field.model';
 import { Label, GetLabelsDto } from 'src/app/shared/models/label.model';
@@ -10,7 +10,7 @@ import { FieldService } from 'src/app/shared/services/field.service';
 import { LabelService } from 'src/app/shared/services/label.service';
 import { ProfileService } from 'src/app/shared/services/profile.service';
 import { ScientistService } from 'src/app/shared/services/scientist.service';
-import { ScientometricSystemService } from 'src/app/shared/services/scientometric-System.service';
+import { ScientometricSystemService } from 'src/app/shared/services/scientometric-system.service';
 
 @Component({
   selector: 'app-administration-profile-add',
@@ -57,29 +57,27 @@ export class ProfileAddComponent implements OnInit {
   profileFieldsError: string[] = [];
 
   ngOnInit(): void {
-    this.activatedRoute.params.subscribe((data: Params) => {
-      this.labelService.getAllLabels().subscribe({
-        next: (allLabels: GetLabelsDto) => {
-          this.allLabels = allLabels.labels;
-          this.possibleLabels = this.allLabels;
+    this.labelService.getAllLabels().subscribe({
+      next: (allLabels: GetLabelsDto) => {
+        this.allLabels = allLabels.labels;
+        this.possibleLabels = this.allLabels;
 
-          for (let profileLabel of this.profileLabels) {
-            this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
-          }
+        for (let profileLabel of this.profileLabels) {
+          this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
         }
-      })
+      }
+    })
 
-      this.fieldService.getAllFields().subscribe({
-        next: (allFields: GetFieldsDto) => {
-          this.allFields = allFields.fields;
+    this.fieldService.getAllFields().subscribe({
+      next: (allFields: GetFieldsDto) => {
+        this.allFields = allFields.fields;
 
-          this.allFields = this.allFields.filter(x => {
-            return x.fieldType.name != FieldTypeName.LABEL &&
-              x.fieldType.name != FieldTypeName.YEAR_CITATION
-          });
-        }
-      })
-    });
+        this.allFields = this.allFields.filter(x => {
+          return x.fieldType.name != FieldTypeName.LABEL &&
+            x.fieldType.name != FieldTypeName.YEAR_CITATION
+        });
+      }
+    })
 
     this.fieldService.getAllFieldTypes().subscribe({
       next: (allFieldTypes: FieldType[]) => {
@@ -92,7 +90,7 @@ export class ProfileAddComponent implements OnInit {
       }
     })
 
-    this.scientistService.getAllScientistPreview().subscribe({
+    this.scientistService.getAllScientistPreviewByUser().subscribe({
       next: (data: ScientistPreview[]) => {
         this.scientists = data;
       }

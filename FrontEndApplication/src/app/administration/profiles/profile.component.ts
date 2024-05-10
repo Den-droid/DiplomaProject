@@ -6,7 +6,7 @@ import { Chair } from 'src/app/shared/models/chair.model';
 import { Faculty } from 'src/app/shared/models/faculty.model';
 import { ProfileService } from 'src/app/shared/services/profile.service';
 import { GetProfilesDto, ProfilePreview } from 'src/app/shared/models/profile.model';
-import { ScientometricSystemService } from 'src/app/shared/services/scientometric-System.service';
+import { ScientometricSystemService } from 'src/app/shared/services/scientometric-system.service';
 import { ScientometricSystem, mapStringToScientometricSystemLabel } from 'src/app/shared/models/scientometric.model';
 import { Permission } from 'src/app/shared/models/permission.model';
 import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';

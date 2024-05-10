@@ -38,7 +38,7 @@ export class SignInComponent {
       },
       complete: () => {
         this.clear();
-        this.router.navigateByUrl("");
+        this.router.navigateByUrl("/user/profiles");
       }
     });
   }
