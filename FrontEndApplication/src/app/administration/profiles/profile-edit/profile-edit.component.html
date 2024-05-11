@@ -22,7 +22,7 @@
             profileField.field.fieldType.name == 'DATE' ? 'date' : 'text'" [attr.id]="'fieldValue' + i"
           [ngClass]="{'form-control' : profileField.field.fieldType.name != 'BOOLEAN'}"
           [value]="profileField.field.fieldType.name === 'BOOLEAN' ? '' : profileField.value"
-          [checked]="profileField.field.fieldType.name === 'BOOLEAN' ? profileField.value == 'true' : ''"
+          [checked]="profileField.field.fieldType.name === 'BOOLEAN' ? profileField.value != 'false' : ''"
           (input)="changeProfileFieldValue(i, $event.target)" />
       </div>
       <div class="col-sm-2 text-center">

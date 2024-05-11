@@ -11,6 +11,7 @@ import org.example.apiapplication.entities.*;
 import org.example.apiapplication.entities.fields.Field;
 import org.example.apiapplication.entities.fields.FieldType;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
+import org.example.apiapplication.entities.recommendation.ProfileFieldRecommendation;
 import org.example.apiapplication.entities.user.Role;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.enums.FieldTypeName;
@@ -20,6 +21,7 @@ import org.example.apiapplication.exceptions.profile.ProfileScientistScientometr
 import org.example.apiapplication.repositories.*;
 import org.example.apiapplication.services.interfaces.LabelService;
 import org.example.apiapplication.services.interfaces.ProfileService;
+import org.example.apiapplication.services.interfaces.RecommendationService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,9 +40,10 @@ public class ProfileServiceImpl implements ProfileService {
     private final RoleRepository roleRepository;
     private final ChairRepository chairRepository;
     private final FacultyRepository facultyRepository;
-    private final FieldTypeRepository fieldTypeRepository;
+    private final ProfileFieldRecommendationRepository profileFieldRecommendationRepository;
 
     private final LabelService labelService;
+    private final RecommendationService recommendationService;
 
     public ProfileServiceImpl(ScientometricSystemRepository scientometricSystemRepository,
                               ProfileRepository profileRepository,
@@ -49,9 +52,8 @@ public class ProfileServiceImpl implements ProfileService {
                               ProfileFieldValueRepository profileFieldValueRepository,
                               RoleRepository roleRepository,
                               ChairRepository chairRepository,
-                              FacultyRepository facultyRepository,
-                              FieldTypeRepository fieldTypeRepository,
-                              LabelService labelService) {
+                              FacultyRepository facultyRepository, ProfileFieldRecommendationRepository profileFieldRecommendationRepository,
+                              LabelService labelService, RecommendationService recommendationService) {
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.profileRepository = profileRepository;
         this.scientistRepository = scientistRepository;
@@ -60,9 +62,10 @@ public class ProfileServiceImpl implements ProfileService {
         this.roleRepository = roleRepository;
         this.chairRepository = chairRepository;
         this.facultyRepository = facultyRepository;
-        this.fieldTypeRepository = fieldTypeRepository;
+        this.profileFieldRecommendationRepository = profileFieldRecommendationRepository;
 
         this.labelService = labelService;
+        this.recommendationService = recommendationService;
     }
 
     @Override
@@ -185,6 +188,7 @@ public class ProfileServiceImpl implements ProfileService {
         profileFieldValues.forEach(x -> x.setProfile(profile));
 
         labelService.addLabelsToProfile(addProfileDto.labelsIds(), profile);
+        recommendationService.updateRecommendations(profileFieldValues);
 
         profileRepository.save(profile);
         profileFieldValueRepository.saveAll(profileFieldValues);
@@ -218,19 +222,24 @@ public class ProfileServiceImpl implements ProfileService {
                 .toList();
 
         List<ProfileFieldValue> originalProfileFieldValues = profile.getProfileFieldValues();
-        List<ProfileFieldValue> toRemove = new ArrayList<>();
+        List<ProfileFieldValue> profileFieldValuesToRemove = new ArrayList<>();
+        List<ProfileFieldRecommendation> profileFieldRecommendationsToRemove = new ArrayList<>();
 
         for (ProfileFieldValue profileFieldValue : originalProfileFieldValues) {
             if (!profileFieldValues.contains(profileFieldValue) &&
                     (profileFieldValue.getField().getType().getName() != FieldTypeName.YEAR_CITATION
                             && profileFieldValue.getField().getType().getName() != FieldTypeName.LABEL)) {
-                toRemove.add(profileFieldValue);
+                profileFieldValuesToRemove.add(profileFieldValue);
+                profileFieldRecommendationsToRemove
+                        .add(profileFieldValue.getProfileFieldRecommendations().get(0));
             }
         }
 
         labelService.addLabelsToProfile(editProfileDto.labelsIds(), profile);
+        recommendationService.updateRecommendations(profileFieldValues);
 
-        profileFieldValueRepository.deleteAll(toRemove);
+        profileFieldRecommendationRepository.deleteAll(profileFieldRecommendationsToRemove);
+        profileFieldValueRepository.deleteAll(profileFieldValuesToRemove);
         profileFieldValueRepository.saveAll(profileFieldValues);
         profileRepository.save(profile);
     }

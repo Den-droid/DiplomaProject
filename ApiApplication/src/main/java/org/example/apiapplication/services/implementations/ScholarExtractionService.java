@@ -1,13 +1,16 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.entities.Label;
 import org.example.apiapplication.entities.Profile;
 import org.example.apiapplication.entities.ScientometricSystem;
 import org.example.apiapplication.entities.extraction.Extraction;
 import org.example.apiapplication.entities.extraction.ExtractionProfile;
 import org.example.apiapplication.entities.extraction.FieldExtraction;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
+import org.example.apiapplication.enums.FieldRuleTypeName;
 import org.example.apiapplication.enums.ScientometricSystemName;
+import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.extraction.PreviousExtractionNotFinishedException;
 import org.example.apiapplication.exceptions.extraction.TooFrequentExtractionException;
 import org.example.apiapplication.helpers.ScholarExtractionHelper;
@@ -15,6 +18,7 @@ import org.example.apiapplication.helpers.ScholarQueryBuilder;
 import org.example.apiapplication.repositories.*;
 import org.example.apiapplication.services.interfaces.ExtractionService;
 import org.example.apiapplication.services.interfaces.LabelService;
+import org.example.apiapplication.services.interfaces.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +45,6 @@ public class ScholarExtractionService implements ExtractionService {
     private final ExtractionProfileRepository extractionProfileRepository;
     private final ProfileRepository profileRepository;
     private final ProfileFieldValueRepository profileFieldValueRepository;
-    private final FieldRepository fieldRepository;
     private final ScientometricSystemRepository scientometricSystemRepository;
     private final FieldRuleTypeRepository fieldRuleTypeRepository;
     private final LabelRepository labelRepository;
@@ -49,6 +53,7 @@ public class ScholarExtractionService implements ExtractionService {
     private final ScholarExtractionHelper scholarExtractionHelper;
 
     private final LabelService labelService;
+    private final RecommendationService recommendationService;
 
     private final ScientometricSystem scholarScientometricSystem;
 
@@ -57,17 +62,15 @@ public class ScholarExtractionService implements ExtractionService {
                                     ProfileRepository profileRepository,
                                     ScientometricSystemRepository scientometricSystemRepository,
                                     ProfileFieldValueRepository profileFieldValueRepository,
-                                    FieldRepository fieldRepository,
                                     FieldRuleTypeRepository fieldRuleTypeRepository,
                                     LabelRepository labelRepository,
                                     FieldExtractionRepository fieldExtractionRepository,
                                     ScholarExtractionHelper scholarExtractionHelper,
-                                    LabelService labelService) {
+                                    LabelService labelService, RecommendationService recommendationService) {
         this.extractionRepository = extractionRepository;
         this.extractionProfileRepository = extractionProfileRepository;
         this.profileRepository = profileRepository;
         this.profileFieldValueRepository = profileFieldValueRepository;
-        this.fieldRepository = fieldRepository;
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.fieldRuleTypeRepository = fieldRuleTypeRepository;
         this.labelRepository = labelRepository;
@@ -76,6 +79,7 @@ public class ScholarExtractionService implements ExtractionService {
         this.scholarExtractionHelper = scholarExtractionHelper;
 
         this.labelService = labelService;
+        this.recommendationService = recommendationService;
 
         scholarScientometricSystem = scientometricSystemRepository
                 .findByName(ScientometricSystemName.SCHOLAR)
@@ -101,15 +105,21 @@ public class ScholarExtractionService implements ExtractionService {
 //                solveConflicts(profileFieldValues);
 //
 //                List<Label> labels = labelService.getAllByExtraction(profileFieldValues.stream()
-//                        .filter((x) -> x.getField().getRuleType().equals(
-//                                fieldRuleTypeRepository.findByName(FieldRuleTypeName.LABELS)
-//                                        .orElseThrow(() -> new EntityNotFoundException("Label", x.getValue())))
-//                        )
+//                        .filter((x) -> {
+//                            FieldExtraction fieldExtraction = fieldExtractionRepository
+//                                    .findByScientometricSystemAndField(scholarScientometricSystem, x.getField())
+//                                    .orElseThrow(() -> new EntityNotFoundException("Field Extraction", x.getField().getName()));
+//                            return fieldExtraction.getRuleType().equals(
+//                                    fieldRuleTypeRepository.findByName(FieldRuleTypeName.LABELS)
+//                                            .orElseThrow(() -> new EntityNotFoundException("Label", x.getValue())))
+//                        })
 //                        .map(ProfileFieldValue::getValue).toList());
 //
 //                profile.setLabels(new HashSet<>(labels));
 //
 //                labelRepository.saveAll(labels);
+//
+//                recommendationService.updateRecommendations(profileFieldValues);
 //
 //                extractionProfile.setFinished(true);
 //                extractionProfileRepository.save(extractionProfile);

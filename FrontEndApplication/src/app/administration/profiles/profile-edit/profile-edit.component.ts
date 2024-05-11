@@ -101,8 +101,6 @@ export class ProfileEditComponent implements OnInit {
       next: (allFieldTypes: FieldType[]) => {
         this.allFieldTypes = allFieldTypes;
 
-        console.log(this.allFieldTypes);
-
         this.allFieldTypes = this.allFieldTypes.filter(x => {
           return x.name != FieldTypeName.CITATION && x.name != FieldTypeName.H_INDEX
             && x.name != FieldTypeName.LABEL && x.name != FieldTypeName.YEAR_CITATION
@@ -188,6 +186,11 @@ export class ProfileEditComponent implements OnInit {
   editProfile() {
     this.validateFields();
     if (this.profileFieldsError.filter(x => x !== '').length > 0) {
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
       return;
     }
 
@@ -214,12 +217,11 @@ export class ProfileEditComponent implements OnInit {
 
   validateFields() {
     for (let i = 0; i < this.updatedProfileFields.length; i++) {
-      if (this.updatedProfileFields[i].value === '') {
-        this.profileFieldsError[i] = 'Enter field!';
-        break;
-      }
-
       if (this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.NUMBER) {
+        if (this.updatedProfileFields[i].value === '') {
+          break;
+        }
+
         try {
           if (isNaN(parseInt(this.updatedProfileFields[i].value))
             || isNaN(parseFloat(this.updatedProfileFields[i].value))) {
@@ -233,6 +235,10 @@ export class ProfileEditComponent implements OnInit {
       else if (this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.CITATION ||
         this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.H_INDEX
       ) {
+        if (this.updatedProfileFields[i].value === '') {
+          break;
+        }
+
         try {
           if (isNaN(parseInt(this.updatedProfileFields[i].value))) {
             throw new Error()

@@ -6,10 +6,11 @@ import org.example.apiapplication.entities.fields.Field;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FieldExtractionRepository extends CrudRepository<FieldExtraction, Integer> {
-//    List<FieldExtraction> findByScientometricSystemAndField(ScientometricSystem scientometricSystem,
-//                                                            Field field);
+    Optional<FieldExtraction> findByScientometricSystemAndField(ScientometricSystem scientometricSystem,
+                                                                Field field);
 
     List<FieldExtraction> findByScientometricSystem(ScientometricSystem scientometricSystem);
 }
