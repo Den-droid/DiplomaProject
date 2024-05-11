@@ -20,7 +20,7 @@ spring:
     baseline-version: 0
 
 email_service:
-  api-key: "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"
+  api-key: ${SENDGRID_API_KEY}
   from-email: "amerscan8+from@gmail.com"
   frontend-url: "http://localhost:4200"
 

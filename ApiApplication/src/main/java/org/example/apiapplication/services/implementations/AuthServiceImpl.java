@@ -191,6 +191,9 @@ public class AuthServiceImpl implements AuthService {
         if (!user.isActive()) {
             throw new UserNotActiveException();
         }
+        if (user.getForgotPasswordToken() != null) {
+            throw new UserAlreadyForgotPasswordException();
+        }
 
         user.setForgotPasswordToken(UUID.randomUUID().toString());
 
