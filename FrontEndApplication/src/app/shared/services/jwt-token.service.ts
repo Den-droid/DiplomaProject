@@ -12,7 +12,8 @@ export class JWTTokenService {
   ) {
   }
 
-  tokenChange: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(this.jwtToken);
+  tokenChange: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(this.jwtToken && !this.isTokenExpired()
+    ? this.jwtToken : '');
 
   get jwtToken(): string | null {
     return this.localStorage.get('access_token');
@@ -78,7 +79,6 @@ export class JWTTokenService {
   clearTokens() {
     this.localStorage.clear();
     this.tokenChange.next('');
-
   }
 }
 

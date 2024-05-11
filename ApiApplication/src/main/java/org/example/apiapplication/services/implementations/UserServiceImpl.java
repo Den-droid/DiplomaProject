@@ -16,6 +16,7 @@ import org.example.apiapplication.exceptions.auth.UserWithUsernameExistsExceptio
 import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
 import org.example.apiapplication.repositories.*;
+import org.example.apiapplication.services.interfaces.EmailService;
 import org.example.apiapplication.services.interfaces.UserService;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +31,20 @@ public class UserServiceImpl implements UserService {
     private final ChairRepository chairRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
-    private final ScientistRepository scientistRepository;
+    private final EmailService emailService;
 
     public UserServiceImpl(UserRepository userRepository,
                            FacultyRepository facultyRepository,
                            ChairRepository chairRepository,
                            RoleRepository roleRepository,
                            PermissionRepository permissionRepository,
-                           ScientistRepository scientistRepository) {
+                           EmailService emailService) {
         this.userRepository = userRepository;
         this.facultyRepository = facultyRepository;
         this.chairRepository = chairRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
-        this.scientistRepository = scientistRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -190,7 +191,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toSet());
         user.setPermissions(permissions);
 
-        // send email
+        emailService.signUpWithCode(user.getEmail(), user.getInviteCode());
 
         userRepository.save(user);
     }
@@ -285,7 +286,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", userId));
         user.setActive(true);
 
-        // send email
+        emailService.activateUser(user.getEmail());
 
         userRepository.save(user);
     }
@@ -296,7 +297,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", userId));
         user.setActive(false);
 
-        // send email
+        emailService.deactivateUser(user.getEmail());
 
         userRepository.save(user);
     }
@@ -308,7 +309,7 @@ public class UserServiceImpl implements UserService {
         user.setApproved(true);
         user.setActive(true);
 
-        // send email
+        emailService.approveUser(user.getEmail());
 
         userRepository.save(user);
     }
@@ -318,12 +319,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", id));
 
-        // send email
-
         user.setRoles(new ArrayList<>());
 
         Scientist scientist = user.getScientists().get(0);
         scientist.setUser(null);
+
+        emailService.rejectUser(user.getEmail());
 
         userRepository.delete(user);
     }

@@ -23,6 +23,7 @@ export class SetNewPasswordComponent implements OnInit {
       this.token = data['token'];
       this.authService.existsByForgotPasswordToken(this.token).subscribe({
         next: (result: boolean) => {
+          console.log(result);
           if (!result) {
             this.router.navigateByUrl("/error/404");
           }

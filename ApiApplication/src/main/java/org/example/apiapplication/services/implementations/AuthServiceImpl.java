@@ -14,6 +14,7 @@ import org.example.apiapplication.repositories.ScientistRepository;
 import org.example.apiapplication.repositories.UserRepository;
 import org.example.apiapplication.security.jwt.JwtUtils;
 import org.example.apiapplication.services.interfaces.AuthService;
+import org.example.apiapplication.services.interfaces.EmailService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,6 +34,8 @@ public class AuthServiceImpl implements AuthService {
     private final ScientistRepository scientistRepository;
     private final RoleRepository roleRepository;
 
+    private final EmailService emailService;
+
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
@@ -40,12 +43,15 @@ public class AuthServiceImpl implements AuthService {
     public AuthServiceImpl(UserRepository userRepository,
                            ScientistRepository scientistRepository,
                            RoleRepository roleRepository,
+                           EmailService emailService,
                            AuthenticationManager authenticationManager,
                            JwtUtils jwtUtils,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.scientistRepository = scientistRepository;
         this.roleRepository = roleRepository;
+
+        this.emailService = emailService;
 
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
@@ -176,9 +182,19 @@ public class AuthServiceImpl implements AuthService {
                 .findByUsername(forgotPasswordDto.email())
                 .orElseThrow(() -> new UserWithUsernameNotExistsException(forgotPasswordDto.email()));
 
+        if (!user.isSignedUp()) {
+            throw new UserNotSignedUpException();
+        }
+        if (!user.isApproved()) {
+            throw new UserNotApprovedException();
+        }
+        if (!user.isActive()) {
+            throw new UserNotActiveException();
+        }
+
         user.setForgotPasswordToken(UUID.randomUUID().toString());
 
-        // send email
+        emailService.forgotPassword(user.getEmail(), user.getForgotPasswordToken());
 
         userRepository.save(user);
     }

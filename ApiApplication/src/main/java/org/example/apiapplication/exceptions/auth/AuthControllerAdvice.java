@@ -50,18 +50,26 @@ public class AuthControllerAdvice {
     }
 
     @ExceptionHandler(value = UserNotApprovedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BaseExceptionDto handleNotApprovedException(UserNotApprovedException ex, WebRequest request) {
         return new BaseExceptionDto(
-                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage());
     }
 
     @ExceptionHandler(value = UserNotActiveException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BaseExceptionDto handleNotActiveException(UserNotActiveException ex, WebRequest request) {
         return new BaseExceptionDto(
-                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage());
+    }
+
+    @ExceptionHandler(value = UserNotSignedUpException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseExceptionDto handleNotSignedUpException(UserNotSignedUpException ex, WebRequest request) {
+        return new BaseExceptionDto(
+                HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage());
     }
 }

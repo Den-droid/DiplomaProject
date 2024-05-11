@@ -12,11 +12,14 @@ export class AppComponent {
   isAuthenticated = false;
   role = '';
 
-  constructor(private router : Router, private jwtService: JWTTokenService, private authService: AuthService) {
+  constructor(private router: Router, private jwtService: JWTTokenService, private authService: AuthService) {
     jwtService.tokenChange.subscribe({
       next: (value: string | null) => {
-        this.isAuthenticated = authService.isAuthenticated();
-        if (value != null) {
+        if (value === null || value === '') {
+          this.isAuthenticated = false;
+          this.role = '';
+        } else {
+          this.isAuthenticated = authService.isAuthenticated();
           this.role = jwtService.getRoles()[0];
         }
       }
