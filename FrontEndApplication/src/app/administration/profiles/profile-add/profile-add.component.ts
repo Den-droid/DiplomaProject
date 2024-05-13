@@ -143,7 +143,11 @@ export class ProfileAddComponent implements OnInit {
 
     let field = this.allFields.filter(x => x.id == this.selectedField)[0];
 
-    this.profileFields.push(new ProfileField(-1, '', field));
+    if (field.fieldType.name === FieldTypeName.BOOLEAN) {
+      this.profileFields.push(new ProfileField(-1, 'false', field));
+    } else {
+      this.profileFields.push(new ProfileField(-1, '', field));
+    }
 
     this.allFields = this.allFields.filter(x => x.id != field.id);
 

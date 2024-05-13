@@ -38,8 +38,6 @@ export class UserEditComponent implements OnInit {
   selectedChair = 0;
   wholeFaculty = false;
 
-  isEditedToMainAdmin = false;
-
   userRole = '';
   currentUserRole = '';
 
@@ -216,22 +214,18 @@ export class UserEditComponent implements OnInit {
     let editAdminDto;
 
     if (this.userRole === RoleName.FACULTY_ADMIN || this.userRole === RoleName.CHAIR_ADMIN) {
-      if (!this.isEditedToMainAdmin) {
-        let permissionList = [];
+      let permissionList = [];
 
-        for (let i = 0; i < this.selectedUserPermissions.length; i++) {
-          if (this.selectedUserPermissions[i]) {
-            permissionList.push(this.userPermissions[i].id);
-          }
+      for (let i = 0; i < this.selectedUserPermissions.length; i++) {
+        if (this.selectedUserPermissions[i]) {
+          permissionList.push(this.userPermissions[i].id);
         }
+      }
 
-        if (this.wholeFaculty) {
-          editAdminDto = new EditAdminDto(this.fullName, [this.selectedFaculty], [], this.isEditedToMainAdmin, permissionList);
-        } else {
-          editAdminDto = new EditAdminDto(this.fullName, [], [this.selectedChair], this.isEditedToMainAdmin, permissionList);
-        }
+      if (this.wholeFaculty) {
+        editAdminDto = new EditAdminDto(this.fullName, [this.selectedFaculty], [], permissionList);
       } else {
-        editAdminDto = new EditAdminDto(this.fullName, [], [], this.isEditedToMainAdmin, []);
+        editAdminDto = new EditAdminDto(this.fullName, [], [this.selectedChair], permissionList);
       }
 
       this.userService.editAdmin(this.userId, editAdminDto).subscribe({

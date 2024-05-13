@@ -135,7 +135,11 @@ export class ProfileEditComponent implements OnInit {
       previousField[0].value = '';
       this.updatedProfileFields.push(previousField[0]);
     } else {
-      this.updatedProfileFields.push(new ProfileField(-1, '', field));
+      if (field.fieldType.name === FieldTypeName.BOOLEAN) {
+        this.updatedProfileFields.push(new ProfileField(-1, 'false', field));
+      } else {
+        this.updatedProfileFields.push(new ProfileField(-1, '', field));
+      }
     }
 
     this.allFields = this.allFields.filter(x => x.id != field.id);

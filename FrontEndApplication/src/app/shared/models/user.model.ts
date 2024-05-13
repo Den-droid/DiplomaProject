@@ -17,8 +17,7 @@ export class AddAdminDto {
 }
 
 export class EditAdminDto {
-  constructor(public fullName: string, public facultyIds: number[], public chairIds: number[],
-    public isMainAdmin: boolean, public permissions: number[]
+  constructor(public fullName: string, public facultyIds: number[], public chairIds: number[], public permissions: number[]
   ) { }
 }
 

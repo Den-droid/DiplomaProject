@@ -120,8 +120,7 @@ public class UserServiceImpl implements UserService {
                 .map(Permission::getId)
                 .toList();
 
-        return new EditAdminDto(user.getFullName(), facultyIds, chairIds, user.getRoles().get(0)
-                .getName().equals(UserRole.MAIN_ADMIN), permissionsIds);
+        return new EditAdminDto(user.getFullName(), facultyIds, chairIds, permissionsIds);
     }
 
     @Override
@@ -208,50 +207,43 @@ public class UserServiceImpl implements UserService {
         Role chairAdmin = roleRepository.findByName(UserRole.CHAIR_ADMIN)
                 .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.CHAIR_ADMIN.name()));
 
-        if (!editAdminDto.isMainAdmin()) {
-            if (!editAdminDto.facultyIds().isEmpty()) {
-                if (!user.getRoles().contains(facultyAdmin)) {
-                    user.getRoles().add(facultyAdmin);
-                }
-
-                List<Faculty> facultyList = new ArrayList<>();
-                for (Integer facultyId : editAdminDto.facultyIds()) {
-                    Faculty faculty = facultyRepository.findById(facultyId)
-                            .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", facultyId));
-
-                    user.getFaculties().add(faculty);
-                    facultyList.add(faculty);
-                }
-
-                user.getFaculties().retainAll(facultyList);
-            } else {
-                user.getFaculties().clear();
-                user.getRoles().remove(facultyAdmin);
+        if (!editAdminDto.facultyIds().isEmpty()) {
+            if (!user.getRoles().contains(facultyAdmin)) {
+                user.getRoles().add(facultyAdmin);
             }
 
-            if (!editAdminDto.chairIds().isEmpty()) {
-                if (!user.getRoles().contains(chairAdmin)) {
-                    user.getRoles().add(chairAdmin);
-                }
-                List<Chair> chairList = new ArrayList<>();
-                for (Integer chairId : editAdminDto.chairIds()) {
-                    Chair chair = chairRepository.findById(chairId)
-                            .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", chairId));
+            List<Faculty> facultyList = new ArrayList<>();
+            for (Integer facultyId : editAdminDto.facultyIds()) {
+                Faculty faculty = facultyRepository.findById(facultyId)
+                        .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", facultyId));
 
-                    user.getChairs().add(chair);
-                    chairList.add(chair);
-                }
-
-                user.getChairs().retainAll(chairList);
-            } else {
-                user.getChairs().clear();
-                user.getRoles().remove(chairAdmin);
+                user.getFaculties().add(faculty);
+                facultyList.add(faculty);
             }
+
+            user.getFaculties().retainAll(facultyList);
         } else {
-            Role role = roleRepository.findByName(UserRole.MAIN_ADMIN)
-                    .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.MAIN_ADMIN.name()));
+            user.getFaculties().clear();
+            user.getRoles().remove(facultyAdmin);
+        }
 
-            user.setRoles(List.of(role));
+        if (!editAdminDto.chairIds().isEmpty()) {
+            if (!user.getRoles().contains(chairAdmin)) {
+                user.getRoles().add(chairAdmin);
+            }
+            List<Chair> chairList = new ArrayList<>();
+            for (Integer chairId : editAdminDto.chairIds()) {
+                Chair chair = chairRepository.findById(chairId)
+                        .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", chairId));
+
+                user.getChairs().add(chair);
+                chairList.add(chair);
+            }
+
+            user.getChairs().retainAll(chairList);
+        } else {
+            user.getChairs().clear();
+            user.getRoles().remove(chairAdmin);
         }
 
         List<Integer> permissionIds = editAdminDto.permissions();
