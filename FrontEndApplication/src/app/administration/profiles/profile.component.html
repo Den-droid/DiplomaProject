@@ -10,8 +10,7 @@
       <div>
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
-          <select class="col-sm-8" id="selectFaculty" name="faculty" [(ngModel)]="selectedScientometricSystem"
-            [disabled]="isFacultyDisabled">
+          <select class="col-sm-8" id="selectFaculty" name="faculty" [(ngModel)]="selectedScientometricSystem">
             <option *ngFor="let scientometricSystem of scientometricSystems" [value]="scientometricSystem.id">
               {{scientometricSystem.name}}</option>
           </select>

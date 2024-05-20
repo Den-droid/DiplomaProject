@@ -1,0 +1,31 @@
+<!-- Page Content -->
+<div style="margin-top: 4%; overflow-x:hidden">
+  <div class="text-center" style="margin-bottom: 2%">
+    <h2>Faculties Compare</h2>
+  </div>
+
+  <div class="mb-3 row d-flex justify-content-between" style="width: 75%; margin-right:auto; margin-left: auto">
+    <div class="mb-3 d-flex justify-content-between">
+      <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
+      <select class="col-sm-8" id="selectScientometricSystem" name="scientometricSystem"
+        [(ngModel)]="selectedScientometricSystem">
+        <option *ngFor="let scientometricSystem of scientometricSystems" [value]="scientometricSystem.id">
+          {{scientometricSystem.name}}</option>
+      </select>
+    </div>
+
+    <div class="mb-3 row">
+      <div class="col d-flex justify-content-center">
+        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
+          (click)="getIndices()">Get Indices</button>
+      </div>
+    </div>
+
+    <div *ngIf="showChart">
+      <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [dataLabels]="chartOptions.dataLabels"
+        [plotOptions]="chartOptions.plotOptions" [yaxis]="chartOptions.yaxis" [legend]="chartOptions.legend"
+        [fill]="chartOptions.fill" [stroke]="chartOptions.stroke" [tooltip]="chartOptions.tooltip"
+        [xaxis]="chartOptions.xaxis" [noData]="chartOptions.noData"></apx-chart>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 package org.example.apiapplication.controllers;
 
 import org.example.apiapplication.dto.faculties.FacultyDto;
+import org.example.apiapplication.dto.indices.EntityIndicesDto;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.FacultyService;
@@ -38,5 +39,20 @@ public class FacultyController {
         User user = sessionUtil.getUserFromSession();
         List<FacultyDto> facultyDtos = facultyService.getByUser(user);
         return ResponseEntity.ok(facultyDtos);
+    }
+
+    @GetMapping("/indices")
+    public ResponseEntity<?> getIndices(@RequestParam Integer scientometricSystemId) {
+        List<EntityIndicesDto> facultiesIndicesDtos =
+                facultyService.getFacultyIndices(scientometricSystemId);
+        return ResponseEntity.ok(facultiesIndicesDtos);
+    }
+
+    @GetMapping("/{id}/indices")
+    public ResponseEntity<?> getIndicesByFaculty(@PathVariable Integer id,
+                                                 @RequestParam Integer scientometricSystemId) {
+        List<EntityIndicesDto> facultyIndicesDtos =
+                facultyService.getFacultyIndicesByFaculty(id, scientometricSystemId);
+        return ResponseEntity.ok(facultyIndicesDtos);
     }
 }

@@ -24,9 +24,6 @@ public class ScientometricSystem {
     @Column(name = "next_min_import_date")
     private LocalDate nextMinImportDate;
 
-    @Column(name = "profile_import_periodicity")
-    private Integer profileImportPeriodicity;
-
     @OneToMany(mappedBy = "scientometricSystem")
     private List<Extraction> extractions = new ArrayList<>();
 

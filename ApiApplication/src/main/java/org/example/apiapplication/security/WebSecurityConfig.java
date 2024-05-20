@@ -31,6 +31,8 @@ public class WebSecurityConfig {
             "/api/chairs/{id}",
             "/api/faculties",
             "/api/faculties/{id}",
+            "/api/faculties/indices",
+            "/api/faculties/{id}/indices",
             "/api/fields",
             "/api/fields/types",
             "/api/fields/{id}",
@@ -38,7 +40,8 @@ public class WebSecurityConfig {
             "/api/labels",
             "/api/labels/{id}",
             "/api/labels/search",
-            "/api/scientists/preview"
+            "/api/scientists/preview",
+            "/api/scientometricSystems"
     };
 
     private final String[] mainAdminUrls = {
