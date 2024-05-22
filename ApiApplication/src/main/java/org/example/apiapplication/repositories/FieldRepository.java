@@ -1,6 +1,7 @@
 package org.example.apiapplication.repositories;
 
 import org.example.apiapplication.entities.fields.Field;
+import org.example.apiapplication.entities.fields.FieldType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -17,4 +18,6 @@ public interface FieldRepository extends CrudRepository<Field, Integer>,
     Optional<Field> findByNameIgnoreCaseAndIdNot(String name, Integer id);
 
     Optional<Field> findByNameIgnoreCase(String name);
+
+    Optional<Field> findByType(FieldType type);
 }

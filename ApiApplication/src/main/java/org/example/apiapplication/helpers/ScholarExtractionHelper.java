@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 @Component
 public class ScholarExtractionHelper {
@@ -29,7 +27,6 @@ public class ScholarExtractionHelper {
                     case ORDERED -> allProfileFieldValues.add(extractOrdered(document, fieldExtraction));
                     case PROPERTY -> allProfileFieldValues.add(extractProperty(document, fieldExtraction));
                     case LABELS -> profileFieldValues = extractLabels(document, fieldExtraction);
-                    case YEAR_CITATIONS -> profileFieldValues = extractYearCitations(document, fieldExtraction);
                 }
 
                 allProfileFieldValues.addAll(profileFieldValues);
@@ -109,55 +106,6 @@ public class ScholarExtractionHelper {
                 ProfileFieldValue profileFieldValue = new ProfileFieldValue();
                 profileFieldValue.setField(fieldExtraction.getField());
                 profileFieldValue.setValue(fieldElement.text());
-
-                profileFieldValues.add(profileFieldValue);
-            }
-        }
-
-        return profileFieldValues;
-    }
-
-    private List<ProfileFieldValue> extractYearCitations(Document document, FieldExtraction fieldExtraction) {
-        List<ProfileFieldValue> profileFieldValues = new ArrayList<>();
-
-        Elements fieldElements = document
-                .select(fieldExtraction.getRule());
-        Elements yearsElements = fieldElements.select(".gsc_g_t");
-        Elements citationElements = fieldElements.select(".gsc_g_a");
-
-        if (!fieldElements.isEmpty()) {
-            List<String> years = yearsElements.stream()
-                    .map(Element::text)
-                    .toList();
-            List<String> citations = citationElements.stream()
-                    .map(Element::text)
-                    .toList();
-
-            List<String> zIndexes = citationElements.stream()
-                    .map((x) -> {
-                        String[] strings = x.attribute("style").getValue().split("[:;]");
-                        return strings[strings.length - 1];
-                    })
-                    .toList();
-
-            Map<String, Integer> map = new TreeMap<>();
-            int citationsIndex = 0;
-            int zIndexIndex = 0;
-            for (int i = 0; i < years.size(); i++) {
-                int citation = 0;
-                if (zIndexes.get(zIndexIndex).equals(String.valueOf(years.size() - i))) {
-                    citation = Integer.parseInt(citations.get(citationsIndex));
-                    citationsIndex++;
-                    zIndexIndex++;
-                }
-                map.put(years.get(i), citation);
-            }
-
-            for (Map.Entry<String, Integer> entry : map.entrySet()) {
-                ProfileFieldValue profileFieldValue = new ProfileFieldValue();
-                profileFieldValue.setField(fieldExtraction.getField());
-                profileFieldValue.setKey(entry.getKey());
-                profileFieldValue.setValue(String.valueOf(entry.getValue()));
 
                 profileFieldValues.add(profileFieldValue);
             }

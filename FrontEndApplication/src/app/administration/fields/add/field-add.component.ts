@@ -22,7 +22,9 @@ export class FieldAddComponent implements OnInit {
     this.fieldService.getAllFieldTypes().subscribe({
       next: (data: FieldType[]) => {
         this.fieldTypes = data;
-        this.fieldTypes = this.fieldTypes.filter(x => x.name != FieldTypeName.YEAR_CITATION)
+        this.fieldTypes = this.fieldTypes.filter(x => x.name != FieldTypeName.LABEL &&
+          x.name != FieldTypeName.CITATION && x.name != FieldTypeName.H_INDEX
+        )
         this.fieldTypes.forEach(fieldType => fieldType.name = mapStringToFieldTypeLabel(fieldType.name));
         if (this.fieldTypes.length > 0)
           this.selectedType = this.fieldTypes[0].id;

@@ -2,10 +2,7 @@ package org.example.apiapplication.controllers;
 
 import org.example.apiapplication.dto.fields.ProfileFieldDto;
 import org.example.apiapplication.dto.labels.LabelDto;
-import org.example.apiapplication.dto.profile.AddProfileDto;
-import org.example.apiapplication.dto.profile.EditProfileDto;
-import org.example.apiapplication.dto.profile.GetProfilesDto;
-import org.example.apiapplication.dto.profile.ProfileFullDto;
+import org.example.apiapplication.dto.profile.*;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.ProfileService;
@@ -25,6 +22,20 @@ public class ProfileController {
                              SessionUtil sessionUtil) {
         this.profileService = profileService;
         this.sessionUtil = sessionUtil;
+    }
+
+    @GetMapping("/commonLabels")
+    public ResponseEntity<?> getProfilesByCommonLabels(@RequestParam Integer labelId) {
+        List<ProfileByLabelDto> profiles = profileService.getProfilesByLabelId(labelId);
+        return ResponseEntity.ok(profiles);
+    }
+
+    @GetMapping("/forUser")
+    public ResponseEntity<?> getProfilesForUser(@RequestParam Integer chairId,
+                                                @RequestParam Integer scientometricSystemId) {
+        List<ProfileForUserDto> profiles =
+                profileService.getProfilesForUser(scientometricSystemId, chairId);
+        return ResponseEntity.ok(profiles);
     }
 
     @GetMapping("/{id}/labels")

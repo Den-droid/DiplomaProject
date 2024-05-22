@@ -128,7 +128,7 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public List<EntityIndicesDto> getFacultyIndicesByFaculty(Integer facultyId, Integer scientometricSystemId) {
+    public List<EntityIndicesDto> getChairsIndicesByFaculty(Integer facultyId, Integer scientometricSystemId) {
         Faculty faculty = facultyRepository.findById(facultyId)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", facultyId));
 
@@ -165,15 +165,13 @@ public class FacultyServiceImpl implements FacultyService {
                     int citation = 0, hirsh = 0;
                     boolean citationDone = false, hirshDone = false;
                     for (ProfileFieldValue profileFieldValue : x.getProfileFieldValues()) {
-
-
-                        if (profileFieldValue.getField().getType().getName()
+                        if (!citationDone && profileFieldValue.getField().getType().getName()
                                 .equals(FieldTypeName.CITATION)) {
                             if (!profileFieldValue.getValue().isEmpty())
                                 citation = Integer.parseInt(profileFieldValue.getValue());
 
                             citationDone = true;
-                        } else if (profileFieldValue.getField().getType().getName()
+                        } else if (!hirshDone && profileFieldValue.getField().getType().getName()
                                 .equals(FieldTypeName.H_INDEX)) {
                             if (!profileFieldValue.getValue().isEmpty())
                                 hirsh = Integer.parseInt(profileFieldValue.getValue());

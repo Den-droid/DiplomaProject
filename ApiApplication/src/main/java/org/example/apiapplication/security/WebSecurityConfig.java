@@ -41,7 +41,9 @@ public class WebSecurityConfig {
             "/api/labels/{id}",
             "/api/labels/search",
             "/api/scientists/preview",
-            "/api/scientometricSystems"
+            "/api/scientometricSystems",
+            "/api/profiles/forUser",
+            "/api/profiles/commonLabels"
     };
 
     private final String[] mainAdminUrls = {

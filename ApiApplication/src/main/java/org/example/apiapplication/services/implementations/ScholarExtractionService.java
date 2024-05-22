@@ -8,9 +8,8 @@ import org.example.apiapplication.entities.extraction.Extraction;
 import org.example.apiapplication.entities.extraction.ExtractionProfile;
 import org.example.apiapplication.entities.extraction.FieldExtraction;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
-import org.example.apiapplication.enums.FieldRuleTypeName;
+import org.example.apiapplication.enums.FieldTypeName;
 import org.example.apiapplication.enums.ScientometricSystemName;
-import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.extraction.PreviousExtractionNotFinishedException;
 import org.example.apiapplication.exceptions.extraction.TooFrequentExtractionException;
 import org.example.apiapplication.helpers.ScholarExtractionHelper;
@@ -89,51 +88,49 @@ public class ScholarExtractionService implements ExtractionService {
     @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.MINUTES)
     @Override
     public void extract() throws IOException {
-//        Optional<Extraction> optionalExtraction = extractionRepository
-//                .findByScientometricSystemAndIsFinished(scholarScientometricSystem, false);
-//
-//        if (optionalExtraction.isPresent()) {
-//            Extraction extraction = optionalExtraction.get();
-//            Optional<ExtractionProfile> optionalExtractionProfile = extractionProfileRepository
-//                    .findFirstByExtractionAndIsFinished(extraction, false);
-//            if (optionalExtractionProfile.isPresent()) {
-//                ExtractionProfile extractionProfile = optionalExtractionProfile.get();
-//                Profile profile = extractionProfile.getProfile();
-//
-//                List<ProfileFieldValue> profileFieldValues = extractScholarProfileFieldValues(profile);
-//
-//                solveConflicts(profileFieldValues);
-//
-//                List<Label> labels = labelService.getAllByExtraction(profileFieldValues.stream()
-//                        .filter((x) -> {
-//                            FieldExtraction fieldExtraction = fieldExtractionRepository
-//                                    .findByScientometricSystemAndField(scholarScientometricSystem, x.getField())
-//                                    .orElseThrow(() -> new EntityNotFoundException("Field Extraction", x.getField().getName()));
-//                            return fieldExtraction.getRuleType().equals(
-//                                    fieldRuleTypeRepository.findByName(FieldRuleTypeName.LABELS)
-//                                            .orElseThrow(() -> new EntityNotFoundException("Label", x.getValue())))
-//                        })
-//                        .map(ProfileFieldValue::getValue).toList());
-//
-//                profile.setLabels(new HashSet<>(labels));
-//
-//                labelRepository.saveAll(labels);
-//
-//                recommendationService.updateRecommendations(profileFieldValues);
-//
-//                extractionProfile.setFinished(true);
-//                extractionProfileRepository.save(extractionProfile);
-//
-//                profileRepository.save(profile);
-//                profileFieldValueRepository.saveAll(profileFieldValues);
-//            } else {
-//                extraction.setFinished(true);
-//                extractionRepository.save(extraction);
-//                stopExtraction();
-//            }
-//        } else {
-//            stopExtraction();
-//        }
+        Optional<Extraction> optionalExtraction = extractionRepository
+                .findByScientometricSystemAndIsFinished(scholarScientometricSystem, false);
+
+        if (optionalExtraction.isPresent()) {
+            Extraction extraction = optionalExtraction.get();
+            Optional<ExtractionProfile> optionalExtractionProfile = extractionProfileRepository
+                    .findFirstByExtractionAndIsFinished(extraction, false);
+            if (optionalExtractionProfile.isPresent()) {
+                ExtractionProfile extractionProfile = optionalExtractionProfile.get();
+                Profile profile = extractionProfile.getProfile();
+
+                List<ProfileFieldValue> profileFieldValues = extractScholarProfileFieldValues(profile);
+
+                solveConflicts(profileFieldValues);
+
+                List<ProfileFieldValue> labelsProfileFieldValues = profileFieldValues.stream()
+                        .filter(x -> x.getField().getType().getName().equals(FieldTypeName.LABEL)).toList();
+                profileFieldValues.removeAll(labelsProfileFieldValues);
+
+                List<String> labelsString = labelsProfileFieldValues.stream()
+                        .map(ProfileFieldValue::getValue)
+                        .toList();
+                List<Label> labels = labelService.getAllByExtraction(labelsString);
+
+                profile.setLabels(new HashSet<>(labels));
+
+                labelRepository.saveAll(labels);
+
+                recommendationService.updateRecommendations(profile, profileFieldValues, !labels.isEmpty());
+
+                extractionProfile.setFinished(true);
+                extractionProfileRepository.save(extractionProfile);
+
+                profileRepository.save(profile);
+                profileFieldValueRepository.saveAll(profileFieldValues);
+            } else {
+                extraction.setFinished(true);
+                extractionRepository.save(extraction);
+                stopExtraction();
+            }
+        } else {
+            stopExtraction();
+        }
     }
 
     @Override
@@ -209,37 +206,14 @@ public class ScholarExtractionService implements ExtractionService {
 
     private void solveConflicts(List<ProfileFieldValue> profileFieldValues) {
         for (ProfileFieldValue profileFieldValue : profileFieldValues) {
-            List<ProfileFieldValue> existingProfileFieldValues = profileFieldValueRepository
+            Optional<ProfileFieldValue> optionalProfileFieldValue = profileFieldValueRepository
                     .findByProfileAndField(profileFieldValue.getProfile(),
                             profileFieldValue.getField());
 
             // if we have found value for profile for specific field
-            if (!existingProfileFieldValues.isEmpty()) {
-                if (existingProfileFieldValues.get(0).getKey() != null &&
-                        !existingProfileFieldValues.get(0).getKey().isEmpty()) {
-                    // if profile field value does have a key
-                    Optional<ProfileFieldValue> foundProfileFieldValue =
-                            existingProfileFieldValues.stream()
-                                    .filter((x) -> x.getKey().equals(profileFieldValue.getKey()))
-                                    .findFirst();
-
-                    foundProfileFieldValue.ifPresent(fieldValue ->
-                            profileFieldValue.setId(fieldValue.getId()));
-                } else {
-                    // if profile field value doesn't have a key
-                    Optional<ProfileFieldValue> foundProfileFieldValue =
-                            existingProfileFieldValues.stream()
-                                    .filter((x) -> x.getValue().equals(profileFieldValue.getValue()))
-                                    .findFirst();
-
-                    if (foundProfileFieldValue.isEmpty()) {
-                        if (existingProfileFieldValues.size() == 1) {
-                            profileFieldValue.setId(existingProfileFieldValues.get(0).getId());
-                        }
-                    } else {
-                        profileFieldValue.setId(foundProfileFieldValue.get().getId());
-                    }
-                }
+            if (optionalProfileFieldValue.isPresent()) {
+                ProfileFieldValue existingProfileFieldValue = optionalProfileFieldValue.get();
+                profileFieldValue.setId(existingProfileFieldValue.getId());
             }
         }
     }

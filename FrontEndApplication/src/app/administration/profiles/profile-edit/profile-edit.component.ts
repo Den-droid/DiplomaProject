@@ -26,7 +26,6 @@ export class ProfileEditComponent implements OnInit {
   possibleLabels: Label[] = [];
   profileLabels: Label[] = [];
 
-  allFieldTypes: FieldType[] = [];
   allFields: Field[] = [];
 
   originalProfileFields: ProfileField[] = [];
@@ -71,10 +70,6 @@ export class ProfileEditComponent implements OnInit {
           this.originalProfileFields = profileFields;
           this.updatedProfileFields = this.originalProfileFields;
 
-          this.updatedProfileFields = this.updatedProfileFields.filter(x => {
-            return x.field.fieldType.name != FieldTypeName.LABEL &&
-              x.field.fieldType.name != FieldTypeName.YEAR_CITATION
-          });
           for (let val of this.updatedProfileFields) {
             this.profileFieldsError.push('');
           }
@@ -84,9 +79,7 @@ export class ProfileEditComponent implements OnInit {
               this.allFields = allFields.fields;
 
               this.allFields = this.allFields.filter(x => {
-                return x.fieldType.name != FieldTypeName.LABEL &&
-                  x.fieldType.name != FieldTypeName.YEAR_CITATION &&
-                  this.updatedProfileFields.filter(y => y.field.id == x.id).length == 0
+                return this.updatedProfileFields.filter(y => y.field.id == x.id).length == 0
               });
             }
           })
@@ -96,17 +89,6 @@ export class ProfileEditComponent implements OnInit {
         }
       })
     });
-
-    this.fieldService.getAllFieldTypes().subscribe({
-      next: (allFieldTypes: FieldType[]) => {
-        this.allFieldTypes = allFieldTypes;
-
-        this.allFieldTypes = this.allFieldTypes.filter(x => {
-          return x.name != FieldTypeName.CITATION && x.name != FieldTypeName.H_INDEX
-            && x.name != FieldTypeName.LABEL && x.name != FieldTypeName.YEAR_CITATION
-        });
-      }
-    })
   }
 
   changeProfileFieldValue(index: number, newValue: EventTarget | null) {

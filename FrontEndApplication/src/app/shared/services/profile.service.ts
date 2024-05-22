@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { baseUrl } from "../constants/url.constant";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { AddProfileDto, EditProfileDto, GetProfilesDto } from "../models/profile.model";
+import { AddProfileDto, EditProfileDto, GetProfilesDto, ProfileByLabel } from "../models/profile.model";
 import { Observable } from "rxjs";
 import { ProfileField } from "../models/field.model";
 import { Label } from "../models/label.model";
@@ -81,5 +81,15 @@ export class ProfileService {
 
   getProfileLabels(id: number): Observable<Label[]> {
     return this.httpClient.get<Label[]>(this.url + "/" + id + "/labels");
+  }
+
+  getProfileByLabel(labelId: number): Observable<ProfileByLabel[]> {
+    const options =
+    {
+      params: new HttpParams()
+        .set('labelId', labelId)
+    };
+
+    return this.httpClient.get<ProfileByLabel[]>(this.url + "/commonLabels", options);
   }
 }

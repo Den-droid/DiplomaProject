@@ -19,6 +19,10 @@ public interface ProfileRepository extends CrudRepository<Profile, Integer> {
     List<Profile> findAllByScientometricSystemAndScientistIn(ScientometricSystem scientometricSystem,
                                                              List<Scientist> scientist);
 
+    List<Profile> findAllByScientometricSystemAndScientistInAndAreWorksDoubtful(
+            ScientometricSystem scientometricSystem, List<Scientist> scientist,
+            boolean areWorksDoubtful);
+
     List<Profile> findAllByScientometricSystemAndScientistInAndAreWorksDoubtfulAndIsActive(
             ScientometricSystem scientometricSystem, List<Scientist> scientist,
             boolean areWorksDoubtful, boolean active);

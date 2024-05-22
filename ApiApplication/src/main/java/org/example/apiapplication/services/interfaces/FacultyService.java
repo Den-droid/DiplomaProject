@@ -15,6 +15,6 @@ public interface FacultyService {
 
     List<EntityIndicesDto> getFacultyIndices(Integer scientometricSystemId);
 
-    List<EntityIndicesDto> getFacultyIndicesByFaculty(Integer facultyId,
-                                                      Integer scientometricSystemId);
+    List<EntityIndicesDto> getChairsIndicesByFaculty(Integer facultyId,
+                                                     Integer scientometricSystemId);
 }

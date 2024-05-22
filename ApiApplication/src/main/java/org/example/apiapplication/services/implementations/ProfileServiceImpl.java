@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.example.apiapplication.dto.fields.FieldDto;
 import org.example.apiapplication.dto.fields.FieldTypeDto;
 import org.example.apiapplication.dto.fields.ProfileFieldDto;
+import org.example.apiapplication.dto.indices.IndicesDto;
 import org.example.apiapplication.dto.labels.LabelDto;
 import org.example.apiapplication.dto.page.PageDto;
 import org.example.apiapplication.dto.profile.*;
@@ -16,6 +17,7 @@ import org.example.apiapplication.entities.user.Role;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.enums.FieldTypeName;
 import org.example.apiapplication.enums.UserRole;
+import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
 import org.example.apiapplication.exceptions.profile.ProfileScientistScientometricSystemExists;
 import org.example.apiapplication.repositories.*;
@@ -41,6 +43,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ChairRepository chairRepository;
     private final FacultyRepository facultyRepository;
     private final ProfileFieldRecommendationRepository profileFieldRecommendationRepository;
+    private final LabelRepository labelRepository;
 
     private final LabelService labelService;
     private final RecommendationService recommendationService;
@@ -52,8 +55,11 @@ public class ProfileServiceImpl implements ProfileService {
                               ProfileFieldValueRepository profileFieldValueRepository,
                               RoleRepository roleRepository,
                               ChairRepository chairRepository,
-                              FacultyRepository facultyRepository, ProfileFieldRecommendationRepository profileFieldRecommendationRepository,
-                              LabelService labelService, RecommendationService recommendationService) {
+                              FacultyRepository facultyRepository,
+                              ProfileFieldRecommendationRepository profileFieldRecommendationRepository,
+                              LabelRepository labelRepository,
+                              LabelService labelService,
+                              RecommendationService recommendationService) {
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.profileRepository = profileRepository;
         this.scientistRepository = scientistRepository;
@@ -63,6 +69,7 @@ public class ProfileServiceImpl implements ProfileService {
         this.chairRepository = chairRepository;
         this.facultyRepository = facultyRepository;
         this.profileFieldRecommendationRepository = profileFieldRecommendationRepository;
+        this.labelRepository = labelRepository;
 
         this.labelService = labelService;
         this.recommendationService = recommendationService;
@@ -149,6 +156,80 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public List<ProfileByLabelDto> getProfilesByLabelId(Integer labelId) {
+        Label label = labelRepository.findById(labelId)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Label", labelId));
+
+        List<Profile> profiles = label.getProfiles();
+
+        return profiles.stream()
+                .map(x -> {
+                    String faculty, chair;
+                    if (x.getScientist().getFaculty() != null) {
+                        faculty = x.getScientist().getFaculty().getUkrainianAbbreviation();
+                        chair = "";
+                    } else {
+                        Scientist scientist = x.getScientist();
+                        faculty = scientist.getChair().getFaculty().getUkrainianAbbreviation();
+                        chair = scientist.getChair().getUkrainianAbbreviation();
+                    }
+                    String name = x.getScientist().getFullName();
+                    String scientometricSystem = x.getScientometricSystem().getName().name();
+
+                    return new ProfileByLabelDto(name, scientometricSystem, faculty, chair);
+                })
+                .toList();
+    }
+
+    @Override
+    public List<ProfileForUserDto> getProfilesForUser(Integer scientometricSystemId, Integer chairId) {
+        Chair chair = chairRepository.findById(chairId)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", chairId));
+
+        ScientometricSystem scientometricSystem = scientometricSystemRepository
+                .findById(scientometricSystemId)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientometric System",
+                        scientometricSystemId));
+
+        List<Scientist> scientists = new ArrayList<>(chair.getScientists());
+        List<Profile> profiles = profileRepository
+                .findAllByScientometricSystemAndScientistInAndAreWorksDoubtful(
+                        scientometricSystem, scientists, false);
+
+        List<ProfileForUserDto> profileForUserDtos = new ArrayList<>();
+        for (Profile profile : profiles) {
+            List<ProfileFieldValue> profileFieldValues = profile.getProfileFieldValues();
+            int citation = -1, hirsh = -1;
+            boolean citationDone = false, hirshDone = false;
+
+            for (ProfileFieldValue profileFieldValue : profileFieldValues) {
+                if (!citationDone && profileFieldValue.getField().getType().getName()
+                        .equals(FieldTypeName.CITATION)) {
+                    if (!profileFieldValue.getValue().isEmpty())
+                        citation = Integer.parseInt(profileFieldValue.getValue());
+
+                    citationDone = true;
+                } else if (!hirshDone && profileFieldValue.getField().getType().getName()
+                        .equals(FieldTypeName.H_INDEX)) {
+                    if (!profileFieldValue.getValue().isEmpty())
+                        hirsh = Integer.parseInt(profileFieldValue.getValue());
+
+                    hirshDone = true;
+                }
+
+                if (citationDone && hirshDone)
+                    break;
+            }
+            List<String> recommendations = recommendationService.getByProfile(profile);
+
+            profileForUserDtos.add(new ProfileForUserDto(profile.getScientist().getFullName(),
+                    new IndicesDto(citation, hirsh), recommendations));
+        }
+
+        return profileForUserDtos;
+    }
+
+    @Override
     public void add(AddProfileDto addProfileDto) {
         Scientist scientist = scientistRepository.findById(addProfileDto.scientistId())
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Scientist",
@@ -188,7 +269,7 @@ public class ProfileServiceImpl implements ProfileService {
         profileFieldValues.forEach(x -> x.setProfile(profile));
 
         labelService.addLabelsToProfile(addProfileDto.labelsIds(), profile);
-        recommendationService.updateRecommendations(profileFieldValues);
+        recommendationService.updateRecommendations(profile, profileFieldValues, !addProfileDto.labelsIds().isEmpty());
 
         profileRepository.save(profile);
         profileFieldValueRepository.saveAll(profileFieldValues);
@@ -226,17 +307,24 @@ public class ProfileServiceImpl implements ProfileService {
         List<ProfileFieldRecommendation> profileFieldRecommendationsToRemove = new ArrayList<>();
 
         for (ProfileFieldValue profileFieldValue : originalProfileFieldValues) {
-            if (!profileFieldValues.contains(profileFieldValue) &&
-                    (profileFieldValue.getField().getType().getName() != FieldTypeName.YEAR_CITATION
-                            && profileFieldValue.getField().getType().getName() != FieldTypeName.LABEL)) {
+            if (!profileFieldValues.contains(profileFieldValue)
+                    && profileFieldValue.getField().getType().getName() != FieldTypeName.LABEL) {
                 profileFieldValuesToRemove.add(profileFieldValue);
-                profileFieldRecommendationsToRemove
-                        .add(profileFieldValue.getProfileFieldRecommendations().get(0));
+
+                ProfileFieldRecommendation profileFieldRecommendation =
+                        profileFieldRecommendationRepository.findByProfileAndField(
+                                        profileFieldValue.getProfile(), profileFieldValue.getField())
+                                .orElseThrow(() -> new EntityNotFoundException("Profile Recommendation",
+                                        profileFieldValue.getField().getName()));
+
+                profileFieldRecommendationsToRemove.add(profileFieldRecommendation);
             }
         }
 
+        // update labels and recommendations
         labelService.addLabelsToProfile(editProfileDto.labelsIds(), profile);
-        recommendationService.updateRecommendations(profileFieldValues);
+        recommendationService.updateRecommendations(profile, profileFieldValues,
+                !editProfileDto.labelsIds().isEmpty());
 
         profileFieldRecommendationRepository.deleteAll(profileFieldRecommendationsToRemove);
         profileFieldValueRepository.deleteAll(profileFieldValuesToRemove);
@@ -316,10 +404,6 @@ public class ProfileServiceImpl implements ProfileService {
                             || (innerChair != null && innerChair.getFaculty().equals(faculty));
                 })
                 .toList();
-    }
-
-    private FieldTypeName getFieldTypeByString(String stringFieldType) {
-        return FieldTypeName.valueOf(stringFieldType);
     }
 
     private ProfilePreviewDto getProfilePreviewDtoByProfile(Profile profile) {

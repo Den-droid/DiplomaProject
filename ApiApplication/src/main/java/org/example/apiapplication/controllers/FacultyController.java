@@ -52,7 +52,7 @@ public class FacultyController {
     public ResponseEntity<?> getIndicesByFaculty(@PathVariable Integer id,
                                                  @RequestParam Integer scientometricSystemId) {
         List<EntityIndicesDto> facultyIndicesDtos =
-                facultyService.getFacultyIndicesByFaculty(id, scientometricSystemId);
+                facultyService.getChairsIndicesByFaculty(id, scientometricSystemId);
         return ResponseEntity.ok(facultyIndicesDtos);
     }
 }

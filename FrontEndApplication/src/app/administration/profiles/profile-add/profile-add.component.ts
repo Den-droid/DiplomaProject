@@ -41,7 +41,6 @@ export class ProfileAddComponent implements OnInit {
   possibleLabels: Label[] = [];
   profileLabels: Label[] = [];
 
-  allFieldTypes: FieldType[] = [];
   allFields: Field[] = [];
 
   profileFields: ProfileField[] = [];
@@ -71,22 +70,6 @@ export class ProfileAddComponent implements OnInit {
     this.fieldService.getAllFields().subscribe({
       next: (allFields: GetFieldsDto) => {
         this.allFields = allFields.fields;
-
-        this.allFields = this.allFields.filter(x => {
-          return x.fieldType.name != FieldTypeName.LABEL &&
-            x.fieldType.name != FieldTypeName.YEAR_CITATION
-        });
-      }
-    })
-
-    this.fieldService.getAllFieldTypes().subscribe({
-      next: (allFieldTypes: FieldType[]) => {
-        this.allFieldTypes = allFieldTypes;
-
-        this.allFieldTypes = this.allFieldTypes.filter(x => {
-          return x.name != FieldTypeName.CITATION && x.name != FieldTypeName.H_INDEX
-            && x.name != FieldTypeName.LABEL && x.name != FieldTypeName.YEAR_CITATION
-        });
       }
     })
 

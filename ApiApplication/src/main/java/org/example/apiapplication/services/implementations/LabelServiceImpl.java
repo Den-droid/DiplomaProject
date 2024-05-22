@@ -8,7 +8,6 @@ import org.example.apiapplication.entities.Profile;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
 import org.example.apiapplication.exceptions.label.LabelAlreadyExistsException;
 import org.example.apiapplication.repositories.LabelRepository;
-import org.example.apiapplication.repositories.ProfileRepository;
 import org.example.apiapplication.services.interfaces.LabelService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,18 +16,14 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Transactional
 public class LabelServiceImpl implements LabelService {
     private final LabelRepository labelRepository;
-    private final ProfileRepository profileRepository;
 
-    public LabelServiceImpl(LabelRepository labelRepository,
-                            ProfileRepository profileRepository) {
+    public LabelServiceImpl(LabelRepository labelRepository) {
         this.labelRepository = labelRepository;
-        this.profileRepository = profileRepository;
     }
 
     @Override
@@ -112,7 +107,7 @@ public class LabelServiceImpl implements LabelService {
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Label",
                         deleteLabelDto.replacementLabelId()));
 
-        Set<Profile> labelProfiles = deletedLabel.getProfiles();
+        List<Profile> labelProfiles = deletedLabel.getProfiles();
         for (Profile profile : labelProfiles) {
             profile.getLabels().remove(deletedLabel);
             profile.getLabels().add(replacementLabel);

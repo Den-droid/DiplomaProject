@@ -2,10 +2,7 @@ package org.example.apiapplication.services.interfaces;
 
 import org.example.apiapplication.dto.fields.ProfileFieldDto;
 import org.example.apiapplication.dto.labels.LabelDto;
-import org.example.apiapplication.dto.profile.AddProfileDto;
-import org.example.apiapplication.dto.profile.EditProfileDto;
-import org.example.apiapplication.dto.profile.GetProfilesDto;
-import org.example.apiapplication.dto.profile.ProfileFullDto;
+import org.example.apiapplication.dto.profile.*;
 import org.example.apiapplication.entities.user.User;
 
 import java.util.List;
@@ -23,6 +20,10 @@ public interface ProfileService {
     ProfileFullDto getProfileFullById(Integer id);
 
     boolean canProfileBeAddedToSystemAndScientist(Integer scientistId, Integer scientometricSystemId);
+
+    List<ProfileByLabelDto> getProfilesByLabelId(Integer labelId);
+
+    List<ProfileForUserDto> getProfilesForUser(Integer scientometricSystemId, Integer chairId);
 
     void add(AddProfileDto addProfileDto);
 

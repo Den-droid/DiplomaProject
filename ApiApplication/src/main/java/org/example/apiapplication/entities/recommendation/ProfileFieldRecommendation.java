@@ -2,7 +2,8 @@ package org.example.apiapplication.entities.recommendation;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.example.apiapplication.entities.fields.ProfileFieldValue;
+import org.example.apiapplication.entities.Profile;
+import org.example.apiapplication.entities.fields.Field;
 
 @Entity
 @Table(name = "profile_field_recommendations")
@@ -15,6 +16,10 @@ public class ProfileFieldRecommendation {
     private boolean isConditionFulfilled;
 
     @ManyToOne
-    @JoinColumn(name = "profile_field_value_id", referencedColumnName = "id")
-    private ProfileFieldValue profileFieldValue;
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
+
+    @ManyToOne
+    @JoinColumn(name = "field_id", referencedColumnName = "id")
+    private Field field;
 }

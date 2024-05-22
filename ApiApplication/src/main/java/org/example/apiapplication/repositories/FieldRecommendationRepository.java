@@ -6,10 +6,13 @@ import org.example.apiapplication.entities.recommendation.FieldRecommendation;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface FieldRecommendationRepository extends CrudRepository<FieldRecommendation, Integer> {
     Optional<FieldRecommendation> findByFieldAndScientometricSystem(Field field,
                                                                     ScientometricSystem scientometricSystem);
+
+    List<FieldRecommendation> findByScientometricSystem(ScientometricSystem scientometricSystem);
 }

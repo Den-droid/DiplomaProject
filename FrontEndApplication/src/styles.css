@@ -153,3 +153,9 @@ a.sidebar-link:hover {
   transform: rotate(45deg);
   transition: all 0.2s ease-out;
 }
+
+td {
+  padding: 5px;
+  border: solid 1px lightblue;
+  text-align: center;
+}

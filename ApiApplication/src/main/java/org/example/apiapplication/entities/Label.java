@@ -3,8 +3,8 @@ package org.example.apiapplication.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "labels")
@@ -17,7 +17,7 @@ public class Label {
     private String name;
 
     @ManyToMany(mappedBy = "labels")
-    private Set<Profile> profiles = new HashSet<>();
+    private List<Profile> profiles = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
