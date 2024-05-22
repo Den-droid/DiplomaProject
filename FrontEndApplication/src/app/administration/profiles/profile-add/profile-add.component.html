@@ -21,7 +21,7 @@
     <label class="col-sm-4 col-form-label" for="scientists">Select Scientist: </label>
     <div class="col-sm-8">
       <select id="scientists" name="scientist" [(ngModel)]="selectedScientist" class="form-control">
-        <option *ngFor="let scientist of scientists | scientist_search : scientistSearchQuery" [value]="scientist.id">
+        <option *ngFor="let scientist of displayedScientists" [value]="scientist.id">
           {{scientist.name}}</option>
       </select>
     </div>
@@ -35,10 +35,8 @@
 
   <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
     <div class="col d-flex justify-content-between">
-      <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
-        routerLink="/user/profiles">Back</button>
-      <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
-        (click)="canAddProfile()">
+      <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
+      <button type="button" class="btn btn-primary btn-block text-center" (click)="canAddProfile()">
         Add</button>
     </div>
   </div>
@@ -75,9 +73,11 @@
             (input)="changeProfileFieldValue(i, $event.target)" />
         </div>
         <div class="col-sm-2 text-center">
-          <button class="btn btn-primary btn-block" (click)="removeFieldFromProfile(i)"> Remove </button>
+          <button class="btn btn-primary btn-block" (click)="removeFieldFromProfile(i)" type="button"> Remove </button>
         </div>
-        <div *ngIf="profileFieldsError[i].length > 0" class="row d-flex justify-content-center" style="color:red;">
+        {{i}}
+        <div *ngIf="profileFieldsError[i] && profileFieldsError[i].length > 0" class="row d-flex justify-content-center"
+          style="color:red;">
           {{profileFieldsError[i]}}</div>
       </div>
       <div class="row d-flex justify-content-between" style="border: 2px solid lightblue; padding: 10px;">
@@ -85,12 +85,13 @@
           <div>
             <div class="mb-3 d-flex justify-content-between">
               <label class="col-sm-4 col-form-label" for="searchField">Search Field: </label>
-              <input class="col-sm-8" type="text" [(ngModel)]="fieldSearchQuery" name="searchField" id="searchField">
+              <input class="col-sm-8" type="text" [value]="_fieldSearchQuery" (input)="setFieldSearchQuery($event)"
+                name="searchField" id="searchField">
             </div>
             <div class="d-flex justify-content-center">
               <label class="col-sm-4 col-form-label" for="selectField">Select Field: </label>
               <select class="col-sm-8" id="chairs" name="selectField" [(ngModel)]="selectedField">
-                <option *ngFor="let field of allFields | field_search : fieldSearchQuery" [value]="field.id">
+                <option *ngFor="let field of possibleFields" [value]="field.id">
                   {{field.name}}</option>
               </select>
             </div>
@@ -124,20 +125,20 @@
           <div>
             <div class="mb-3 d-flex justify-content-center">
               <label class="col-sm-4 col-form-label" for="searchLabel">Search Label: </label>
-              <input class="col-sm-8" type="text" [(ngModel)]="labelSearchQuery" name="searchLabel" id="searchLabel">
+              <input class="col-sm-8" type="text" [value]="_labelSearchQuery" (input)="setLabelSearchQuery($event)"
+                name="searchLabel" id="searchLabel">
             </div>
             <div class="d-flex justify-content-center">
               <label class="col-sm-4 col-form-label" for="selectLabel">Select Label: </label>
               <select class="col-sm-8" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
-                <option *ngFor="let label of possibleLabels | label_search : labelSearchQuery" [value]="label.id">
+                <option *ngFor="let label of possibleLabels" [value]="label.id">
                   {{label.name}}</option>
               </select>
             </div>
           </div>
         </div>
         <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
-          <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-            (click)="addLabel()">Add Label</button>
+          <button type="button" class="btn btn-primary btn-block" (click)="addLabel()">Add Label</button>
           <span *ngIf="selectedLabelError.length > 0" style="color: red"> {{selectedLabelError}} </span>
         </div>
       </div>
@@ -145,10 +146,8 @@
 
     <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
       <div class="col d-flex justify-content-between">
-        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
-          routerLink="/user/profiles">Back</button>
-        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center">
-          Add Profile</button>
+        <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
+        <button type="submit" class="btn btn-primary btn-block text-center"> Add Profile</button>
       </div>
     </div>
   </ng-template>

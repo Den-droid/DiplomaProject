@@ -13,7 +13,6 @@ import { ProfileService } from 'src/app/shared/services/profile.service';
 export class CommonLabelsComponent implements OnInit {
   constructor(private readonly labelService: LabelService, private readonly profileService: ProfileService) { }
 
-  _labelSearchQuery = '';
   selectedLabel = 0;
 
   allLabels: Label[] = [];
@@ -22,10 +21,6 @@ export class CommonLabelsComponent implements OnInit {
   profiles: ProfileByLabel[] = [];
 
   error = '';
-
-  get labelSearchQuery(): string {
-    return this._labelSearchQuery;
-  }
 
   set labelSearchQuery(labelSearchQuery: string) {
     this.selectedLabel = 0;
@@ -51,13 +46,12 @@ export class CommonLabelsComponent implements OnInit {
 
   getProfiles() {
     let validate = this.validate();
-    console.log(validate);
     if (validate.length !== 0) {
       this.error = validate;
       return;
     }
 
-    this.profileService.getProfileByLabel(this.selectedLabel).subscribe({
+    this.profileService.getProfilesByLabel(this.selectedLabel).subscribe({
       next: (data: ProfileByLabel[]) => {
         this.profiles = data;
 

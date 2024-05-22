@@ -8,18 +8,19 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { FacultiesComponent } from './faculties/faculties.component';
 import { ChairsComponent } from './chairs/chairs.component';
 import { CommonLabelsComponent } from './common-labels/common-labels.component';
+import { ProfilesComponent } from './profiles/profiles.component';
 
 const homeRoutes: Routes = [
   { path: "", pathMatch: "full", redirectTo: "faculties" },
   { path: "faculties/chairs", component: ChairsComponent },
   { path: "faculties", component: FacultiesComponent },
   { path: "commonlabels", component: CommonLabelsComponent },
-  // { path: "scientists/data" }
+  { path: "profiles", component: ProfilesComponent }
 ]
 
 @NgModule({
   declarations: [
-    HomeComponent, FacultiesComponent, ChairsComponent, CommonLabelsComponent
+    HomeComponent, FacultiesComponent, ChairsComponent, CommonLabelsComponent, ProfilesComponent
   ],
   imports: [
     CommonModule, FormsModule, SharedModule, NgApexchartsModule, RouterModule.forChild(homeRoutes)

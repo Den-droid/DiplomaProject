@@ -1,0 +1,69 @@
+<div style="margin-top: 4%; overflow-x:hidden">
+  <div class="text-center" style="margin-bottom: 2%">
+    <h2>Profiles</h2>
+  </div>
+
+  <div class="row d-flex justify-content-between" style="width: 75%; margin-right:auto; margin-left: auto;">
+    <div class="mb-3 d-flex justify-content-center">
+      <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
+      <select class="col-sm-8" id="selectScientometricSystem" name="scientometricSystem"
+        [(ngModel)]="selectedScientometricSystem">
+        <option *ngFor="let scientometricSystem of scientometricSystems" [value]="scientometricSystem.id">
+          {{scientometricSystem.name}}</option>
+      </select>
+    </div>
+    <div class="mb-3 d-flex justify-content-center">
+      <label class="col-sm-4 col-form-label" for="selectFaculty">Select faculty: </label>
+      <select class="col-sm-8" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty">
+        <option *ngFor="let faculty of faculties" [value]="faculty.id">
+          {{faculty.name}}</option>
+      </select>
+    </div>
+    <div class="mb-3 d-flex justify-content-center">
+      <label class="col-sm-4 col-form-label" for="selectChair">Select chair: </label>
+      <select class="col-sm-8" id="selectChair" name="selectChair" [(ngModel)]="selectedChair"
+        [disabled]="selectedFaculty === 0">
+        <option *ngFor="let chair of displayedChairs" [value]="chair.id">
+          {{chair.name}}</option>
+      </select>
+    </div>
+    <div class="mb-3 row">
+      <div class="col d-flex justify-content-center">
+        <button type="button" class="btn btn-primary btn-block text-center" (click)="getProfiles()">
+          Get Profiles</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template [ngIf]="profiles.length !== 0">
+    <table class="mb-3" style="width: 75%; margin-right:auto; margin-left: auto;
+    border: 2px solid lightblue; padding: 5px; border-collapse: collapse">
+      <thead style="font-weight: bold">
+        <tr>
+          <td>Scientist</td>
+          <td>Citation</td>
+          <td>Hirsh</td>
+          <td>Recommendations</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let profile of profiles">
+          <td style="width: 40%">{{profile.name}}</td>
+          <td style="width: 10%">{{profile.indices.citationIndex >= 0 ? profile.indices.citationIndex : 'Not
+            Extracted'}}</td>
+          <td style="width: 10%">{{profile.indices.hirshIndex >= 0 ? profile.indices.hirshIndex : 'Not Extracted'}}</td>
+          <td style="width: 40%">
+            <ul style="text-align:left" *ngIf="profile.recommendations.length > 0">
+              <li style="list-style-type: disc;" *ngFor="let recommendation of profile.recommendations">
+                {{recommendation}}
+              </li>
+            </ul>
+            <label *ngIf="profile.recommendations.length == 0">
+              Congratulations! Your profile is fully filled!
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+</div>

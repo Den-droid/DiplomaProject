@@ -16,22 +16,23 @@ export class SignUpComponent implements OnInit {
   email = '';
   password = '';
   confirmPassword = '';
+
   scientists: ScientistPreview[] = [];
+  displayedScientists: ScientistPreview[] = [];
+
   selectedScientist = 0;
-
-  _searchQuery = '';
-
-  public get searchQuery(): string {
-    return this._searchQuery;
-  }
-
-  public set searchQuery(v: string) {
-    this._searchQuery = v;
-    this.selectedScientist = 0;
-  }
 
   error = '';
   uuid = '';
+
+  public set searchQuery(searchQuery: string) {
+    this.selectedScientist = 0;
+    this.displayedScientists = this.scientists.filter(x => x.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    if (this.displayedScientists.length > 0) {
+      this.selectedScientist = this.displayedScientists[0].id;
+    }
+  }
 
   constructor(private readonly router: Router, private readonly authService: AuthService,
     private readonly scientistService: ScientistService
@@ -43,7 +44,11 @@ export class SignUpComponent implements OnInit {
     this.scientistService.getAllScientistPreview().subscribe({
       next: (result: ScientistPreview[]) => {
         this.scientists = result;
-        this.selectedScientist = this.scientists[0].id;
+        this.displayedScientists = this.scientists;
+
+        if (this.displayedScientists.length > 0) {
+          this.selectedScientist = this.displayedScientists[0].id;
+        }
       }
     });
   }

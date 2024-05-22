@@ -24,13 +24,14 @@ export class ProfileAddComponent implements OnInit {
     private readonly scientistService: ScientistService
   ) {
   }
+
   selectedScientist = 0;
 
   scientometricSystems: ScientometricSystem[] = [];
   selectedScientometricSystem = 0;
 
-  scientistSearchQuery = '';
   scientists: ScientistPreview[] = [];
+  displayedScientists: ScientistPreview[] = [];
 
   errorCanAddProfile = '';
 
@@ -42,18 +43,46 @@ export class ProfileAddComponent implements OnInit {
   profileLabels: Label[] = [];
 
   allFields: Field[] = [];
+  possibleFields: Field[] = [];
 
   profileFields: ProfileField[] = [];
 
-  labelSearchQuery = '';
+  _labelSearchQuery = '';
   selectedLabel = 0;
 
-  fieldSearchQuery = '';
+  _fieldSearchQuery = '';
   selectedField = 0;
 
   selectedFieldError = '';
   selectedLabelError = '';
   profileFieldsError: string[] = [];
+
+  set scientistSearchQuery(value: string) {
+    this.selectedScientist = 0;
+    this.displayedScientists = this.scientists.filter(x => x.name.toLowerCase().includes(value.toLowerCase()));
+
+    if (this.displayedScientists.length > 0) {
+      this.selectedScientist = this.displayedScientists[0].id;
+    }
+  }
+
+  setFieldSearchQuery(value: Event) {
+    let valueText = (value.target as HTMLInputElement).value;
+
+    this._fieldSearchQuery = valueText;
+    this.selectedField = 0;
+
+    this.setPossibleFields();
+  }
+
+  setLabelSearchQuery(value: Event) {
+    let valueText = (value.target as HTMLInputElement).value;
+
+    this._labelSearchQuery = valueText;
+    this.selectedLabel = 0;
+
+    this.setPossibleLabels();
+  }
 
   ngOnInit(): void {
     this.labelService.getAllLabels().subscribe({
@@ -61,21 +90,31 @@ export class ProfileAddComponent implements OnInit {
         this.allLabels = allLabels.labels;
         this.possibleLabels = this.allLabels;
 
-        for (let profileLabel of this.profileLabels) {
-          this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+        if (this.possibleLabels.length > 0) {
+          this.selectedLabel = this.possibleLabels[0].id;
         }
       }
     })
 
     this.fieldService.getAllFields().subscribe({
       next: (allFields: GetFieldsDto) => {
-        this.allFields = allFields.fields;
+        this.allFields = allFields.fields.filter(x => x.fieldType.name != FieldTypeName.LABEL);
+        this.possibleFields = this.allFields;
+
+        if (this.possibleFields.length > 0) {
+          this.selectedField = this.possibleFields[0].id;
+        }
       }
     })
 
     this.scientistService.getAllScientistPreviewByUser().subscribe({
       next: (data: ScientistPreview[]) => {
         this.scientists = data;
+        this.displayedScientists = this.scientists;
+
+        if (this.displayedScientists.length > 0) {
+          this.selectedScientist = this.displayedScientists[0].id;
+        }
       }
     })
 
@@ -83,6 +122,10 @@ export class ProfileAddComponent implements OnInit {
       next: (data: ScientometricSystem[]) => {
         this.scientometricSystems = data;
         this.scientometricSystems.forEach(x => x.name = mapStringToScientometricSystemLabel(x.name));
+
+        if (this.scientometricSystems.length > 0) {
+          this.selectedScientometricSystem = this.scientometricSystems[0].id;
+        }
       }
     })
   }
@@ -115,6 +158,30 @@ export class ProfileAddComponent implements OnInit {
     }
   }
 
+  setPossibleLabels() {
+    this.possibleLabels = this.allLabels;
+
+    for (let profileLabel of this.profileLabels) {
+      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+    }
+    this.possibleLabels = this.possibleLabels.filter(x => x.name.toLowerCase().includes(this._labelSearchQuery.toLowerCase()));
+
+    if (this.possibleLabels.length > 0)
+      this.selectedLabel = this.possibleLabels[0].id;
+  }
+
+  setPossibleFields() {
+    this.possibleFields = this.allFields;
+
+    for (let profileField of this.profileFields) {
+      this.possibleFields = this.possibleFields.filter(x => x.id != profileField.field.id);
+    }
+    this.possibleFields = this.possibleFields.filter(x => x.name.toLowerCase().includes(this._fieldSearchQuery.toLowerCase()));
+
+    if (this.possibleFields.length > 0)
+      this.selectedField = this.possibleFields[0].id;
+  }
+
   addFieldToProfile() {
     let selectedFieldError = this.validateSelectedField();
     if (selectedFieldError.length !== 0) {
@@ -124,7 +191,7 @@ export class ProfileAddComponent implements OnInit {
       this.selectedFieldError = '';
     }
 
-    let field = this.allFields.filter(x => x.id == this.selectedField)[0];
+    let field = this.possibleFields.filter(x => x.id == this.selectedField)[0];
 
     if (field.fieldType.name === FieldTypeName.BOOLEAN) {
       this.profileFields.push(new ProfileField(-1, 'false', field));
@@ -132,17 +199,15 @@ export class ProfileAddComponent implements OnInit {
       this.profileFields.push(new ProfileField(-1, '', field));
     }
 
-    this.allFields = this.allFields.filter(x => x.id != field.id);
+    this.setPossibleFields();
 
-    this.selectedField = 0;
     this.profileFieldsError.push('');
   }
 
   removeFieldFromProfile(index: number) {
-    let profileField = this.profileFields.filter((x, ind) => ind == index)[0];
+    this.profileFields = this.profileFields.filter((x, ind) => ind != index);
 
-    this.allFields.push(profileField.field);
-    this.profileFields = this.profileFields.filter(x => x.id != profileField.id);
+    this.setPossibleFields();
 
     this.profileFieldsError = this.profileFieldsError.filter((x, ind) => ind != index);
   }
@@ -150,11 +215,7 @@ export class ProfileAddComponent implements OnInit {
   removeLabel(id: number) {
     this.profileLabels = this.profileLabels.filter(x => x.id != id);
 
-    this.possibleLabels = this.allLabels;
-
-    for (let profileLabel of this.profileLabels) {
-      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
-    }
+    this.setPossibleLabels();
   }
 
   addLabel() {
@@ -168,13 +229,7 @@ export class ProfileAddComponent implements OnInit {
 
     this.profileLabels.push(this.possibleLabels.filter(x => x.id == this.selectedLabel)[0]);
 
-    this.possibleLabels = this.allLabels;
-
-    for (let profileLabel of this.profileLabels) {
-      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
-    }
-
-    this.selectedLabel = 0;
+    this.setPossibleLabels();
   }
 
   addProfile() {
@@ -209,7 +264,7 @@ export class ProfileAddComponent implements OnInit {
     for (let i = 0; i < this.profileFields.length; i++) {
       if (this.profileFields[i].value === '') {
         this.profileFieldsError[i] = 'Enter field!';
-        break;
+        continue;
       }
 
       if (this.profileFields[i].field.fieldType.name === FieldTypeName.NUMBER) {
@@ -239,9 +294,6 @@ export class ProfileAddComponent implements OnInit {
   }
 
   validateCanAddProfile() {
-    if (this.selectedScientometricSystem == 0) {
-      return 'Select Scientometric System'
-    }
     if (this.selectedScientist == 0) {
       return 'Select Scientist';
     }

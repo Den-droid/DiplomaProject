@@ -1,8 +1,13 @@
 import { ProfileField } from "./field.model";
+import { Indices } from "./indices";
 import { Page } from "./page.model";
 
 export class ProfileByLabel {
   constructor(public name: string, public scientometricSystemName: string, public faculty: string, public chair: string) { }
+}
+
+export class ProfileForUser {
+  constructor(public name: string, public indices: Indices, public recommendations: string[]) { }
 }
 
 export class ProfilePreview {

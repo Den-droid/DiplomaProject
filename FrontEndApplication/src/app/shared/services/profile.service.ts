@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { baseUrl } from "../constants/url.constant";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { AddProfileDto, EditProfileDto, GetProfilesDto, ProfileByLabel } from "../models/profile.model";
+import { AddProfileDto, EditProfileDto, GetProfilesDto, ProfileByLabel, ProfileForUser } from "../models/profile.model";
 import { Observable } from "rxjs";
 import { ProfileField } from "../models/field.model";
 import { Label } from "../models/label.model";
@@ -83,7 +83,7 @@ export class ProfileService {
     return this.httpClient.get<Label[]>(this.url + "/" + id + "/labels");
   }
 
-  getProfileByLabel(labelId: number): Observable<ProfileByLabel[]> {
+  getProfilesByLabel(labelId: number): Observable<ProfileByLabel[]> {
     const options =
     {
       params: new HttpParams()
@@ -91,5 +91,16 @@ export class ProfileService {
     };
 
     return this.httpClient.get<ProfileByLabel[]>(this.url + "/commonLabels", options);
+  }
+
+  getProfilesForUser(scientometricSystemId: number, chairId: number): Observable<ProfileForUser[]> {
+    const options =
+    {
+      params: new HttpParams()
+        .set('scientometricSystemId', scientometricSystemId)
+        .set('chairId', chairId)
+    };
+
+    return this.httpClient.get<ProfileForUser[]>(this.url + "/forUser", options);
   }
 }
