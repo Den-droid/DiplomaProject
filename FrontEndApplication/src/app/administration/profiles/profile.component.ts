@@ -11,6 +11,7 @@ import { ScientometricSystem, mapStringToScientometricSystemLabel } from 'src/ap
 import { Permission } from 'src/app/shared/models/permission.model';
 import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
 import { UserService } from 'src/app/shared/services/user.service';
+import { ScientometricSystemLabel } from 'src/app/shared/constants/scientometric-system.constant';
 
 @Component({
   selector: 'app-administration-profile',
@@ -63,7 +64,13 @@ export class ProfileComponent implements OnInit {
           this.scientometricSystems.push(scientometricSystem);
         }
         if (this.scientometricSystems.length > 0) {
-          this.selectedScientometricSystem = this.scientometricSystems[0].id;
+          let scholar = this.scientometricSystems.filter(x =>
+            x.name == ScientometricSystemLabel.SCHOLAR);
+          if (scholar.length > 0)
+            this.selectedScientometricSystem = scholar[0].id;
+          else {
+            this.selectedScientometricSystem = this.scientometricSystems[0].id;
+          }
         }
 
         this.getPageElements(this.currentPage);
@@ -97,11 +104,6 @@ export class ProfileComponent implements OnInit {
         this.displayedChairs.push(chair);
       }
     }
-  }
-
-  validate(): string {
-
-    return '';
   }
 
   getPageElements(page: number) {
@@ -139,14 +141,6 @@ export class ProfileComponent implements OnInit {
       this.isSearchMode = false;
       this.pageChange(1);
     } else {
-      let validationResult = this.validate();
-      if (validationResult.length > 0) {
-        this.error = validationResult;
-        return;
-      } else {
-        this.error = '';
-      }
-
       this.isSearchMode = true;
       this.profileService.searchProfiles(page, this.selectedScientometricSystem,
         this.searchQuery, this.selectedFaculty, this.selectedChair).subscribe({

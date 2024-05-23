@@ -27,19 +27,38 @@ export class ProfileEditComponent implements OnInit {
   profileLabels: Label[] = [];
 
   allFields: Field[] = [];
+  possibleFields: Field[] = [];
 
   originalProfileFields: ProfileField[] = [];
   updatedProfileFields: ProfileField[] = [];
 
-  labelSearchQuery = '';
+  _labelSearchQuery = '';
   selectedLabel = 0;
 
-  fieldSearchQuery = '';
+  _fieldSearchQuery = '';
   selectedField = 0;
 
   selectedFieldError = '';
   selectedLabelError = '';
   profileFieldsError: string[] = [];
+
+  setFieldSearchQuery(value: Event) {
+    let valueText = (value.target as HTMLInputElement).value;
+
+    this._fieldSearchQuery = valueText;
+    this.selectedField = 0;
+
+    this.setPossibleFields();
+  }
+
+  setLabelSearchQuery(value: Event) {
+    let valueText = (value.target as HTMLInputElement).value;
+
+    this._labelSearchQuery = valueText;
+    this.selectedLabel = 0;
+
+    this.setPossibleLabels();
+  }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
@@ -56,6 +75,10 @@ export class ProfileEditComponent implements OnInit {
 
               for (let profileLabel of this.profileLabels) {
                 this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+              }
+
+              if (this.possibleLabels.length > 0) {
+                this.selectedLabel = this.possibleLabels[0].id;
               }
             }
           })
@@ -76,11 +99,16 @@ export class ProfileEditComponent implements OnInit {
 
           this.fieldService.getAllFields().subscribe({
             next: (allFields: GetFieldsDto) => {
-              this.allFields = allFields.fields;
+              this.allFields = allFields.fields.filter(x => x.fieldType.name != FieldTypeName.LABEL);
+              this.possibleFields = this.allFields;
 
-              this.allFields = this.allFields.filter(x => {
+              this.possibleFields = this.possibleFields.filter(x => {
                 return this.updatedProfileFields.filter(y => y.field.id == x.id).length == 0
               });
+
+              if (this.possibleFields.length > 0) {
+                this.selectedField = this.possibleFields[0].id;
+              }
             }
           })
         },
@@ -91,12 +119,37 @@ export class ProfileEditComponent implements OnInit {
     });
   }
 
+  setPossibleLabels() {
+    this.possibleLabels = this.allLabels;
+
+    for (let profileLabel of this.profileLabels) {
+      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+    }
+    this.possibleLabels = this.possibleLabels.filter(x => x.name.toLowerCase().includes(this._labelSearchQuery.toLowerCase()));
+
+    if (this.possibleLabels.length > 0)
+      this.selectedLabel = this.possibleLabels[0].id;
+  }
+
+  setPossibleFields() {
+    this.possibleFields = this.allFields;
+
+    for (let profileField of this.updatedProfileFields) {
+      this.possibleFields = this.possibleFields.filter(x => x.id != profileField.field.id);
+    }
+    this.possibleFields = this.possibleFields.filter(x => x.name.toLowerCase().includes(this._fieldSearchQuery.toLowerCase()));
+
+    if (this.possibleFields.length > 0)
+      this.selectedField = this.possibleFields[0].id;
+  }
+
   changeProfileFieldValue(index: number, newValue: EventTarget | null) {
     if (this.updatedProfileFields[index].field.fieldType.name === FieldTypeName.BOOLEAN) {
       this.updatedProfileFields[index].value = (newValue as HTMLInputElement).checked ? 'true' : 'false';
     } else {
       this.updatedProfileFields[index].value = (newValue as HTMLInputElement).value;
     }
+    console.log(this.updatedProfileFields[index].value);
   }
 
   addFieldToProfile() {
@@ -114,7 +167,6 @@ export class ProfileEditComponent implements OnInit {
     let previousField = this.originalProfileFields.filter(x => x.field.id == this.selectedField);
 
     if (previousField.length > 0) {
-      previousField[0].value = '';
       this.updatedProfileFields.push(previousField[0]);
     } else {
       if (field.fieldType.name === FieldTypeName.BOOLEAN) {
@@ -124,17 +176,15 @@ export class ProfileEditComponent implements OnInit {
       }
     }
 
-    this.allFields = this.allFields.filter(x => x.id != field.id);
+    this.setPossibleFields();
 
-    this.selectedField = 0;
     this.profileFieldsError.push('');
   }
 
   removeFieldFromProfile(index: number) {
-    let profileField = this.updatedProfileFields.filter((x, ind) => ind == index)[0];
+    this.updatedProfileFields = this.updatedProfileFields.filter((x, ind) => ind != index);
 
-    this.allFields.push(profileField.field);
-    this.updatedProfileFields = this.updatedProfileFields.filter(x => x.id != profileField.id);
+    this.setPossibleFields();
 
     this.profileFieldsError = this.profileFieldsError.filter((x, ind) => ind != index);
   }
@@ -142,11 +192,7 @@ export class ProfileEditComponent implements OnInit {
   removeLabel(id: number) {
     this.profileLabels = this.profileLabels.filter(x => x.id != id);
 
-    this.possibleLabels = this.allLabels;
-
-    for (let profileLabel of this.profileLabels) {
-      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
-    }
+    this.setPossibleLabels();
   }
 
   addLabel() {
@@ -160,20 +206,14 @@ export class ProfileEditComponent implements OnInit {
 
     this.profileLabels.push(this.possibleLabels.filter(x => x.id == this.selectedLabel)[0]);
 
-    this.possibleLabels = this.allLabels;
-
-    for (let profileLabel of this.profileLabels) {
-      this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
-    }
-
-    this.selectedLabel = 0;
+    this.setPossibleLabels();
   }
 
   editProfile() {
     this.validateFields();
     if (this.profileFieldsError.filter(x => x !== '').length > 0) {
       window.scroll({
-        top: 0,
+        top: 120,
         left: 0,
         behavior: 'smooth'
       });
@@ -203,11 +243,12 @@ export class ProfileEditComponent implements OnInit {
 
   validateFields() {
     for (let i = 0; i < this.updatedProfileFields.length; i++) {
-      if (this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.NUMBER) {
-        if (this.updatedProfileFields[i].value === '') {
-          break;
-        }
+      if (this.updatedProfileFields[i].value === '') {
+        this.profileFieldsError[i] = 'Enter field!';
+        continue;
+      }
 
+      if (this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.NUMBER) {
         try {
           if (isNaN(parseInt(this.updatedProfileFields[i].value))
             || isNaN(parseFloat(this.updatedProfileFields[i].value))) {
@@ -221,10 +262,6 @@ export class ProfileEditComponent implements OnInit {
       else if (this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.CITATION ||
         this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.H_INDEX
       ) {
-        if (this.updatedProfileFields[i].value === '') {
-          break;
-        }
-
         try {
           if (isNaN(parseInt(this.updatedProfileFields[i].value))) {
             throw new Error()

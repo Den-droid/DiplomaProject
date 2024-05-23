@@ -1,11 +1,11 @@
 <!-- Page Content -->
-<div style="margin-top: 4%; overflow-x:hidden">
-  <div class="text-center" style="margin-bottom: 2%">
+<div class="main-content">
+  <div class="text-center mb-4">
     <h2>Extraction Statuses</h2>
   </div>
 
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto;
-    border: 2px solid lightblue; padding: 5px" *ngFor="let scientometricSystem of scientometricSystems; index as i">
+  <div class="mb-3 row justify-content-center main-inner-content pd-5 border-content"
+    *ngFor="let scientometricSystem of scientometricSystems; index as i">
     <label class="col-sm-4"> {{scientometricSystemsLabels[i]}} </label>
     <div class="col-sm-8 text-center">
       <label *ngIf="isRunning[i]">This Extraction is already running</label>

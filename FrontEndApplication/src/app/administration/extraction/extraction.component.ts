@@ -25,16 +25,13 @@ export class ExtractionComponent implements OnInit {
       next: (data: ScientometricSystem[]) => {
         this.scientometricSystems = data;
 
-        for (let scientometricSystem of data) {
-          this.scientometricSystemsLabels.push(mapStringToScientometricSystemLabel(scientometricSystem.name));
-          this.isPossible.push(new Date(scientometricSystem.nextMinImportDate).getTime() < this.dateNow);
-        }
-      },
-      complete: () => {
-        for (let scientometricSystem of this.scientometricSystems) {
-          this.scientometricSystemService.getExtractionIsRunning(scientometricSystem.id).subscribe({
+        for (let i = 0; i < data.length; i++) {
+          this.scientometricSystemsLabels.push(mapStringToScientometricSystemLabel(data[i].name));
+          this.isPossible.push(new Date(data[i].nextMinImportDate).getTime() < this.dateNow);
+          this.isRunning.push(true);
+          this.scientometricSystemService.getExtractionIsRunning(data[i].id).subscribe({
             next: (result: boolean) => {
-              this.isRunning.push(result);
+              this.isRunning[i] = result;
             }
           });
         }

@@ -1,17 +1,17 @@
-<form (ngSubmit)="deleteLabel()" style="margin-top: 4%; overflow-x:hidden">
-  <div class="text-center" style="margin-bottom: 2%">
+<form (ngSubmit)="deleteLabel()" class="main-content">
+  <div class="text-center mb-4">
     <h2>Delete Label</h2>
     <h4>In order to delete label, you need to select replacement!</h4>
   </div>
 
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="searchLabel">Search Replacement Label: </label>
     <div class="col-sm-8">
       <input type="text" [(ngModel)]="searchQuery" name="searchQuery" id="searchLabel" class="form-control">
     </div>
   </div>
 
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="replacementLabels">Select Replacement Label: </label>
     <div class="col-sm-8">
       <select id="replacementLabels" name="replacementLabels" [(ngModel)]="selectedLabel" class="form-control">
@@ -27,12 +27,8 @@
     </div>
   </div>
 
-  <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
-    <div class="col d-flex justify-content-between">
-      <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
-        routerLink="/user/labels">Back</button>
-      <button type="submit" data-mdb-button-init data-mdb-ripple-init
-        class="btn btn-primary btn-block text-center">Delete</button>
-    </div>
+  <div class="mb-4 d-flex justify-content-between main-inner-content">
+    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/labels">Back</button>
+    <button type="submit" class="btn btn-primary btn-block text-center">Delete</button>
   </div>
 </form>

@@ -29,6 +29,8 @@ export class ProfilesComponent implements OnInit {
 
   profiles: ProfileForUser[] = [];
 
+  getProfilesClicked = false;
+
   public get selectedFaculty(): number {
     return this._selectedFaculty;
   }
@@ -89,6 +91,8 @@ export class ProfilesComponent implements OnInit {
     this.profileService.getProfilesForUser(this.selectedScientometricSystem, this.selectedChair).subscribe({
       next: (data: ProfileForUser[]) => {
         this.profiles = data;
+
+        this.getProfilesClicked = true;
       }
     });
   }

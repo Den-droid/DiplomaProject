@@ -1,11 +1,11 @@
 <!-- Page Content -->
-<form (ngSubmit)="signUpByInviteCode()" style="margin-top: 4%; overflow-x:hidden">
-  <div class="text-center" style="margin-bottom: 2%">
+<form (ngSubmit)="signUpByInviteCode()" class="main-content">
+  <div class="text-center mb-4">
     <h2>Sign Up</h2>
   </div>
 
   <!-- Fullname input -->
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="fullname">Fullname: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="fullname" name="fullname" type="text" id="fullname" class="form-control" />
@@ -13,7 +13,7 @@
   </div>
 
   <!-- Password input -->
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="password">Password: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="password" name="password" type="password" id="password" class="form-control" />
@@ -21,7 +21,7 @@
     <small class="text-muted" style="font-size: 13px">Password should be at least 8 characters long</small>
   </div>
 
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="confirmPassword">Confirm Password: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" id="confirmPassword"
@@ -37,8 +37,7 @@
 
   <div class="row mb-4">
     <div class="col d-flex justify-content-center">
-      <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center">Sign
-        Up</button>
+      <button type="submit" class="btn btn-primary btn-block text-center">Sign Up</button>
     </div>
   </div>
 </form>

@@ -1,11 +1,11 @@
 <!-- Page Content -->
-<div style="margin-top: 4%; overflow-x:hidden">
-  <div class="text-center" style="margin-bottom: 2%">
+<div class="main-content">
+  <div class="text-center mb-4">
     <h2>Chairs Compare</h2>
   </div>
 
-  <div class="mb-3 justify-content-between" style="width: 75%; margin-right:auto; margin-left: auto">
-    <div class="mb-3 row justify-content-between">
+  <div class="mb-3 row d-flex justify-content-between main-inner-content">
+    <div class="mb-3 row d-flex justify-content-between">
       <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
       <select class="col-sm-8" id="selectScientometricSystem" name="scientometricSystem"
         [(ngModel)]="selectedScientometricSystem">
@@ -13,7 +13,7 @@
           {{scientometricSystem.name}}</option>
       </select>
     </div>
-    <div class="mb-3 row justify-content-between">
+    <div class="mb-3 row d-flex justify-content-between">
       <label class="col-sm-4 col-form-label" for="selectFaculty">Select faculty: </label>
       <select class="col-sm-8" id="selectFaculty" [(ngModel)]="selectedFaculty" name="selectFaculty">
         <option *ngFor="let faculty of faculties" [value]="faculty.id">
@@ -21,10 +21,9 @@
       </select>
     </div>
 
-    <div class="mb-3 row">
-      <div class="col d-flex justify-content-center">
-        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block text-center"
-          (click)="getIndices()">Get Indices</button>
+    <div class="mb-3">
+      <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-primary btn-block text-center" (click)="getIndices()">Get Indices</button>
       </div>
     </div>
 

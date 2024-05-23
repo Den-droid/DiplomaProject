@@ -1,9 +1,9 @@
-<div style="margin-top: 4%; overflow-x:hidden">
-  <div class="text-center" style="margin-bottom: 2%">
+<div class="main-content">
+  <div class="text-center mb-4">
     <h2>Common Labels</h2>
   </div>
 
-  <div class="row d-flex justify-content-between" style="width: 75%; margin-right:auto; margin-left: auto;">
+  <div class="row d-flex justify-content-between main-inner-content">
     <div class="mb-3 d-flex justify-content-center">
       <label class="col-sm-4 col-form-label" for="searchLabel">Search Label: </label>
       <input class="col-sm-8" type="text" [(ngModel)]="labelSearchQuery" name="searchLabel" id="searchLabel">
@@ -20,17 +20,20 @@
         <p>{{error}}</p>
       </div>
     </div>
-    <div class="mb-3 row">
-      <div class="col d-flex justify-content-center">
+    <div class="mb-3">
+      <div class="d-flex justify-content-center">
         <button type="button" class="btn btn-primary btn-block text-center" (click)="getProfiles()">
           Get Profiles</button>
       </div>
     </div>
   </div>
 
+  <div *ngIf="profiles.length === 0 && getProfilesClicked" class="text-center mb-2">
+    <p>No records found</p>
+  </div>
+
   <ng-template [ngIf]="profiles.length !== 0">
-    <table class="mb-3" style="width: 75%; margin-right:auto; margin-left: auto;
-    border: 2px solid lightblue; padding: 5px; border-collapse: collapse">
+    <table class="mb-3 main-inner-content pd-5 border-content" style="border-collapse: collapse">
       <thead style="font-weight: bold">
         <tr>
           <td>Scientist</td>

@@ -1,5 +1,9 @@
-<form (ngSubmit)="addProfile()" style="margin-top: 4%; overflow-x:hidden">
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+<form (ngSubmit)="addProfile()" class="main-content">
+  <div class="text-center mb-4">
+    <h2>Add Profile</h2>
+  </div>
+
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="selectSystem">Select Scientometric System: </label>
     <div class="col-sm-8">
       <select id="selectSystem" name="system" [(ngModel)]="selectedScientometricSystem" class="form-control">
@@ -9,7 +13,7 @@
     </div>
   </div>
 
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="searchScientists">Search Scientist: </label>
     <div class="col-sm-8">
       <input type="text" [(ngModel)]="scientistSearchQuery" name="searchQuery" id="searchScientists"
@@ -17,7 +21,7 @@
     </div>
   </div>
 
-  <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row justify-content-center main-inner-content">
     <label class="col-sm-4 col-form-label" for="scientists">Select Scientist: </label>
     <div class="col-sm-8">
       <select id="scientists" name="scientist" [(ngModel)]="selectedScientist" class="form-control">
@@ -33,41 +37,31 @@
     </div>
   </div>
 
-  <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
-    <div class="col d-flex justify-content-between">
-      <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
-      <button type="button" class="btn btn-primary btn-block text-center" (click)="canAddProfile()">
-        Add</button>
-    </div>
+  <div class="mb-4 d-flex justify-content-between main-inner-content">
+    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
+    <button type="button" class="btn btn-primary btn-block text-center" (click)="canAddProfile()"> Add</button>
   </div>
 
-  <ng-template [ngIf]="!profileCanBeAdded && addProfileButtonClicked">
-    <div class="text-center" style="margin-bottom: 2%">
-      <h4 class="mb-3">Profile already exists for this scientist and scientometric system</h4>
-      <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back To
-        Profiles</button>
-    </div>
-  </ng-template>
-
   <ng-template [ngIf]="profileCanBeAdded">
-    <div class="text-center" style="margin-bottom: 2%">
+    <div class="text-center mb-4">
       <h4>Add Fields</h4>
     </div>
 
-    <div class="mb-3 row d-flex justify-content-center"
-      style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
+    <div class="mb-3 row d-flex justify-content-center main-inner-content border-content pd-10">
       <div class="mb-3 row d-flex justify-content-center" *ngFor="let profileField of profileFields; index as i">
-        <div class="col-sm-4 d-flex flex-column">
-          <label class="col-form-label" [attr.for]="'fieldValue' + i">{{profileField.field.name}}</label>
+        <div class="col-sm-4 d-flex flex-column justify-content-center">
+          <label [ngClass]="{'form-check-label' : profileField.field.fieldType.name == 'BOOLEAN',
+          'col-form-label' : profileField.field.fieldType.name != 'BOOLEAN'}"
+            [attr.for]="'fieldValue' + i">{{profileField.field.name}}</label>
           <small class="row" *ngIf="profileField.field.fieldType.name === 'CITATION' ||
         profileField.field.fieldType.name === 'H_INDEX'" class="text-muted"
             style="font-size: 13px">{{profileField.field.fieldType.name === 'CITATION' ?
             'This value is counted as citations on graphs' : 'This value is counted as H_Index on graphs'}}</small>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 d-flex flex-column justify-content-center">
           <input name="fieldValue" class="fieldValue" [attr.type]="profileField.field.fieldType.name == 'BOOLEAN' ? 'checkbox' :
-            profileField.field.fieldType.name == 'DATE' ? 'date' : 'text'" [attr.id]="'fieldValue' + i"
-            [ngClass]="{'form-control' : profileField.field.fieldType.name != 'BOOLEAN'}"
+            profileField.field.fieldType.name == 'DATE' ? 'date' : 'text'" [attr.id]="'fieldValue' + i" [ngClass]="{'form-control' : profileField.field.fieldType.name != 'BOOLEAN',
+                      'form-check-input' : profileField.field.fieldType.name == 'BOOLEAN'}"
             [value]="profileField.field.fieldType.name === 'BOOLEAN' ? '' : profileField.value"
             [checked]="profileField.field.fieldType.name === 'BOOLEAN' ? profileField.value == 'true' : ''"
             (input)="changeProfileFieldValue(i, $event.target)" />
@@ -75,7 +69,6 @@
         <div class="col-sm-2 text-center">
           <button class="btn btn-primary btn-block" (click)="removeFieldFromProfile(i)" type="button"> Remove </button>
         </div>
-        {{i}}
         <div *ngIf="profileFieldsError[i] && profileFieldsError[i].length > 0" class="row d-flex justify-content-center"
           style="color:red;">
           {{profileFieldsError[i]}}</div>
@@ -85,32 +78,34 @@
           <div>
             <div class="mb-3 d-flex justify-content-between">
               <label class="col-sm-4 col-form-label" for="searchField">Search Field: </label>
-              <input class="col-sm-8" type="text" [value]="_fieldSearchQuery" (input)="setFieldSearchQuery($event)"
-                name="searchField" id="searchField">
+              <div class="col-sm-8">
+                <input class="form-control" type="text" [value]="_fieldSearchQuery"
+                  (input)="setFieldSearchQuery($event)" name="searchField" id="searchField">
+              </div>
             </div>
             <div class="d-flex justify-content-center">
               <label class="col-sm-4 col-form-label" for="selectField">Select Field: </label>
-              <select class="col-sm-8" id="chairs" name="selectField" [(ngModel)]="selectedField">
-                <option *ngFor="let field of possibleFields" [value]="field.id">
-                  {{field.name}}</option>
-              </select>
+              <div class="col-sm-8">
+                <select class="form-control" id="chairs" name="selectField" [(ngModel)]="selectedField">
+                  <option *ngFor="let field of possibleFields" [value]="field.id">
+                    {{field.name}}</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
         <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
-          <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-            (click)="addFieldToProfile()">Add Field</button>
+          <button type="button" class="btn btn-primary btn-block" (click)="addFieldToProfile()">Add Field</button>
           <span *ngIf="selectedFieldError.length > 0" style="color: red"> {{selectedFieldError}} </span>
         </div>
       </div>
     </div>
 
     <div class="text-center" style="margin-top: 2%; margin-bottom: 2%">
-      <h4>Labels</h4>
+      <h4>Add Labels</h4>
     </div>
 
-    <div class="mb-3 row d-flex justify-content-center"
-      style="width: 65%; margin-right:auto; margin-left: auto; border: 2px solid lightblue; padding: 10px">
+    <div class="mb-3 row d-flex justify-content-center main-inner-content border-content pd-10">
       <div class="mb-3 row d-flex justify-content-center">
         <div class="col-sm-4 d-flex justify-content-center align-items-center"
           *ngFor="let label of profileLabels; index as i"
@@ -125,15 +120,19 @@
           <div>
             <div class="mb-3 d-flex justify-content-center">
               <label class="col-sm-4 col-form-label" for="searchLabel">Search Label: </label>
-              <input class="col-sm-8" type="text" [value]="_labelSearchQuery" (input)="setLabelSearchQuery($event)"
-                name="searchLabel" id="searchLabel">
+              <div class="col-sm-8">
+                <input class="form-control" type="text" [value]="_labelSearchQuery"
+                  (input)="setLabelSearchQuery($event)" name="searchLabel" id="searchLabel">
+              </div>
             </div>
             <div class="d-flex justify-content-center">
               <label class="col-sm-4 col-form-label" for="selectLabel">Select Label: </label>
-              <select class="col-sm-8" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
-                <option *ngFor="let label of possibleLabels" [value]="label.id">
-                  {{label.name}}</option>
-              </select>
+              <div class="col-sm-8">
+                <select class="form-control" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
+                  <option *ngFor="let label of possibleLabels" [value]="label.id">
+                    {{label.name}}</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -144,11 +143,9 @@
       </div>
     </div>
 
-    <div class="row mb-4" style="width: 65%; margin-right:auto; margin-left: auto">
-      <div class="col d-flex justify-content-between">
-        <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
-        <button type="submit" class="btn btn-primary btn-block text-center"> Add Profile</button>
-      </div>
+    <div class="mb-4 d-flex justify-content-between main-inner-content">
+      <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
+      <button type="submit" class="btn btn-primary btn-block text-center"> Add Profile</button>
     </div>
   </ng-template>
 </form>

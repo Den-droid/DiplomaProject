@@ -36,7 +36,6 @@ export class ProfileAddComponent implements OnInit {
   errorCanAddProfile = '';
 
   profileCanBeAdded = false;
-  addProfileButtonClicked = false;
 
   allLabels: Label[] = [];
   possibleLabels: Label[] = [];

@@ -1,28 +1,26 @@
-<div style="margin-top: 4%; overflow-x:hidden">
-
-  <div class="text-center" style="margin-bottom: 2%">
+<div class="main-content">
+  <div class="text-center mb-4">
     <h2>Labels</h2>
   </div>
 
-  <div class="mb-3 row d-flex justify-content-between" style="width: 65%; margin-right:auto; margin-left: auto">
+  <div class="mb-3 row d-flex justify-content-between main-inner-content">
     <div class="col-sm-8 d-flex justify-content-start">
       <input type="text" [(ngModel)]="searchQuery" name="searchLabel" id="searchLabel" style="width: 100%">
-      <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-        style="margin-left: 25px" (click)="search(1)">Search</button>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-left: 25px"
+        (click)="search(1)">Search</button>
     </div>
     <div class="col-sm-4 d-flex justify-content-end">
-      <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block"
-        style="margin-left: 25px" routerLink="/user/labels/add">Add Label</button>
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/labels/add">Add Label</button>
     </div>
   </div>
 
-  <div *ngIf="isEmpty" class="text-center" style="margin-bottom: 2%">
+  <div *ngIf="isEmpty" class="text-center mb-4">
     <p>No records found</p>
   </div>
 
   <ng-template [ngIf]="!isEmpty">
-    <div class="mb-3 row justify-content-center" style="width: 65%; margin-right:auto; margin-left: auto;
-    border: 2px solid lightblue; padding: 5px" *ngFor="let label of displayedLabels">
+    <div class="mb-3 row justify-content-center main-inner-content pd-5 border-content"
+      *ngFor="let label of displayedLabels">
       <label class="col-sm-4"> {{label.name}}</label>
       <div class="col-sm-8 d-flex justify-content-around align-items-center">
         <button type="submit" class="btn btn-primary btn-block" (click)="goToEditPage(label.id)">Edit</button>

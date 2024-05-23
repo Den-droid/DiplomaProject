@@ -20,6 +20,8 @@ export class CommonLabelsComponent implements OnInit {
 
   profiles: ProfileByLabel[] = [];
 
+  getProfilesClicked = false;
+
   error = '';
 
   set labelSearchQuery(labelSearchQuery: string) {
@@ -57,6 +59,8 @@ export class CommonLabelsComponent implements OnInit {
 
         this.profiles.forEach(profile => profile.scientometricSystemName =
           mapStringToScientometricSystemLabel(profile.scientometricSystemName));
+
+        this.getProfilesClicked = true;
 
         this.clear();
       }

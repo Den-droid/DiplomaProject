@@ -159,3 +159,25 @@ td {
   border: solid 1px lightblue;
   text-align: center;
 }
+
+.main-content {
+  margin-top: 2%;
+}
+
+.main-inner-content {
+  width: 80%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.pd-5 {
+  padding: 5px;
+}
+
+.pd-10 {
+  padding: 10px;
+}
+
+.border-content {
+  border: 2px solid lightblue;
+}
