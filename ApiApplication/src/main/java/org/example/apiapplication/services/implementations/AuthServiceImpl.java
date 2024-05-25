@@ -65,6 +65,10 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByUsername(signInDto.email()).get();
 
+        if (!user.isSignedUp()) {
+            throw new UserNotSignedUpException();
+        }
+
         if (!user.isApproved()) {
             throw new UserNotApprovedException();
         }
@@ -79,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
                 .map(x -> x.getName().name())
                 .toList();
 
-        String accessToken = jwtUtils.generateAccessToken(signInDto.email(), roles, user.getFullName());
+        String accessToken = jwtUtils.generateAccessToken(signInDto.email(), roles, user.getId());
         String refreshToken = jwtUtils.generateRefreshToken(signInDto.email());
 
         user.setRefreshToken(refreshToken);
@@ -106,7 +110,7 @@ public class AuthServiceImpl implements AuthService {
                 .map(x -> x.getName().name())
                 .toList();
 
-        String accessToken = jwtUtils.generateAccessToken(user.getUsername(), roles, user.getFullName());
+        String accessToken = jwtUtils.generateAccessToken(user.getUsername(), roles, user.getId());
         String refreshToken = jwtUtils.generateRefreshToken(user.getUsername());
 
         user.setRefreshToken(refreshToken);

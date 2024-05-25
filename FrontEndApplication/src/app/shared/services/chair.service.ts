@@ -16,8 +16,4 @@ export class ChairService {
   getAll(): Observable<Chair[]> {
     return this.httpClient.get<Chair[]>(this.url);
   }
-
-  getByUser(): Observable<Chair[]> {
-    return this.httpClient.get<Chair[]>(this.url + "/currentUser");
-  }
 }

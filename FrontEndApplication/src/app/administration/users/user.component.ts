@@ -29,7 +29,6 @@ export class UserComponent implements OnInit {
 
   searchQuery = '';
   isSearchMode = false;
-  error = '';
 
   _selectedRole = 0;
   _selectedFaculty = 0;
@@ -97,12 +96,12 @@ export class UserComponent implements OnInit {
         }
       }
     });
-    this.facultyService.getByUser().subscribe({
+    this.userService.getCurrentUserFaculties().subscribe({
       next: (data: Faculty[]) => {
         this.faculties = data;
       }
     });
-    this.chairService.getByUser().subscribe({
+    this.userService.getCurrentUserChairs().subscribe({
       next: (data: Chair[]) => {
         this.chairs = data;
       }
@@ -113,7 +112,7 @@ export class UserComponent implements OnInit {
       }
     })
 
-    this.getPageElements(this.currentPage);
+    this.getAll(this.currentPage);
   }
 
   hasPermissionForAction(permissionName: string): boolean {
@@ -129,14 +128,7 @@ export class UserComponent implements OnInit {
     }
   }
 
-  validate(): string {
-    if (this.selectedRole == 0) {
-      return 'Select Role';
-    }
-    return '';
-  }
-
-  getPageElements(page: number) {
+  getAll(page: number) {
     this.userService.getAllUsers(page).subscribe({
       next: (data: GetUsersDto) => {
         if (data.users.length == 0) {
@@ -155,9 +147,10 @@ export class UserComponent implements OnInit {
   pageChange(page: number) {
     if (this.isSearchMode) {
       this.search(page);
+    } else {
+      this.getAll(page);
     }
 
-    this.getPageElements(page);
 
     window.scroll({
       top: 0,
@@ -171,15 +164,8 @@ export class UserComponent implements OnInit {
       this.isSearchMode = false;
       this.pageChange(1);
     } else {
-      let validationResult = this.validate();
-      if (validationResult.length > 0) {
-        this.error = validationResult;
-        return;
-      } else {
-        this.error = '';
-      }
-
       this.isSearchMode = true;
+
       this.userService.searchUsers(page, this.searchQuery, this.selectedRole,
         this.selectedFaculty, this.selectedChair).subscribe({
           next: (data: GetUsersDto) => {
@@ -198,15 +184,10 @@ export class UserComponent implements OnInit {
   }
 
   clear() {
-    this.clearError();
     this.selectedRole = 0;
     this.selectedFaculty = 0;
     this.selectedChair = 0;
     this.searchQuery = '';
-  }
-
-  clearError() {
-    this.error = '';
   }
 
   goToEditPage(id: number) {

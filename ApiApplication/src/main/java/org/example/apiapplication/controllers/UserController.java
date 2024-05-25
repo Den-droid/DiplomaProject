@@ -1,7 +1,10 @@
 package org.example.apiapplication.controllers;
 
+import org.example.apiapplication.dto.chairs.ChairDto;
+import org.example.apiapplication.dto.faculties.FacultyDto;
 import org.example.apiapplication.dto.permissions.PermissionDto;
 import org.example.apiapplication.dto.roles.RoleDto;
+import org.example.apiapplication.dto.scientist.ScientistPreviewDto;
 import org.example.apiapplication.dto.user.*;
 import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.security.utils.SessionUtil;
@@ -43,12 +46,6 @@ public class UserController {
         return ResponseEntity.ok(getUsersDto);
     }
 
-    @GetMapping("/exists/{id}")
-    public ResponseEntity<?> existsUser(@PathVariable Integer id) {
-        boolean userExists = userService.existsById(id);
-        return ResponseEntity.ok(userExists);
-    }
-
     @PostMapping("/admins")
     public ResponseEntity<?> createAdmin(@RequestBody CreateAdminDto createAdminDto) {
         userService.createAdmin(createAdminDto);
@@ -67,7 +64,7 @@ public class UserController {
         return ResponseEntity.ok(roles);
     }
 
-    @GetMapping("/currentUser/permissions")
+    @GetMapping("/current/permissions")
     public ResponseEntity<?> getCurrentUserPermissions() {
         User user = sessionUtil.getUserFromSession();
         List<PermissionDto> permissions = userService.getUserPermissions(user);
@@ -119,16 +116,50 @@ public class UserController {
     }
 
     @PutMapping("/current")
-    public ResponseEntity<?> editCurrentUser(@RequestBody EditUserDto editUserDto) {
+    public ResponseEntity<?> editCurrentUser(@RequestBody EditCurrentUserDto editUserDto) {
         User user = sessionUtil.getUserFromSession();
         userService.editCurrentUser(user, editUserDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/current")
-    public ResponseEntity<?> getCurrentUser(){
-        User user = sessionUtil.getUserFromSession();
-        UserDto userDto = userService.getCurrent(user);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCurrentUser(@PathVariable Integer id) {
+        UserDto userDto = userService.getById(id);
         return ResponseEntity.ok(userDto);
+    }
+
+    @GetMapping("/current/canEditUser")
+    public ResponseEntity<?> canEditUser(@RequestParam Integer userId) {
+        User user = sessionUtil.getUserFromSession();
+        boolean canEdit = userService.canEditUser(user, userId);
+        return ResponseEntity.ok(canEdit);
+    }
+
+    @GetMapping("/current/canEditProfile")
+    public ResponseEntity<?> canEditProfile(@RequestParam Integer profileId) {
+        User user = sessionUtil.getUserFromSession();
+        boolean canEdit = userService.canEditProfile(user, profileId);
+        return ResponseEntity.ok(canEdit);
+    }
+
+    @GetMapping("/current/faculties")
+    public ResponseEntity<?> getUserFaculties() {
+        User user = sessionUtil.getUserFromSession();
+        List<FacultyDto> faculties = userService.getUserFaculties(user);
+        return ResponseEntity.ok(faculties);
+    }
+
+    @GetMapping("/current/chairs")
+    public ResponseEntity<?> getUserChairs() {
+        User user = sessionUtil.getUserFromSession();
+        List<ChairDto> chairs = userService.getUserChairs(user);
+        return ResponseEntity.ok(chairs);
+    }
+
+    @GetMapping("/current/scientists")
+    public ResponseEntity<?> getUserScientists() {
+        User user = sessionUtil.getUserFromSession();
+        List<ScientistPreviewDto> scientists = userService.getUserScientists(user);
+        return ResponseEntity.ok(scientists);
     }
 }

@@ -63,7 +63,7 @@ export class CommonLabelsComponent implements OnInit {
 
         this.getProfilesClicked = true;
 
-        this.clear();
+        this.clearError();
       }
     })
   }
@@ -73,10 +73,6 @@ export class CommonLabelsComponent implements OnInit {
       return 'Select label';
     }
     return '';
-  }
-
-  clear() {
-    this.clearError();
   }
 
   clearError() {

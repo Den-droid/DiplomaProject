@@ -6,7 +6,7 @@ import { RoleService } from 'src/app/shared/services/role.service';
 import { Role, UpdateDefaultPermissions, mapStringToRoleLabel } from 'src/app/shared/models/role.model';
 import { Permission, mapStringToPermissionLabel } from 'src/app/shared/models/permission.model';
 import { RoleName } from 'src/app/shared/constants/roles.constant';
-import { EditUserDto, User } from 'src/app/shared/models/user.model';
+import { EditCurrentUserDto, User } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'app-administration-user-settings',
@@ -33,7 +33,9 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUserRole = this.jwtService.getRoles()[0];
-    this.userService.getCurrentUser().subscribe({
+
+    let id = this.jwtService.getId();
+    this.userService.getUserById(id).subscribe({
       next: (user: User) => {
         this.fullName = user.fullName;
       }
@@ -97,7 +99,7 @@ export class SettingsComponent implements OnInit {
       this.errorFullname = '';
     }
 
-    let editUserDto = new EditUserDto(this.fullName);
+    let editUserDto = new EditCurrentUserDto(this.fullName);
 
     this.userService.editCurrentUser(editUserDto).subscribe();
   }

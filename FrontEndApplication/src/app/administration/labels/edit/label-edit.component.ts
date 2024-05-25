@@ -46,10 +46,8 @@ export class LabelEditComponent implements OnInit {
     this.labelService.editLabel(this.id, editLabelDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
-        this.clearName();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/user/labels");
       }
     })
@@ -60,14 +58,5 @@ export class LabelEditComponent implements OnInit {
       return "Enter name!";
     }
     return '';
-  }
-
-  clear() {
-    this.name = '';
-    this.error = '';
-  }
-
-  clearName() {
-    this.name = '';
   }
 }

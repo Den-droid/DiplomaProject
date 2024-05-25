@@ -1,7 +1,10 @@
 package org.example.apiapplication.services.interfaces;
 
+import org.example.apiapplication.dto.chairs.ChairDto;
+import org.example.apiapplication.dto.faculties.FacultyDto;
 import org.example.apiapplication.dto.permissions.PermissionDto;
 import org.example.apiapplication.dto.roles.RoleDto;
+import org.example.apiapplication.dto.scientist.ScientistPreviewDto;
 import org.example.apiapplication.dto.user.*;
 import org.example.apiapplication.entities.user.User;
 
@@ -20,11 +23,17 @@ public interface UserService {
 
     List<RoleDto> getUserRoles(Integer userId);
 
+    List<ChairDto> getUserChairs(User user);
+
+    List<FacultyDto> getUserFaculties(User user);
+
+    List<ScientistPreviewDto> getUserScientists(User user);
+
     EditAdminDto getEditDto(Integer userId);
 
-    UserDto getCurrent(User user);
+    boolean canEditProfile(User user, Integer editProfileId);
 
-    boolean existsById(Integer id);
+    boolean canEditUser(User user, Integer editUserId);
 
     void createAdmin(CreateAdminDto createAdminDto);
 
@@ -32,7 +41,7 @@ public interface UserService {
 
     void editUser(Integer id, EditUserDto editUserDto);
 
-    void editCurrentUser(User user, EditUserDto editUserDto);
+    void editCurrentUser(User user, EditCurrentUserDto editUserDto);
 
     void activateUser(Integer userId);
 

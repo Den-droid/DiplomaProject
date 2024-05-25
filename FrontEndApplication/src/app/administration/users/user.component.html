@@ -44,11 +44,6 @@
             </select>
           </div>
         </div>
-        <div *ngIf="error.length > 0" class="row mb-4" style="color: red">
-          <div class="col d-flex justify-content-center">
-            <p>{{error}}</p>
-          </div>
-        </div>
         <div class="d-flex justify-content-between">
           <button type="button" class="btn btn-primary btn-block" (click)="clear()">Clear</button>
           <button type="button" class="btn btn-primary btn-block" (click)="search(1)">Search</button>

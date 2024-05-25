@@ -40,7 +40,7 @@ public class WebSecurityConfig {
             "/api/labels",
             "/api/labels/{id}",
             "/api/labels/search",
-            "/api/scientists/preview",
+            "/api/scientists/notRegistered",
             "/api/scientometricSystems",
             "/api/profiles/forUser",
             "/api/profiles/commonLabels"
@@ -66,9 +66,9 @@ public class WebSecurityConfig {
     };
 
     private final String[] userUrls = {
-            "/api/chairs/currentUser",
-            "/api/faculties/currentUser",
-            "/api/scientists/currentUser",
+            "/api/users/current/chairs",
+            "/api/users/current/faculties",
+            "/api/users/current/scientists",
             "/api/profiles/canAddProfile",
             "/api/users/current"
     };

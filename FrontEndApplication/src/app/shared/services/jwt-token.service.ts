@@ -55,8 +55,8 @@ export class JWTTokenService {
     return (token !== '');
   }
 
-  getFullName() {
-    return this.decodedToken['fullName'];
+  getId(){
+    return +this.decodedToken['id'];
   }
 
   getRoles() {

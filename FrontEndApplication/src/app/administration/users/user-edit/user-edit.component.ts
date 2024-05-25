@@ -56,55 +56,62 @@ export class UserEditComponent implements OnInit {
 
       this.userService.getEditDto(this.userId).subscribe({
         next: (result: EditAdminDto) => {
-          this.facultyService.getAll().subscribe({
-            next: (data: Faculty[]) => {
-              this.faculties = data;
+          this.fullName = result.fullName;
 
-              this.chairService.getAll().subscribe({
-                next: (data: Chair[]) => {
-                  this.chairs = data;
+          this.userService.canEditUser(this.userId).subscribe({
+            next: (canEdit: boolean) => {
+              if (!canEdit)
+                this.router.navigateByUrl('/error/403');
 
-                  this.userService.getRoles(this.userId).subscribe({
-                    next: (data: Role[]) => {
-                      this.userRole = data[0].name;
+              this.facultyService.getAll().subscribe({
+                next: (data: Faculty[]) => {
+                  this.faculties = data;
 
-                      if (this.userRole != RoleName.USER) {
-                        if (result.facultyIds[0] === undefined) {
-                          let chair = this.chairs.filter(x => x.id === result.chairIds[0])[0];
-                          this.selectedFaculty = this.faculties.filter(x => x.id == chair.facultyId)[0].id;
-                          this.selectedChair = result.chairIds[0];
-                        } else if (result.chairIds[0] === undefined) {
-                          this.selectedFaculty = this.faculties.filter(x => x.id == result.facultyIds[0])[0].id;
-                          this.wholeFaculty = true;
-                        }
-                      }
+                  this.chairService.getAll().subscribe({
+                    next: (data: Chair[]) => {
+                      this.chairs = data;
 
-                      this.roleService.getPossiblePermissions(data[0].id).subscribe({
-                        next: (possiblePermissions: Permission[]) => {
-                          possiblePermissions.forEach(x => x.name = mapStringToPermissionLabel(x.name));
-                          this.userPermissions = possiblePermissions;
+                      this.userService.getRoles(this.userId).subscribe({
+                        next: (data: Role[]) => {
+                          this.userRole = data[0].name;
 
-                          this.userService.getUserPermissionsById(this.userId).subscribe({
-                            next: (userPermissions: Permission[]) => {
-                              this.selectedUserPermissions = [];
+                          if (this.userRole != RoleName.USER) {
+                            if (result.facultyIds[0] === undefined) {
+                              let chair = this.chairs.filter(x => x.id === result.chairIds[0])[0];
+                              this.selectedFaculty = this.faculties.filter(x => x.id == chair.facultyId)[0].id;
+                              this.selectedChair = result.chairIds[0];
+                            } else if (result.chairIds[0] === undefined) {
+                              this.selectedFaculty = this.faculties.filter(x => x.id == result.facultyIds[0])[0].id;
+                              this.wholeFaculty = true;
+                            }
+                          }
 
-                              for (let possiblePermission of this.userPermissions) {
-                                this.selectedUserPermissions.push(
-                                  userPermissions.filter(x => x.id === possiblePermission.id).length > 0
-                                );
-                              }
+                          this.roleService.getPossiblePermissions(data[0].id).subscribe({
+                            next: (possiblePermissions: Permission[]) => {
+                              possiblePermissions.forEach(x => x.name = mapStringToPermissionLabel(x.name));
+                              this.userPermissions = possiblePermissions;
+
+                              this.userService.getUserPermissionsById(this.userId).subscribe({
+                                next: (userPermissions: Permission[]) => {
+                                  this.selectedUserPermissions = [];
+
+                                  for (let possiblePermission of this.userPermissions) {
+                                    this.selectedUserPermissions.push(
+                                      userPermissions.filter(x => x.id === possiblePermission.id).length > 0
+                                    );
+                                  }
+                                }
+                              })
                             }
                           })
                         }
-                      })
+                      });
                     }
-                  });
+                  })
                 }
               })
             }
-          });
-
-          this.fullName = result.fullName;
+          })
         },
         error: (error: any) => {
           this.router.navigateByUrl("/error/404");
@@ -203,25 +210,26 @@ export class UserEditComponent implements OnInit {
       this.errorFullname = '';
     }
 
-    let facultyChairCorrect = this.validateFacultyChair();
-    if (facultyChairCorrect.length > 0) {
-      this.errorFaculty = facultyChairCorrect;
-      return;
-    } else {
-      this.errorFaculty = '';
+    if (this.userRole === RoleName.FACULTY_ADMIN || this.userRole === RoleName.CHAIR_ADMIN) {
+      let facultyChairCorrect = this.validateFacultyChair();
+      if (facultyChairCorrect.length > 0) {
+        this.errorFaculty = facultyChairCorrect;
+        return;
+      } else {
+        this.errorFaculty = '';
+      }
     }
 
-    let editAdminDto;
+    let permissionList = [];
+
+    for (let i = 0; i < this.selectedUserPermissions.length; i++) {
+      if (this.selectedUserPermissions[i]) {
+        permissionList.push(this.userPermissions[i].id);
+      }
+    }
 
     if (this.userRole === RoleName.FACULTY_ADMIN || this.userRole === RoleName.CHAIR_ADMIN) {
-      let permissionList = [];
-
-      for (let i = 0; i < this.selectedUserPermissions.length; i++) {
-        if (this.selectedUserPermissions[i]) {
-          permissionList.push(this.userPermissions[i].id);
-        }
-      }
-
+      let editAdminDto;
       if (this.wholeFaculty) {
         editAdminDto = new EditAdminDto(this.fullName, [this.selectedFaculty], [], permissionList);
       } else {
@@ -234,7 +242,7 @@ export class UserEditComponent implements OnInit {
         }
       });
     } else {
-      let editUserDto = new EditUserDto(this.fullName);
+      let editUserDto = new EditUserDto(this.fullName, permissionList);
 
       this.userService.editUser(this.userId, editUserDto).subscribe({
         complete: () => {

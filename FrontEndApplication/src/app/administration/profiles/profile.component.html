@@ -31,8 +31,7 @@
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="selectFaculty">Select faculty: </label>
           <div class="col-sm-8">
-            <select class="form-control" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty"
-              [disabled]="isFacultyDisabled">
+            <select class="form-control" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty">
               <option *ngFor="let faculty of faculties" [value]="faculty.id">
                 {{faculty.name}}</option>
             </select>
@@ -41,16 +40,10 @@
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="selectChair">Select chair: </label>
           <div class="col-sm-8">
-            <select class="form-control" id="chairs" name="selectChair" [(ngModel)]="selectedChair"
-              [disabled]="selectedFaculty === 0 || isChairDisabled">
+            <select class="form-control" id="chairs" name="selectChair" [(ngModel)]="selectedChair">
               <option *ngFor="let chair of displayedChairs" [value]="chair.id">
                 {{chair.name}}</option>
             </select>
-          </div>
-        </div>
-        <div *ngIf="error.length > 0" class="row mb-4" style="color: red">
-          <div class="col d-flex justify-content-center">
-            <p>{{error}}</p>
           </div>
         </div>
         <div class="d-flex justify-content-between">
@@ -74,7 +67,7 @@
   <ng-template [ngIf]="displayedProfiles.length !== 0">
     <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let profile of displayedProfiles">
-      <label class="col-sm-6 text-center"> {{profile.scientistName}}</label>
+      <label class="text-center" [ngClass]="{'col-sm-6': true}"> {{profile.scientistName}}</label>
       <div class="col-sm-6 d-flex align-items-center flex-column">
         <button *ngIf="currentUserRole === 'MAIN_ADMIN' && profile.areWorksDoubtful" class="mb-3"
           style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"

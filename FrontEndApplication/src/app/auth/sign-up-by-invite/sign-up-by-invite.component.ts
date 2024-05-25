@@ -46,10 +46,8 @@ export class SignUpByInviteComponent implements OnInit {
     this.authService.signUpByInviteCode(this.inviteCode, signUpByInviteDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
-        this.clearPasswordFullname();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/auth/signin");
       }
     });
@@ -68,18 +66,5 @@ export class SignUpByInviteComponent implements OnInit {
       return "Password and confirm password must match!";
     }
     return '';
-  }
-
-  clear() {
-    this.password = '';
-    this.confirmPassword = '';
-    this.fullname = '';
-    this.error = '';
-  }
-
-  clearPasswordFullname() {
-    this.password = '';
-    this.confirmPassword = '';
-    this.fullname = '';
   }
 }

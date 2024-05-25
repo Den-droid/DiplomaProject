@@ -36,10 +36,8 @@ export class ForgotPasswordComponent implements OnInit {
     this.authService.forgotPassword(forgotPasswordDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
-        this.clearEmail();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/auth/forgotpassword/success/" + this.uuid);
       }
     });
@@ -52,14 +50,5 @@ export class ForgotPasswordComponent implements OnInit {
       return "Enter correct email!";
     }
     return '';
-  }
-
-  clear() {
-    this.email = '';
-    this.error = '';
-  }
-
-  clearEmail() {
-    this.email = '';
   }
 }

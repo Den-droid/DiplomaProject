@@ -2,7 +2,7 @@ import { Page } from "./page.model";
 
 export class User {
   constructor(public id: number, public email: string, public fullName: string,
-    public isApproved: boolean, public isActive: boolean, public isSignedUp : boolean) { }
+    public isApproved: boolean, public isActive: boolean, public isSignedUp: boolean) { }
 }
 
 export class GetUsersDto {
@@ -22,5 +22,9 @@ export class EditAdminDto {
 }
 
 export class EditUserDto {
+  constructor(public fullName: string, public permissionIds: number[]) { }
+}
+
+export class EditCurrentUserDto {
   constructor(public fullName: string) { }
 }
