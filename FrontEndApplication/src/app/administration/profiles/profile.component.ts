@@ -22,7 +22,8 @@ export class ProfileComponent implements OnInit {
   constructor(private readonly router: Router, private readonly profileService: ProfileService,
     private readonly facultyService: FacultyService, private readonly chairService: ChairService,
     private readonly scientometricSystemService: ScientometricSystemService, private readonly jwtService: JWTTokenService,
-    private readonly userService: UserService) { }
+    private readonly userService: UserService) {
+  }
 
   currentPage = 1;
   totalPages = 1;

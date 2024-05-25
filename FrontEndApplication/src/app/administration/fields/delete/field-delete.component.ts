@@ -19,7 +19,7 @@ export class FieldDeleteComponent implements OnInit {
   possibleFields: Field[] = [];
 
   constructor(private readonly router: Router, private readonly activatedRoute: ActivatedRoute,
-    private readonly fieldService: FieldService,
+    private readonly fieldService: FieldService
   ) {
   }
 

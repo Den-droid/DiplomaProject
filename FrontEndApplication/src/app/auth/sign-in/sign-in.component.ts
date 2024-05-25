@@ -15,7 +15,8 @@ export class SignInComponent {
   password = '';
   error = '';
 
-  constructor(private readonly router: Router, private readonly authService: AuthService, private jwtService: JWTTokenService) {
+  constructor(private readonly router: Router, private readonly authService: AuthService,
+    private jwtService: JWTTokenService) {
   }
 
   signIn() {

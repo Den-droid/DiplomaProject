@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RoleName } from 'src/app/shared/constants/roles.constant';
-
 import { Chair } from 'src/app/shared/models/chair.model';
 import { Faculty } from 'src/app/shared/models/faculty.model';
 import { Permission, mapStringToPermissionLabel } from 'src/app/shared/models/permission.model';
@@ -22,7 +21,8 @@ import { ValidateEmails } from 'src/app/shared/validators/emails.validator';
 export class UserAddComponent implements OnInit {
   constructor(private readonly router: Router, private readonly userService: UserService,
     private readonly facultyService: FacultyService, private readonly chairService: ChairService,
-    private readonly roleService: RoleService, private readonly permissionService: PermissionService) { }
+    private readonly roleService: RoleService, private readonly permissionService: PermissionService) {
+  }
 
   email = '';
   errorEmail = '';

@@ -13,13 +13,13 @@ import { SignUpByInviteComponent } from './sign-up-by-invite/sign-up-by-invite.c
 import { SharedModule } from '../shared/shared.module';
 
 const authRoutes: Routes = [
-  { path: "signin", component: SignInComponent },
-  { path: "signup", component: SignUpComponent },
-  { path: "signup/success/:dummy", component: SignUpSuccessComponent },
-  { path: "forgotpassword", component: ForgotPasswordComponent },
-  { path: "forgotpassword/success/:dummy", component: ForgotPasswordSuccessComponent },
-  { path: "forgotpassword/:token", component: SetNewPasswordComponent },
-  { path: "signupbyinvitecode/:inviteCode", component: SignUpByInviteComponent },
+  { path: "signin", component: SignInComponent, title: 'Sign In' },
+  { path: "signup", component: SignUpComponent, title: 'Sign Up' },
+  { path: "signup/success/:dummy", component: SignUpSuccessComponent, title: 'Sign Up Success' },
+  { path: "forgotpassword", component: ForgotPasswordComponent, title: 'Forgot Password' },
+  { path: "forgotpassword/success/:dummy", component: ForgotPasswordSuccessComponent, title: 'Forgot Password Success' },
+  { path: "forgotpassword/:token", component: SetNewPasswordComponent, title: 'Set New Password' },
+  { path: "signupbyinvitecode/:inviteCode", component: SignUpByInviteComponent, title: 'Sign Up by Invite Code' },
   { path: "**", redirectTo: "/error/404" }
 ]
 

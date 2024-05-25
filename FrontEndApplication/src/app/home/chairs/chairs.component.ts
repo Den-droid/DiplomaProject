@@ -1,5 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import {
   ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNoData, ApexPlotOptions,
   ApexStroke, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
@@ -54,10 +53,8 @@ export class ChairsComponent {
   showChart = false;
 
   constructor(private readonly facultyService: FacultyService,
-    private readonly scientometricSystemService: ScientometricSystemService,
-    private readonly titleService : Title
+    private readonly scientometricSystemService: ScientometricSystemService
   ) {
-    this.titleService.setTitle("Faculty Chairs Indices");
     this.chartOptions = {
       noData: { text: "Loading..." },
       legend: {},

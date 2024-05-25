@@ -11,7 +11,8 @@ import { ProfileService } from 'src/app/shared/services/profile.service';
   styleUrls: ['./common-labels.component.css']
 })
 export class CommonLabelsComponent implements OnInit {
-  constructor(private readonly labelService: LabelService, private readonly profileService: ProfileService) { }
+  constructor(private readonly labelService: LabelService, private readonly profileService: ProfileService) {
+  }
 
   selectedLabel = 0;
 

@@ -16,7 +16,8 @@ import { ScientometricSystemService } from 'src/app/shared/services/scientometri
 export class ProfilesComponent implements OnInit {
   constructor(private readonly profileService: ProfileService, private readonly facultyService: FacultyService,
     private readonly scientometricSystemService: ScientometricSystemService, private readonly chairService: ChairService
-  ) { }
+  ) {
+  }
 
   selectedScientometricSystem = 0;
   _selectedFaculty = 0;

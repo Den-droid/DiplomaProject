@@ -15,8 +15,7 @@ export class SetNewPasswordComponent implements OnInit {
   token = ''
 
   constructor(private readonly router: Router, private readonly authService: AuthService,
-    private readonly activatedRoute: ActivatedRoute) {
-  }
+    private readonly activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {

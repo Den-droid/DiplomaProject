@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FieldTypeName } from 'src/app/shared/constants/field-type.constant';
-import { FieldType, Field, ProfileField, GetFieldsDto } from 'src/app/shared/models/field.model';
+import { Field, ProfileField, GetFieldsDto } from 'src/app/shared/models/field.model';
 import { Label, GetLabelsDto } from 'src/app/shared/models/label.model';
 import { AddProfileDto } from 'src/app/shared/models/profile.model';
 import { ScientistPreview } from 'src/app/shared/models/scientist.model';
@@ -18,9 +18,9 @@ import { ScientometricSystemService } from 'src/app/shared/services/scientometri
   styleUrls: ['./profile-add.component.css']
 })
 export class ProfileAddComponent implements OnInit {
-  constructor(private readonly router: Router, private readonly activatedRoute: ActivatedRoute,
-    private readonly fieldService: FieldService, private readonly profileService: ProfileService,
-    private readonly labelService: LabelService, private readonly scientometricSystemService: ScientometricSystemService,
+  constructor(private readonly router: Router, private readonly fieldService: FieldService,
+    private readonly profileService: ProfileService, private readonly labelService: LabelService,
+    private readonly scientometricSystemService: ScientometricSystemService,
     private readonly scientistService: ScientistService
   ) {
   }

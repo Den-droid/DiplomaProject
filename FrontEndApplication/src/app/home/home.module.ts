@@ -12,10 +12,10 @@ import { ProfilesComponent } from './profiles/profiles.component';
 
 const homeRoutes: Routes = [
   { path: "", pathMatch: "full", redirectTo: "faculties" },
-  { path: "faculties/chairs", component: ChairsComponent },
-  { path: "faculties", component: FacultiesComponent },
-  { path: "commonlabels", component: CommonLabelsComponent },
-  { path: "profiles", component: ProfilesComponent }
+  { path: "faculties/chairs", component: ChairsComponent, title: 'Faculty Chairs Indices' },
+  { path: "faculties", component: FacultiesComponent, title: 'Faculties Indices' },
+  { path: "commonlabels", component: CommonLabelsComponent, title: 'Common Labels' },
+  { path: "profiles", component: ProfilesComponent, title: 'Profiles' }
 ]
 
 @NgModule({

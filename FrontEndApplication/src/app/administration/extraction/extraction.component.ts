@@ -17,7 +17,6 @@ export class ExtractionComponent implements OnInit {
 
   constructor(private readonly extractionService: ExtractionService,
     private readonly scientometricSystemService: ScientometricSystemService) {
-
   }
 
   ngOnInit(): void {

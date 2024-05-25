@@ -34,7 +34,7 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.currentUserRole = this.jwtService.getRoles()[0];
     this.userService.getCurrentUser().subscribe({
-      next: (user : User) => {
+      next: (user: User) => {
         this.fullName = user.fullName;
       }
     })

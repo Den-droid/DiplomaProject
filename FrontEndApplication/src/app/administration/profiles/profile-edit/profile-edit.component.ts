@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FieldTypeName } from 'src/app/shared/constants/field-type.constant';
-import { Field, FieldType, GetFieldsDto, ProfileField } from 'src/app/shared/models/field.model';
+import { Field, GetFieldsDto, ProfileField } from 'src/app/shared/models/field.model';
 import { GetLabelsDto, Label } from 'src/app/shared/models/label.model';
 import { EditProfileDto } from 'src/app/shared/models/profile.model';
 import { FieldService } from 'src/app/shared/services/field.service';
