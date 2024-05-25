@@ -184,7 +184,6 @@ export class UserAddComponent implements OnInit {
     this.userService.addAdmin(addAdminDto).subscribe({
       error: (error: any) => {
         this.errorEmail = error?.error?.error;
-        this.clearEmail();
       },
       complete: () => {
         this.router.navigateByUrl('/user/users');
@@ -210,9 +209,5 @@ export class UserAddComponent implements OnInit {
       return 'Select Chair';
     }
     return '';
-  }
-
-  clearEmail() {
-    this.email = '';
   }
 }

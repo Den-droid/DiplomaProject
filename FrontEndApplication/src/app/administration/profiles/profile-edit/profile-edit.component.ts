@@ -7,6 +7,7 @@ import { EditProfileDto } from 'src/app/shared/models/profile.model';
 import { FieldService } from 'src/app/shared/services/field.service';
 import { LabelService } from 'src/app/shared/services/label.service';
 import { ProfileService } from 'src/app/shared/services/profile.service';
+import { UserService } from 'src/app/shared/services/user.service';
 
 @Component({
   selector: 'app-administration-profile-edit',
@@ -16,7 +17,7 @@ import { ProfileService } from 'src/app/shared/services/profile.service';
 export class ProfileEditComponent implements OnInit {
   constructor(private readonly router: Router, private readonly activatedRoute: ActivatedRoute,
     private readonly fieldService: FieldService, private readonly profileService: ProfileService,
-    private readonly labelService: LabelService
+    private readonly labelService: LabelService, private readonly userService: UserService
   ) {
   }
 
@@ -64,56 +65,61 @@ export class ProfileEditComponent implements OnInit {
     this.activatedRoute.params.subscribe((data: Params) => {
       this.profileId = data['id'];
 
-      this.profileService.getProfileLabels(this.profileId).subscribe({
-        next: (labels: Label[]) => {
-          this.profileLabels = labels;
-
-          this.labelService.getAllLabels().subscribe({
-            next: (allLabels: GetLabelsDto) => {
-              this.allLabels = allLabels.labels;
-              this.possibleLabels = this.allLabels;
-
-              for (let profileLabel of this.profileLabels) {
-                this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
-              }
-
-              if (this.possibleLabels.length > 0) {
-                this.selectedLabel = this.possibleLabels[0].id;
-              }
-            }
-          })
+      this.userService.canEditProfile(this.profileId).subscribe({
+        next: (canEditProfile: boolean) => {
+          if (!canEditProfile)
+            this.router.navigateByUrl('/error/403');
         },
         error: (error: any) => {
-          this.router.navigateByUrl("/error/404");
-        }
-      })
+          this.router.navigateByUrl('/error/404');
+        },
+        complete: () => {
+          this.profileService.getProfileLabels(this.profileId).subscribe({
+            next: (labels: Label[]) => {
+              this.profileLabels = labels;
 
-      this.profileService.getProfileFields(this.profileId).subscribe({
-        next: (profileFields: ProfileField[]) => {
-          this.originalProfileFields = profileFields;
-          this.updatedProfileFields = this.originalProfileFields;
+              this.labelService.getAllLabels().subscribe({
+                next: (allLabels: GetLabelsDto) => {
+                  this.allLabels = allLabels.labels;
+                  this.possibleLabels = this.allLabels;
 
-          for (let val of this.updatedProfileFields) {
-            this.profileFieldsError.push('');
-          }
+                  for (let profileLabel of this.profileLabels) {
+                    this.possibleLabels = this.possibleLabels.filter(x => x.id != profileLabel.id);
+                  }
 
-          this.fieldService.getAllFields().subscribe({
-            next: (allFields: GetFieldsDto) => {
-              this.allFields = allFields.fields.filter(x => x.fieldType.name != FieldTypeName.LABEL);
-              this.possibleFields = this.allFields;
-
-              this.possibleFields = this.possibleFields.filter(x => {
-                return this.updatedProfileFields.filter(y => y.field.id == x.id).length == 0
-              });
-
-              if (this.possibleFields.length > 0) {
-                this.selectedField = this.possibleFields[0].id;
-              }
+                  if (this.possibleLabels.length > 0) {
+                    this.selectedLabel = this.possibleLabels[0].id;
+                  }
+                }
+              })
             }
           })
-        },
-        error: (error: any) => {
-          this.router.navigateByUrl("/error/404");
+
+          this.profileService.getProfileFields(this.profileId).subscribe({
+            next: (profileFields: ProfileField[]) => {
+              this.originalProfileFields = profileFields;
+              this.updatedProfileFields = this.originalProfileFields;
+
+              for (let val of this.updatedProfileFields) {
+                this.profileFieldsError.push('');
+              }
+
+              this.fieldService.getAllFields().subscribe({
+                next: (allFields: GetFieldsDto) => {
+                  this.allFields = allFields.fields.filter(x => x.fieldType.name != FieldTypeName.LABEL);
+                  this.possibleFields = this.allFields;
+
+                  this.possibleFields = this.possibleFields.filter(x => {
+                    return this.updatedProfileFields.filter(y => y.field.id == x.id).length == 0
+                  });
+
+                  if (this.possibleFields.length > 0) {
+                    this.selectedField = this.possibleFields[0].id;
+                  }
+                }
+              })
+            }
+          })
         }
       })
     });

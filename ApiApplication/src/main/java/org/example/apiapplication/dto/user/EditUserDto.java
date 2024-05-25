@@ -1,4 +1,6 @@
 package org.example.apiapplication.dto.user;
 
-public record EditUserDto(String fullName) {
+import java.util.List;
+
+public record EditUserDto(String fullName, List<Integer> permissionIds) {
 }

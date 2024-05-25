@@ -46,10 +46,8 @@ export class FieldAddComponent implements OnInit {
     this.fieldService.addField(addFieldDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
-        this.clearName();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/user/fields");
       }
     })
@@ -63,14 +61,5 @@ export class FieldAddComponent implements OnInit {
       return "Select type!";
     }
     return '';
-  }
-
-  clear() {
-    this.name = '';
-    this.error = '';
-  }
-
-  clearName() {
-    this.name = '';
   }
 }

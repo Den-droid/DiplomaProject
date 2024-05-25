@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FacultyService } from 'src/app/shared/services/faculty.service';
-import { ChairService } from 'src/app/shared/services/chair.service';
 import { Chair } from 'src/app/shared/models/chair.model';
 import { Faculty } from 'src/app/shared/models/faculty.model';
 import { ProfileService } from 'src/app/shared/services/profile.service';
@@ -12,6 +10,8 @@ import { Permission } from 'src/app/shared/models/permission.model';
 import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
 import { UserService } from 'src/app/shared/services/user.service';
 import { ScientometricSystemLabel } from 'src/app/shared/constants/scientometric-system.constant';
+import { PermissionName } from 'src/app/shared/constants/permissions.constant';
+import { RoleName } from 'src/app/shared/constants/roles.constant';
 
 @Component({
   selector: 'app-administration-profile',
@@ -20,7 +20,6 @@ import { ScientometricSystemLabel } from 'src/app/shared/constants/scientometric
 })
 export class ProfileComponent implements OnInit {
   constructor(private readonly router: Router, private readonly profileService: ProfileService,
-    private readonly facultyService: FacultyService, private readonly chairService: ChairService,
     private readonly scientometricSystemService: ScientometricSystemService, private readonly jwtService: JWTTokenService,
     private readonly userService: UserService) {
   }
@@ -30,13 +29,10 @@ export class ProfileComponent implements OnInit {
 
   searchQuery = '';
   isSearchMode = false;
-  error = '';
 
   selectedScientometricSystem = 0;
   _selectedFaculty = 0;
   selectedChair = 0;
-  isChairDisabled = false;
-  isFacultyDisabled = false;
 
   scientometricSystems: ScientometricSystem[] = [];
   faculties: Faculty[] = [];
@@ -48,6 +44,10 @@ export class ProfileComponent implements OnInit {
   userPermissions: Permission[] = [];
   currentUserRole: string = this.jwtService.getRoles()[0];
 
+  canEditDeactivateProfiles = false;
+  canAddProfiles = false;
+  isMainAdmin = false;
+
   public get selectedFaculty(): number {
     return this._selectedFaculty;
   }
@@ -58,6 +58,8 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isMainAdmin = this.currentUserRole == RoleName.MAIN_ADMIN;
+
     this.scientometricSystemService.getAllScientometricSystems().subscribe({
       next: (data: ScientometricSystem[]) => {
         for (let scientometricSystem of data) {
@@ -74,22 +76,30 @@ export class ProfileComponent implements OnInit {
           }
         }
 
-        this.getPageElements(this.currentPage);
+        this.getAll(this.currentPage);
       }
     })
-    this.facultyService.getByUser().subscribe({
+    this.userService.getCurrentUserFaculties().subscribe({
       next: (data: Faculty[]) => {
         this.faculties = data;
+
+        this.userService.getCurrentUserChairs().subscribe({
+          next: (data: Chair[]) => {
+            this.chairs = data;
+          }
+        })
       }
     });
-    this.chairService.getByUser().subscribe({
-      next: (data: Chair[]) => {
-        this.chairs = data;
-      }
-    })
     this.userService.getCurrentUserPermissions().subscribe({
       next: (data: Permission[]) => {
         this.userPermissions = data;
+
+        this.canEditDeactivateProfiles = this.userPermissions.filter(x => x.name == PermissionName.DEACTIVATE_PROFILES ||
+          x.name == PermissionName.EDIT_PROFILES
+        ).length > 0;
+
+        this.canAddProfiles = this.userPermissions.filter(x => x.name == PermissionName.ADD_PROFILES
+        ).length > 0;
       }
     })
   }
@@ -107,7 +117,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  getPageElements(page: number) {
+  getAll(page: number) {
     this.profileService.getAllProfiles(page, this.selectedScientometricSystem).subscribe({
       next: (data: GetProfilesDto) => {
         if (data.profiles.length == 0) {
@@ -126,9 +136,9 @@ export class ProfileComponent implements OnInit {
   pageChange(page: number) {
     if (this.isSearchMode) {
       this.search(page);
+    } else {
+      this.getAll(page);
     }
-
-    this.getPageElements(page);
 
     window.scroll({
       top: 0,
@@ -143,6 +153,7 @@ export class ProfileComponent implements OnInit {
       this.pageChange(1);
     } else {
       this.isSearchMode = true;
+
       this.profileService.searchProfiles(page, this.selectedScientometricSystem,
         this.searchQuery, this.selectedFaculty, this.selectedChair).subscribe({
           next: (data: GetProfilesDto) => {
@@ -161,14 +172,9 @@ export class ProfileComponent implements OnInit {
   }
 
   clear() {
-    this.clearError();
     this.selectedFaculty = 0;
     this.selectedChair = 0;
     this.searchQuery = '';
-  }
-
-  clearError() {
-    this.error = '';
   }
 
   goToEditPage(id: number) {

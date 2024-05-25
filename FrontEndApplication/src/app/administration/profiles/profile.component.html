@@ -2,16 +2,14 @@
   <div class="text-center mb-4">
     <h2>Profiles</h2>
   </div>
-  <div class="text-center mb-4" *ngIf="currentUserRole !== 'MAIN_ADMIN'">
-    <p> If you can't see actions you want to do, then ask {{currentUserRole
+  <div class="text-center mb-4" *ngIf="!isMainAdmin">
+    <p> If you don't some permissions, then ask {{currentUserRole
       === 'USER' ?
       'main admin or administrator of your faculty or chair' : 'main admin'}}</p>
   </div>
 
   <div class="mb-3 row d-flex justify-content-between">
-    <div [ngClass]="{'col-sm-8' : (hasPermissionForAction('ADD_PROFILES')
-    || currentUserRole === 'MAIN_ADMIN'), 'col-sm-12': (!hasPermissionForAction('ADD_PROFILES')
-    && currentUserRole !== 'MAIN_ADMIN')}">
+    <div class="col-sm-8">
       <div>
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
@@ -31,8 +29,7 @@
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="selectFaculty">Select faculty: </label>
           <div class="col-sm-8">
-            <select class="form-control" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty"
-              [disabled]="isFacultyDisabled">
+            <select class="form-control" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty">
               <option *ngFor="let faculty of faculties" [value]="faculty.id">
                 {{faculty.name}}</option>
             </select>
@@ -41,16 +38,10 @@
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="selectChair">Select chair: </label>
           <div class="col-sm-8">
-            <select class="form-control" id="chairs" name="selectChair" [(ngModel)]="selectedChair"
-              [disabled]="selectedFaculty === 0 || isChairDisabled">
+            <select class="form-control" id="chairs" name="selectChair" [(ngModel)]="selectedChair">
               <option *ngFor="let chair of displayedChairs" [value]="chair.id">
                 {{chair.name}}</option>
             </select>
-          </div>
-        </div>
-        <div *ngIf="error.length > 0" class="row mb-4" style="color: red">
-          <div class="col d-flex justify-content-center">
-            <p>{{error}}</p>
           </div>
         </div>
         <div class="d-flex justify-content-between">
@@ -59,12 +50,13 @@
         </div>
       </div>
     </div>
-    <ng-template [ngIf]="hasPermissionForAction('ADD_PROFILES') || currentUserRole === 'MAIN_ADMIN'">
-      <div class="col-sm-4 d-flex justify-content-end align-items-center">
-        <button type="submit" class="btn btn-primary btn-block" routerLink="/user/profiles/add">Add
-          Profile</button>
-      </div>
-    </ng-template>
+    <div *ngIf="isMainAdmin || canAddProfiles" class="col-sm-4 d-flex justify-content-end align-items-center">
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/profiles/add">Add Profile</button>
+    </div>
+    <div *ngIf="!isMainAdmin && !canAddProfiles"
+      class="col-sm-4 d-flex align-items-center justify-content-center text-end">
+      <span> You have no permissions to add profiles!</span>
+    </div>
   </div>
 
   <div *ngIf="displayedProfiles.length === 0" class="text-center mb-4">
@@ -74,23 +66,27 @@
   <ng-template [ngIf]="displayedProfiles.length !== 0">
     <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let profile of displayedProfiles">
-      <label class="col-sm-6 text-center"> {{profile.scientistName}}</label>
-      <div class="col-sm-6 d-flex align-items-center flex-column">
-        <button *ngIf="currentUserRole === 'MAIN_ADMIN' && profile.areWorksDoubtful" class="mb-3"
+      <span class="text-center col-sm-6"> {{profile.scientistName}}</span>
+      <div *ngIf="canEditDeactivateProfiles || isMainAdmin" class="col-sm-6 d-flex align-items-center flex-column">
+        <button *ngIf="isMainAdmin && profile.areWorksDoubtful" class="mb-3"
           style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="unmarkAsDoubtful(profile.id)">Unmark Works Doubtful</button>
-        <button *ngIf="currentUserRole === 'MAIN_ADMIN' && !profile.areWorksDoubtful" class="mb-3"
+        <button *ngIf="isMainAdmin && !profile.areWorksDoubtful" class="mb-3"
           style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="markAsDoubtful(profile.id)">Mark Works Doubtful</button>
         <button *ngIf="profile.isActive && (hasPermissionForAction('EDIT_PROFILES')
-        || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
+        || isMainAdmin)" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
           class="btn btn-primary btn-block" (click)="goToEditPage(profile.id)">Edit</button>
         <button *ngIf="!profile.isActive && (hasPermissionForAction('DEACTIVATE_PROFILES')
-        || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
+        || isMainAdmin)" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
           class="btn btn-primary btn-block" (click)="activate(profile.id)">Activate</button>
         <button *ngIf="profile.isActive && (hasPermissionForAction('DEACTIVATE_PROFILES')
-        || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
+        || isMainAdmin)" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
           class="btn btn-primary btn-block" (click)="deactivate(profile.id)">Deactivate</button>
+      </div>
+      <div *ngIf="!canEditDeactivateProfiles && !isMainAdmin"
+        class="col-sm-6 d-flex justify-content-center align-items-center text-center">
+        <span> You have no permissions to edit or deactivate profile! </span>
       </div>
     </div>
   </ng-template>

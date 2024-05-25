@@ -9,8 +9,8 @@ import { ScientometricSystem, mapStringToScientometricSystemLabel } from 'src/ap
 import { FieldService } from 'src/app/shared/services/field.service';
 import { LabelService } from 'src/app/shared/services/label.service';
 import { ProfileService } from 'src/app/shared/services/profile.service';
-import { ScientistService } from 'src/app/shared/services/scientist.service';
 import { ScientometricSystemService } from 'src/app/shared/services/scientometric-system.service';
+import { UserService } from 'src/app/shared/services/user.service';
 
 @Component({
   selector: 'app-administration-profile-add',
@@ -20,8 +20,7 @@ import { ScientometricSystemService } from 'src/app/shared/services/scientometri
 export class ProfileAddComponent implements OnInit {
   constructor(private readonly router: Router, private readonly fieldService: FieldService,
     private readonly profileService: ProfileService, private readonly labelService: LabelService,
-    private readonly scientometricSystemService: ScientometricSystemService,
-    private readonly scientistService: ScientistService
+    private readonly scientometricSystemService: ScientometricSystemService, private readonly userService: UserService
   ) {
   }
 
@@ -98,7 +97,7 @@ export class ProfileAddComponent implements OnInit {
       }
     })
 
-    this.scientistService.getAllScientistPreviewByUser().subscribe({
+    this.userService.getCurrentUserScientists().subscribe({
       next: (data: ScientistPreview[]) => {
         this.scientists = data;
         this.displayedScientists = this.scientists;

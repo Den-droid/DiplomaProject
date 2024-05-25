@@ -41,7 +41,7 @@ export class SignUpComponent implements OnInit {
 
   ngOnInit(): void {
     this.uuid = uuidv4();
-    this.scientistService.getAllScientistPreview().subscribe({
+    this.scientistService.getNotRegisteredScientists().subscribe({
       next: (result: ScientistPreview[]) => {
         this.scientists = result;
         this.displayedScientists = this.scientists;
@@ -67,10 +67,8 @@ export class SignUpComponent implements OnInit {
     this.authService.signUp(signUpDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
-        this.clearEmailPasswordFullname();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/auth/signup/success/" + this.uuid);
       }
     });
@@ -94,18 +92,5 @@ export class SignUpComponent implements OnInit {
       return "Select scientist!";
     }
     return '';
-  }
-
-  clear() {
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
-    this.error = '';
-  }
-
-  clearEmailPasswordFullname() {
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
   }
 }

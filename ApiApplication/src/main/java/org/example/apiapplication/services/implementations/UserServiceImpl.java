@@ -1,12 +1,16 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.dto.chairs.ChairDto;
+import org.example.apiapplication.dto.faculties.FacultyDto;
 import org.example.apiapplication.dto.page.PageDto;
 import org.example.apiapplication.dto.permissions.PermissionDto;
 import org.example.apiapplication.dto.roles.RoleDto;
+import org.example.apiapplication.dto.scientist.ScientistPreviewDto;
 import org.example.apiapplication.dto.user.*;
 import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
+import org.example.apiapplication.entities.Profile;
 import org.example.apiapplication.entities.Scientist;
 import org.example.apiapplication.entities.permissions.Permission;
 import org.example.apiapplication.entities.user.Role;
@@ -31,20 +35,25 @@ public class UserServiceImpl implements UserService {
     private final ChairRepository chairRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final ProfileRepository profileRepository;
     private final EmailService emailService;
+    private final ScientistRepository scientistRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            FacultyRepository facultyRepository,
                            ChairRepository chairRepository,
                            RoleRepository roleRepository,
                            PermissionRepository permissionRepository,
-                           EmailService emailService) {
+                           ProfileRepository profileRepository,
+                           EmailService emailService, ScientistRepository scientistRepository) {
         this.userRepository = userRepository;
         this.facultyRepository = facultyRepository;
         this.chairRepository = chairRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
+        this.profileRepository = profileRepository;
         this.emailService = emailService;
+        this.scientistRepository = scientistRepository;
     }
 
     @Override
@@ -64,11 +73,6 @@ public class UserServiceImpl implements UserService {
         }
 
         return getUserPageByListAndPage(users, page);
-    }
-
-    @Override
-    public boolean existsById(Integer id) {
-        return userRepository.existsById(id);
     }
 
     @Override
@@ -105,6 +109,120 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<ChairDto> getUserChairs(User user) {
+        Role adminRole = roleRepository.findByName(UserRole.MAIN_ADMIN).orElseThrow();
+        Role facultyRole = roleRepository.findByName(UserRole.FACULTY_ADMIN).orElseThrow();
+        Role chairRole = roleRepository.findByName(UserRole.CHAIR_ADMIN).orElseThrow();
+
+        if (user.getRoles().contains(facultyRole) || user.getRoles().contains(chairRole)) {
+            Set<Chair> chairSet = new HashSet<>(user.getChairs());
+            for (Faculty faculty : user.getFaculties()) {
+                chairSet.addAll(faculty.getChairs());
+            }
+
+            return chairSet.stream()
+                    .map(x -> new ChairDto(x.getId(), x.getUkrainianName(), x.getFaculty().getId()))
+                    .toList();
+        } else if (user.getRoles().contains(adminRole)) {
+            List<Chair> chairs = new ArrayList<>();
+            for (Chair chair : chairRepository.findAll()) {
+                chairs.add(chair);
+            }
+
+            return chairs.stream()
+                    .map(x -> new ChairDto(x.getId(), x.getUkrainianName(),
+                            x.getFaculty().getId()))
+                    .toList();
+        } else {
+            Chair chair = user.getScientists().get(0).getChair();
+            return List.of(new ChairDto(chair.getId(), chair.getUkrainianName(),
+                    chair.getFaculty().getId()));
+        }
+    }
+
+    @Override
+    public List<FacultyDto> getUserFaculties(User user) {
+        Role adminRole = roleRepository.findByName(UserRole.MAIN_ADMIN).orElseThrow();
+        Role facultyRole = roleRepository.findByName(UserRole.FACULTY_ADMIN).orElseThrow();
+        Role chairRole = roleRepository.findByName(UserRole.CHAIR_ADMIN).orElseThrow();
+
+        if (user.getRoles().contains(facultyRole) || user.getRoles().contains(chairRole)) {
+            Set<Faculty> facultySet = new HashSet<>(user.getFaculties());
+            for (Chair chair : user.getChairs()) {
+                facultySet.add(chair.getFaculty());
+            }
+            facultySet.addAll(user.getFaculties());
+
+            return facultySet.stream()
+                    .map(x -> new FacultyDto(x.getId(), x.getUkrainianName()))
+                    .toList();
+        } else if (user.getRoles().contains(adminRole)) {
+            List<Faculty> faculties = new ArrayList<>();
+            for (Faculty faculty : facultyRepository.findAll()) {
+                faculties.add(faculty);
+            }
+            return faculties.stream()
+                    .map(x -> new FacultyDto(x.getId(), x.getUkrainianName()))
+                    .toList();
+        } else {
+            Scientist scientist = user.getScientists().get(0);
+
+            Faculty faculty = scientist.getFaculty();
+            if (faculty != null)
+                return List.of(new FacultyDto(faculty.getId(), faculty.getUkrainianName()));
+            else {
+                Faculty chairFaculty = scientist.getChair().getFaculty();
+                return List.of(new FacultyDto(chairFaculty.getId(), chairFaculty.getUkrainianName()));
+            }
+        }
+    }
+
+    @Override
+    public List<ScientistPreviewDto> getUserScientists(User user) {
+        String userRole = user.getRoles().get(0).getName().name();
+
+        if (userRole.equals(UserRole.MAIN_ADMIN.name())) {
+            List<Scientist> scientists = new ArrayList<>();
+            for (Scientist scientist : scientistRepository.findAll()) {
+                scientists.add(scientist);
+            }
+
+            return scientists.stream()
+                    .map((x) -> new ScientistPreviewDto(x.getId(), x.getFullName()))
+                    .toList();
+        } else if (userRole.equals(UserRole.USER.name())) {
+            Scientist scientist = user.getScientists().get(0);
+            return List.of(new ScientistPreviewDto(scientist.getId(), scientist.getFullName()));
+        } else if (userRole.equals(UserRole.CHAIR_ADMIN.name())) {
+            List<Scientist> scientists = new ArrayList<>();
+
+            Set<Chair> chairs = user.getChairs();
+            for (Chair chair : chairs) {
+                scientists.addAll(chair.getScientists());
+            }
+
+            return scientists.stream()
+                    .map(x -> new ScientistPreviewDto(x.getId(), x.getFullName()))
+                    .toList();
+        } else {
+            List<Scientist> scientists = new ArrayList<>();
+
+            Set<Faculty> faculties = user.getFaculties();
+            for (Faculty faculty : faculties) {
+                scientists.addAll(faculty.getScientists());
+
+                for (Chair chair : faculty.getChairs()) {
+                    scientists.addAll(chair.getScientists());
+                }
+            }
+
+            return scientists.stream()
+                    .map(x -> new ScientistPreviewDto(x.getId(), x.getFullName()))
+                    .toList();
+        }
+    }
+
+    @Override
     public EditAdminDto getEditDto(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", userId));
@@ -124,9 +242,48 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getCurrent(User user) {
-        return new UserDto(user.getId(), user.getEmail(), user.getFullName(),
-                user.isApproved(), user.isActive(), user.isSignedUp());
+    public boolean canEditProfile(User user, Integer editProfileId) {
+        Profile profile = profileRepository.findById(editProfileId)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Profile", editProfileId));
+
+        Role mainAdmin = roleRepository.findByName(UserRole.MAIN_ADMIN)
+                .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.MAIN_ADMIN.name()));
+        Role roleUser = roleRepository.findByName(UserRole.USER)
+                .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.USER.name()));
+
+        if (user.getRoles().contains(mainAdmin)) {
+            return true;
+        } else if (user.getRoles().contains(roleUser)) {
+            List<Profile> profiles = user.getScientists().get(0).getProfiles();
+            return profiles.contains(profile);
+        } else {
+            Scientist scientist = profile.getScientist();
+            return facultyChairAdminCanChangeScientist(user, scientist);
+        }
+    }
+
+    @Override
+    public boolean canEditUser(User user, Integer editUserId) {
+        User editUser = userRepository.findById(editUserId)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("User", editUserId));
+
+        Role mainAdmin = roleRepository.findByName(UserRole.MAIN_ADMIN)
+                .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.MAIN_ADMIN.name()));
+
+        if (user.getRoles().contains(mainAdmin)) {
+            return !editUser.getRoles().contains(mainAdmin);
+        } else {
+            Role roleUser = roleRepository.findByName(UserRole.USER)
+                    .orElseThrow(() -> new EntityNotFoundException("Role", UserRole.USER.name()));
+
+            if (editUser.getRoles().contains(roleUser)) {
+                Scientist scientist = editUser.getScientists().get(0);
+
+                return facultyChairAdminCanChangeScientist(user, scientist);
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -260,13 +417,18 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotExistsException("User", id));
 
+        Set<Permission> permissions = editUserDto.permissionIds().stream()
+                .map(x -> permissionRepository.findById(x).orElseThrow(() -> new EntityWithIdNotExistsException("Permission", x)))
+                .collect(Collectors.toSet());
+
         user.setFullName(editUserDto.fullName());
+        user.setPermissions(permissions);
 
         userRepository.save(user);
     }
 
     @Override
-    public void editCurrentUser(User user, EditUserDto editUserDto) {
+    public void editCurrentUser(User user, EditCurrentUserDto editUserDto) {
         user.setFullName(editUserDto.fullName());
 
         userRepository.save(user);
@@ -364,11 +526,24 @@ public class UserServiceImpl implements UserService {
             return users.stream()
                     .filter(user -> {
                         boolean isScientist = !user.getScientists().isEmpty();
-                        boolean isUserScientistFromFaculty = isScientist &&
-                                user.getScientists().get(0).getFaculty().equals(faculty);
-                        boolean isUserScientistFromFacultyChair = isScientist &&
-                                user.getScientists().get(0).getChair().getFaculty().equals(faculty);
-                        return isUserScientistFromFaculty || isUserScientistFromFacultyChair;
+                        if (!isScientist)
+                            return false;
+
+                        Scientist scientist = user.getScientists().get(0);
+
+                        Faculty userFaculty = scientist.getFaculty();
+                        boolean isUserScientistFromFaculty = userFaculty != null &&
+                                userFaculty.equals(faculty);
+                        if (isUserScientistFromFaculty)
+                            return true;
+
+                        Faculty userFacultyChair = scientist.getChair().getFaculty();
+                        boolean isUserScientistFromFacultyChair = userFacultyChair != null &&
+                                userFacultyChair.equals(faculty);
+                        if (isUserScientistFromFacultyChair)
+                            return true;
+
+                        return false;
                     })
                     .toList();
         }
@@ -404,15 +579,11 @@ public class UserServiceImpl implements UserService {
     private List<User> getUsersByUser(User user) {
         Role roleMainAdmin = roleRepository.findByName(UserRole.MAIN_ADMIN).orElseThrow();
         Role roleUser = roleRepository.findByName(UserRole.USER).orElseThrow();
-        Role roleFacultyAdmin = roleRepository.findByName(UserRole.FACULTY_ADMIN).orElseThrow();
-        Role roleChairAdmin = roleRepository.findByName(UserRole.CHAIR_ADMIN).orElseThrow();
 
         if (user.getRoles().contains(roleMainAdmin)) {
             List<User> users = new ArrayList<>();
             for (User userFromIterable : userRepository.findAll()) {
-                if (userFromIterable.getRoles().contains(roleUser) ||
-                        userFromIterable.getRoles().contains(roleChairAdmin) ||
-                        userFromIterable.getRoles().contains(roleFacultyAdmin)) {
+                if (!userFromIterable.getRoles().contains(roleMainAdmin)) {
                     users.add(userFromIterable);
                 }
             }
@@ -462,5 +633,36 @@ public class UserServiceImpl implements UserService {
                 .toList();
 
         return new GetUsersDto(userDtos, new PageDto(page, totalPages));
+    }
+
+    private boolean facultyChairAdminCanChangeScientist(User user, Scientist scientist) {
+        Faculty faculty = scientist.getFaculty();
+        Chair chair = scientist.getChair();
+
+        Set<Faculty> faculties = user.getFaculties();
+        Set<Chair> chairs = user.getChairs();
+
+        if (faculty != null) {
+            if (faculties != null && !faculties.isEmpty()) {
+                return faculties.contains(faculty);
+            } else {
+                return false;
+            }
+        } else if (chair != null) {
+            if (chairs != null && !chairs.isEmpty()) {
+                return chairs.contains(chair);
+            }
+
+            if (faculties != null && !faculties.isEmpty()) {
+                for (Faculty userFaculty : faculties) {
+                    if (userFaculty.equals(chair.getFaculty())) {
+                        return userFaculty.getChairs().contains(chair);
+                    }
+                }
+                return false;
+            }
+        }
+
+        return false;
     }
 }

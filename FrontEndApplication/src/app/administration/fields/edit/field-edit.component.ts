@@ -47,10 +47,8 @@ export class FieldEditComponent implements OnInit {
     this.fieldService.editField(this.id, editFieldDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
-        this.clearName();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/user/fields");
       }
     })
@@ -61,14 +59,5 @@ export class FieldEditComponent implements OnInit {
       return "Enter name!";
     }
     return '';
-  }
-
-  clear() {
-    this.name = '';
-    this.error = '';
-  }
-
-  clearName() {
-    this.name = '';
   }
 }

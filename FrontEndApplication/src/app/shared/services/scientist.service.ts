@@ -13,11 +13,7 @@ export class ScientistService {
   constructor(private readonly httpClient: HttpClient) {
   }
 
-  getAllScientistPreview(): Observable<ScientistPreview[]> {
-    return this.httpClient.get<ScientistPreview[]>(this.url + "/preview");
-  }
-
-  getAllScientistPreviewByUser(): Observable<ScientistPreview[]> {
-    return this.httpClient.get<ScientistPreview[]>(this.url + "/currentUser");
+  getNotRegisteredScientists(): Observable<ScientistPreview[]> {
+    return this.httpClient.get<ScientistPreview[]>(this.url + "/notRegistered");
   }
 }

@@ -35,10 +35,8 @@ export class SignInComponent {
       },
       error: (error: any) => {
         this.error = error?.error?.status == 401 ? "Invalid username or password. Try again!" : error?.error?.error;
-        this.clearEmailPassword();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/user/profiles");
       }
     });
@@ -54,16 +52,5 @@ export class SignInComponent {
       return "Enter correct email!";
     }
     return '';
-  }
-
-  clear() {
-    this.email = '';
-    this.password = '';
-    this.error = '';
-  }
-
-  clearEmailPassword() {
-    this.email = '';
-    this.password = '';
   }
 }

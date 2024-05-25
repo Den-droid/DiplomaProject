@@ -7,7 +7,7 @@
   </div>
 
   <div class="mb-3 row d-flex justify-content-between">
-    <div [ngClass]="{'col-sm-8': currentUserRole === 'MAIN_ADMIN', 'col-sm-12': currentUserRole !== 'MAIN_ADMIN'}">
+    <div class="col-sm-8">
       <div>
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="searchUser">Enter full name: </label>
@@ -44,22 +44,18 @@
             </select>
           </div>
         </div>
-        <div *ngIf="error.length > 0" class="row mb-4" style="color: red">
-          <div class="col d-flex justify-content-center">
-            <p>{{error}}</p>
-          </div>
-        </div>
         <div class="d-flex justify-content-between">
           <button type="button" class="btn btn-primary btn-block" (click)="clear()">Clear</button>
           <button type="button" class="btn btn-primary btn-block" (click)="search(1)">Search</button>
         </div>
       </div>
     </div>
-    <ng-template [ngIf]="currentUserRole === 'MAIN_ADMIN'">
-      <div class="col-sm-4 d-flex justify-content-end align-items-center">
-        <button type="submit" class="btn btn-primary btn-block" routerLink="/user/users/add">Add Admin</button>
-      </div>
-    </ng-template>
+    <div *ngIf="isMainAdmin" class="col-sm-4 d-flex justify-content-end align-items-center">
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/users/add">Add Admin</button>
+    </div>
+    <div *ngIf="!isMainAdmin" class="col-sm-4 d-flex justify-content-end align-items-center text-end">
+      <span>Only main administrator can add admins!</span>
+    </div>
   </div>
 
 
@@ -70,23 +66,29 @@
   <ng-template [ngIf]="displayedUsers.length !== 0">
     <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let user of displayedUsers">
-      <label class="col-sm-4 text-center"> {{user.email}}</label>
-      <label class="text-center" [ngClass]="{'col-sm-4' : user.isSignedUp, 'col-sm-8' : !user.isSignedUp}"> {{!user.isSignedUp ?
-        'This user needs to complete sign up by following link in email' : user.fullName}}</label>
-      <div class="col-sm-4 d-flex align-items-center flex-column">
+      <span class="col-sm-4 text-center"> {{user.email}}</span>
+      <span class="text-center" [ngClass]="{'col-sm-4' : user.isSignedUp, 'col-sm-8' : !user.isSignedUp}">
+        {{!user.isSignedUp ?
+        'This user needs to complete sign up by following link in email' : user.fullName}}</span>
+      <div *ngIf="(isMainAdmin || canEditDeactivateUsers) && user.isSignedUp"
+        class="col-sm-4 d-flex align-items-center flex-column">
         <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
           type="button" class="btn btn-primary btn-block" (click)="approve(user.id)">Approve</button>
         <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
           type="button" class="btn btn-primary btn-block" (click)="reject(user.id)">Reject</button>
-        <button *ngIf="user.isActive && (hasPermissionForAction('EDIT_USERS') || currentUserRole === 'MAIN_ADMIN')"
-          class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
+        <button *ngIf="user.isActive && (hasPermissionForAction('EDIT_USERS') || isMainAdmin)" class="mb-3"
+          style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="goToEditPage(user.id)">Edit</button>
         <button *ngIf="!user.isActive && user.isApproved && (hasPermissionForAction('DEACTIVATE_USERS')
-          || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
-          type="button" class="btn btn-primary btn-block" (click)="activate(user.id)">Activate</button>
+          || isMainAdmin)" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
+          class="btn btn-primary btn-block" (click)="activate(user.id)">Activate</button>
         <button *ngIf="user.isActive && user.isApproved && (hasPermissionForAction('DEACTIVATE_USERS')
-          || currentUserRole === 'MAIN_ADMIN')" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
-          type="button" class="btn btn-primary btn-block" (click)="deactivate(user.id)">Deactivate</button>
+          || isMainAdmin)" class="mb-3" style="margin-top: 10px; margin-bottom: 10px" type="button"
+          class="btn btn-primary btn-block" (click)="deactivate(user.id)">Deactivate</button>
+      </div>
+      <div *ngIf="(!isMainAdmin && !canEditDeactivateUsers) && user.isSignedUp"
+        class="col-sm-6 d-flex justify-content-center align-items-center text-center">
+        <span> You have no permissions to edit or deactivate user! </span>
       </div>
     </div>
   </ng-template>

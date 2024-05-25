@@ -39,6 +39,7 @@ export class PaginationComponent implements OnInit {
 
   updatePages() {
     this.pages = [];
+    this.pagesText = [];
     if (this.totalPages <= 9) {
       for (let i = 0; i < this.totalPages; i++) {
         this.pages.push(i + 1);

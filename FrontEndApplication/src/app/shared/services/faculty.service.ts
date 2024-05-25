@@ -18,10 +18,6 @@ export class FacultyService {
     return this.httpClient.get<Faculty[]>(this.url);
   }
 
-  getByUser(): Observable<Faculty[]> {
-    return this.httpClient.get<Faculty[]>(this.url + "/currentUser");
-  }
-
   getFacultiesIndices(scientometricSystemId: number): Observable<EntityIndices[]> {
     const options = scientometricSystemId ?
       {

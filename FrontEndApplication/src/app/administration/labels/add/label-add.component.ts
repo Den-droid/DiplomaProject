@@ -29,10 +29,8 @@ export class LabelAddComponent {
     this.labelService.addLabel(addLabelDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
-        this.clearName();
       },
       complete: () => {
-        this.clear();
         this.router.navigateByUrl("/user/labels");
       }
     })
@@ -43,14 +41,5 @@ export class LabelAddComponent {
       return "Enter name!";
     }
     return '';
-  }
-
-  clear() {
-    this.name = '';
-    this.error = '';
-  }
-
-  clearName() {
-    this.name = '';
   }
 }
