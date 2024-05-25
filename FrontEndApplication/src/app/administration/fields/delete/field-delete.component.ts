@@ -11,19 +11,12 @@ import { FieldService } from 'src/app/shared/services/field.service';
 export class FieldDeleteComponent implements OnInit {
   _searchQuery = '';
 
-  public get searchQuery(): string {
-    return this._searchQuery;
-  }
-
-  public set searchQuery(v: string) {
-    this._searchQuery = v;
-    this.selectedField = 0;
-  }
-
   selectedField = 0;
   error = '';
+
   currentField!: Field;
   fields: Field[] = [];
+  possibleFields: Field[] = [];
 
   constructor(private readonly router: Router, private readonly activatedRoute: ActivatedRoute,
     private readonly fieldService: FieldService,
@@ -42,6 +35,8 @@ export class FieldDeleteComponent implements OnInit {
               this.fields = data.fields.filter(field => field.name !== this.currentField.name &&
                 field.fieldType.id === this.currentField.fieldType.id
               );
+
+              this.setPossibleFields();
             }
           })
         },
@@ -50,6 +45,24 @@ export class FieldDeleteComponent implements OnInit {
         }
       });
     });
+  }
+
+  setFieldSearchQuery(value: Event) {
+    let valueText = (value.target as HTMLInputElement).value;
+
+    this._searchQuery = valueText;
+    this.selectedField = 0;
+
+    this.setPossibleFields();
+  }
+
+  setPossibleFields() {
+    this.possibleFields = this.fields;
+
+    this.possibleFields = this.possibleFields.filter(x => x.name.toLowerCase().includes(this._searchQuery.toLowerCase()));
+
+    if (this.possibleFields.length > 0)
+      this.selectedField = this.possibleFields[0].id;
   }
 
   validate(): string {

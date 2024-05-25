@@ -3,29 +3,35 @@
     <h2>Profiles</h2>
   </div>
 
-  <div class="row d-flex justify-content-between main-inner-content">
+  <div class="row d-flex justify-content-between">
     <div class="mb-3 d-flex justify-content-center">
       <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
-      <select class="col-sm-8" id="selectScientometricSystem" name="scientometricSystem"
-        [(ngModel)]="selectedScientometricSystem">
-        <option *ngFor="let scientometricSystem of scientometricSystems" [value]="scientometricSystem.id">
-          {{scientometricSystem.name}}</option>
-      </select>
+      <div class="col-sm-8">
+        <select class="form-control" id="selectScientometricSystem" name="scientometricSystem"
+          [(ngModel)]="selectedScientometricSystem">
+          <option *ngFor="let scientometricSystem of scientometricSystems" [value]="scientometricSystem.id">
+            {{scientometricSystem.name}}</option>
+        </select>
+      </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">
       <label class="col-sm-4 col-form-label" for="selectFaculty">Select faculty: </label>
-      <select class="col-sm-8" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty">
-        <option *ngFor="let faculty of faculties" [value]="faculty.id">
-          {{faculty.name}}</option>
-      </select>
+      <div class="col-sm-8">
+        <select class="form-control" id="selectFaculty" name="faculty" [(ngModel)]="selectedFaculty">
+          <option *ngFor="let faculty of faculties" [value]="faculty.id">
+            {{faculty.name}}</option>
+        </select>
+      </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">
       <label class="col-sm-4 col-form-label" for="selectChair">Select chair: </label>
-      <select class="col-sm-8" id="selectChair" name="selectChair" [(ngModel)]="selectedChair"
-        [disabled]="selectedFaculty === 0">
-        <option *ngFor="let chair of displayedChairs" [value]="chair.id">
-          {{chair.name}}</option>
-      </select>
+      <div class="col-sm-8">
+        <select class="form-control" id="selectChair" name="selectChair" [(ngModel)]="selectedChair"
+          [disabled]="selectedFaculty === 0">
+          <option *ngFor="let chair of displayedChairs" [value]="chair.id">
+            {{chair.name}}</option>
+        </select>
+      </div>
     </div>
     <div class="mb-3">
       <div class="d-flex justify-content-center">
@@ -35,12 +41,12 @@
     </div>
   </div>
 
-  <div *ngIf="profiles.length === 0 && getProfilesClicked" class="text-center mb-2">
+  <div *ngIf="profiles.length === 0 && getProfilesClicked" class="text-center mb-4">
     <p>No records found</p>
   </div>
 
   <ng-template [ngIf]="profiles.length !== 0">
-    <table class="mb-3 main-inner-content pd-5 border-content" style="border-collapse: collapse">
+    <table class="mb-3 pd-5 border-content" style="width: 100%; border-collapse: collapse">
       <thead style="font-weight: bold">
         <tr>
           <td>Scientist</td>

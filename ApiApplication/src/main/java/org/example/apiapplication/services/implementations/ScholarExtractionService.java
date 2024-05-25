@@ -11,6 +11,7 @@ import org.example.apiapplication.entities.fields.ProfileFieldValue;
 import org.example.apiapplication.enums.FieldTypeName;
 import org.example.apiapplication.enums.ScientometricSystemName;
 import org.example.apiapplication.exceptions.extraction.PreviousExtractionNotFinishedException;
+import org.example.apiapplication.exceptions.extraction.ProfileByProfileIdNotFoundException;
 import org.example.apiapplication.exceptions.extraction.TooFrequentExtractionException;
 import org.example.apiapplication.helpers.ScholarExtractionHelper;
 import org.example.apiapplication.helpers.ScholarQueryBuilder;
@@ -45,7 +46,6 @@ public class ScholarExtractionService implements ExtractionService {
     private final ProfileRepository profileRepository;
     private final ProfileFieldValueRepository profileFieldValueRepository;
     private final ScientometricSystemRepository scientometricSystemRepository;
-    private final FieldRuleTypeRepository fieldRuleTypeRepository;
     private final LabelRepository labelRepository;
     private final FieldExtractionRepository fieldExtractionRepository;
 
@@ -61,17 +61,16 @@ public class ScholarExtractionService implements ExtractionService {
                                     ProfileRepository profileRepository,
                                     ScientometricSystemRepository scientometricSystemRepository,
                                     ProfileFieldValueRepository profileFieldValueRepository,
-                                    FieldRuleTypeRepository fieldRuleTypeRepository,
                                     LabelRepository labelRepository,
                                     FieldExtractionRepository fieldExtractionRepository,
                                     ScholarExtractionHelper scholarExtractionHelper,
-                                    LabelService labelService, RecommendationService recommendationService) {
+                                    LabelService labelService,
+                                    RecommendationService recommendationService) {
         this.extractionRepository = extractionRepository;
         this.extractionProfileRepository = extractionProfileRepository;
         this.profileRepository = profileRepository;
         this.profileFieldValueRepository = profileFieldValueRepository;
         this.scientometricSystemRepository = scientometricSystemRepository;
-        this.fieldRuleTypeRepository = fieldRuleTypeRepository;
         this.labelRepository = labelRepository;
         this.fieldExtractionRepository = fieldExtractionRepository;
 
@@ -85,7 +84,7 @@ public class ScholarExtractionService implements ExtractionService {
                 .orElseThrow();
     }
 
-    @Scheduled(initialDelay = 1, fixedDelay = 3, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(initialDelay = 30, fixedDelay = 150, timeUnit = TimeUnit.SECONDS)
     @Override
     public void extract() throws IOException {
         Optional<Extraction> optionalExtraction = extractionRepository
@@ -94,12 +93,20 @@ public class ScholarExtractionService implements ExtractionService {
         if (optionalExtraction.isPresent()) {
             Extraction extraction = optionalExtraction.get();
             Optional<ExtractionProfile> optionalExtractionProfile = extractionProfileRepository
-                    .findFirstByExtractionAndIsFinished(extraction, false);
+                    .findFirstByExtractionAndIsFinishedAndErrorOccurred(extraction, false, false);
             if (optionalExtractionProfile.isPresent()) {
                 ExtractionProfile extractionProfile = optionalExtractionProfile.get();
                 Profile profile = extractionProfile.getProfile();
 
-                List<ProfileFieldValue> profileFieldValues = extractScholarProfileFieldValues(profile);
+                List<ProfileFieldValue> profileFieldValues;
+                try {
+                    profileFieldValues = extractScholarProfileFieldValues(profile);
+                } catch (ProfileByProfileIdNotFoundException e) {
+                    extractionProfile.setFinished(false);
+                    extractionProfile.setErrorOccurred(true);
+                    extractionProfileRepository.save(extractionProfile);
+                    return;
+                }
 
                 solveConflicts(profileFieldValues);
 
@@ -160,6 +167,7 @@ public class ScholarExtractionService implements ExtractionService {
                 ExtractionProfile extractionProfile = new ExtractionProfile();
                 extractionProfile.setExtraction(extraction);
                 extractionProfile.setFinished(false);
+                extractionProfile.setErrorOccurred(false);
                 extractionProfile.setProfile(profile);
 
                 extractionProfiles.add(extractionProfile);
@@ -180,7 +188,7 @@ public class ScholarExtractionService implements ExtractionService {
         postProcessor.postProcessBeforeDestruction(this, BEAN_NAME);
     }
 
-    private List<ProfileFieldValue> extractScholarProfileFieldValues(Profile profile) throws IOException {
+    private List<ProfileFieldValue> extractScholarProfileFieldValues(Profile profile) throws IOException, ProfileByProfileIdNotFoundException {
         String userId = profile.getProfileUserId();
 
         ScholarQueryBuilder scholarQueryBuilder = ScholarQueryBuilder.builder()
@@ -197,8 +205,12 @@ public class ScholarExtractionService implements ExtractionService {
         List<FieldExtraction> fieldExtractions = fieldExtractionRepository.
                 findByScientometricSystem(scholarScientometricSystem);
 
-        profileFieldValues = scholarExtractionHelper
-                .extractScholarProfile(scholarQueryBuilder.toString(), fieldExtractions);
+        try {
+            profileFieldValues = scholarExtractionHelper
+                    .extractScholarProfile(scholarQueryBuilder.toString(), fieldExtractions);
+        } catch (Exception e) {
+            throw new ProfileByProfileIdNotFoundException(userId);
+        }
         profileFieldValues.forEach((x) -> x.setProfile(profile));
 
         return profileFieldValues;

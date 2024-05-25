@@ -7,7 +7,7 @@
     <h4>Edit Fields</h4>
   </div>
 
-  <div class="mb-3 row d-flex justify-content-center main-inner-content border-content pd-10">
+  <div class="mb-3 row d-flex justify-content-center border-content pd-10">
     <div class="mb-3 row d-flex justify-content-center" *ngFor="let profileField of updatedProfileFields; index as i">
       <div class="col-sm-4 d-flex flex-column justify-content-center">
         <label [ngClass]="{'form-check-label' : profileField.field.fieldType.name == 'BOOLEAN',
@@ -65,7 +65,7 @@
     <h4>Edit Labels</h4>
   </div>
 
-  <div class="mb-3 row d-flex justify-content-center main-inner-content border-content pd-10">
+  <div class="mb-3 row d-flex justify-content-center border-content pd-10">
     <div class="mb-3 row d-flex justify-content-center">
       <div class="col-sm-4 d-flex justify-content-center align-items-center"
         *ngFor="let label of profileLabels; index as i" style="border: 2px solid lightblue; margin: 5px; padding: 10px">
@@ -103,7 +103,7 @@
     </div>
   </div>
 
-  <div class="mb-4 d-flex justify-content-between main-inner-content">
+  <div class="mb-4 d-flex justify-content-between">
     <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
     <button type="submit" class="btn btn-primary btn-block text-center"> Edit</button>
   </div>

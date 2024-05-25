@@ -4,20 +4,21 @@
     <h2>Faculties Compare</h2>
   </div>
 
-  <div class="mb-3 row d-flex justify-content-between main-inner-content">
+  <div class="mb-3 row d-flex justify-content-between">
     <div class="mb-3 row d-flex justify-content-between">
       <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
-      <select class="col-sm-8" id="selectScientometricSystem" name="scientometricSystem"
-        [(ngModel)]="selectedScientometricSystem">
-        <option *ngFor="let scientometricSystem of scientometricSystems" [value]="scientometricSystem.id">
-          {{scientometricSystem.name}}</option>
-      </select>
+      <div class="col-sm-8">
+        <select class="form-control" id="selectScientometricSystem" name="scientometricSystem"
+          [(ngModel)]="selectedScientometricSystem">
+          <option *ngFor="let scientometricSystem of scientometricSystems" [value]="scientometricSystem.id">
+            {{scientometricSystem.name}}</option>
+        </select>
+      </div>
     </div>
 
     <div class="mb-3">
       <div class="d-flex justify-content-center">
-        <button type="button" class="btn btn-primary btn-block text-center"
-          (click)="getIndices()">Get Indices</button>
+        <button type="button" class="btn btn-primary btn-block text-center" (click)="getIndices()">Get Indices</button>
       </div>
     </div>
 

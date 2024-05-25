@@ -4,9 +4,9 @@
     <h2>Extraction Statuses</h2>
   </div>
 
-  <div class="mb-3 row justify-content-center main-inner-content pd-5 border-content"
+  <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
     *ngFor="let scientometricSystem of scientometricSystems; index as i">
-    <label class="col-sm-4"> {{scientometricSystemsLabels[i]}} </label>
+    <label class="col-sm-4 text-center"> {{scientometricSystemsLabels[i]}} </label>
     <div class="col-sm-8 text-center">
       <label *ngIf="isRunning[i]">This Extraction is already running</label>
       <label *ngIf="!isRunning[i] && !isPossible[i]">This Extraction

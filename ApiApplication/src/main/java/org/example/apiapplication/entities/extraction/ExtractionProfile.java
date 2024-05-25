@@ -15,6 +15,9 @@ public class ExtractionProfile {
     @Column(name = "is_finished")
     private boolean isFinished;
 
+    @Column(name = "error_occurred")
+    private boolean errorOccurred;
+
     @ManyToOne
     @JoinColumn(name = "extraction_id", referencedColumnName = "id")
     private Extraction extraction;

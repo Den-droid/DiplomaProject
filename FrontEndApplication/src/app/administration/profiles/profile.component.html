@@ -2,10 +2,15 @@
   <div class="text-center mb-4">
     <h2>Profiles</h2>
   </div>
+  <div class="text-center mb-4" *ngIf="currentUserRole !== 'MAIN_ADMIN'">
+    <p> If you can't see actions you want to do, then ask {{currentUserRole
+      === 'USER' ?
+      'main admin or administrator of your faculty or chair' : 'main admin'}}</p>
+  </div>
 
-  <div class="mb-3 row d-flex justify-content-between main-inner-content">
+  <div class="mb-3 row d-flex justify-content-between">
     <div [ngClass]="{'col-sm-8' : (hasPermissionForAction('ADD_PROFILES')
-    || currentUserRole === 'MAIN_ADMIN'), 'col-sm-12': (!hasPermissionForAction('DEACTIVATE_PROFILES')
+    || currentUserRole === 'MAIN_ADMIN'), 'col-sm-12': (!hasPermissionForAction('ADD_PROFILES')
     && currentUserRole !== 'MAIN_ADMIN')}">
       <div>
         <div class="mb-3 d-flex justify-content-between">
@@ -62,15 +67,15 @@
     </ng-template>
   </div>
 
-  <div *ngIf="displayedProfiles.length === 0" class="text-center" style="margin-bottom: 2%">
+  <div *ngIf="displayedProfiles.length === 0" class="text-center mb-4">
     <p>No records found</p>
   </div>
 
   <ng-template [ngIf]="displayedProfiles.length !== 0">
-    <div class="mb-3 row justify-content-center align-items-center main-inner-content pd-5 border-content"
+    <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let profile of displayedProfiles">
-      <label class="col-sm-4"> {{profile.scientistName}}</label>
-      <div class="col-sm-4 d-flex align-items-center flex-column">
+      <label class="col-sm-6 text-center"> {{profile.scientistName}}</label>
+      <div class="col-sm-6 d-flex align-items-center flex-column">
         <button *ngIf="currentUserRole === 'MAIN_ADMIN' && profile.areWorksDoubtful" class="mb-3"
           style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="unmarkAsDoubtful(profile.id)">Unmark Works Doubtful</button>

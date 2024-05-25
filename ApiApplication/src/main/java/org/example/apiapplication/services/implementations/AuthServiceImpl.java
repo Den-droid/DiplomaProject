@@ -136,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
         roles.add(userRole);
         user.setRoles(roles);
 
-        user.setPermissions(userRole.getDefaultPermissions());
+        user.getPermissions().addAll(userRole.getDefaultPermissions());
 
         Scientist scientist = scientistRepository
                 .findById(signUpDto.scientistId())

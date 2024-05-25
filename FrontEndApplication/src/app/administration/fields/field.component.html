@@ -3,9 +3,10 @@
     <h2>Fields</h2>
   </div>
 
-  <div class="mb-3 row d-flex justify-content-between main-inner-content">
+  <div class="mb-3 row d-flex justify-content-between">
     <div class="col-sm-8 d-flex justify-content-start">
-      <input type="text" [(ngModel)]="searchQuery" name="search" id="searchField" style="width: 100%">
+      <input type="text" [(ngModel)]="searchQuery" name="search" id="searchField" style="width: 100%"
+        class="form-control">
       <button type="submit" class="btn btn-primary btn-block" style="margin-left: 25px"
         (click)="search(1)">Search</button>
     </div>
@@ -19,14 +20,14 @@
   </div>
 
   <ng-template [ngIf]="displayedFields.length > 0">
-    <div class="mb-3 row justify-content-center main-inner-content pd-5 border-content"
+    <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let field of displayedFields">
-      <label class="col-sm-4"> {{field.name}}</label>
-      <div class="col-sm-8 d-flex justify-content-around align-items-center">
-        <button type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
+      <label class="col-sm-6 text-center"> {{field.name}}</label>
+      <div class="col-sm-6 d-flex align-items-center flex-column">
+        <button style="margin-top: 10px; margin-bottom: 10px" type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
         field.fieldType.name !== 'H_INDEX' && field.fieldType.name !== 'LABEL'" class="btn btn-primary btn-block"
           (click)="goToEditPage(field.id)">Edit</button>
-        <button type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
+        <button style="margin-top: 10px; margin-bottom: 10px" type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
         field.fieldType.name !== 'H_INDEX' && field.fieldType.name !== 'LABEL'" class="btn btn-primary btn-block"
           (click)="goToDeletePage(field.id)">Delete</button>
       </div>

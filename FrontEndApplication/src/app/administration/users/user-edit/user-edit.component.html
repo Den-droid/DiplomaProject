@@ -3,7 +3,7 @@
     <h2>Edit User</h2>
   </div>
 
-  <div class="mb-3 row justify-content-center main-inner-content">
+  <div class="mb-3 row justify-content-center">
     <label class="col-sm-4 col-form-label" for="fullname">Full name: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="fullName" name="fullname" type="text" id="fullname" class="form-control" />
@@ -21,7 +21,7 @@
       <h4>Select Faculty And Chair</h4>
     </div>
 
-    <div class="mb-3 row d-flex justify-content-between main-inner-content border-content pd-10">
+    <div class="mb-3 row d-flex justify-content-between border-content pd-10">
       <div class="mb-3 row d-flex justify-content-between">
         <div class="col-sm-12 d-flex justify-content-between">
           <label class="col-sm-2 col-form-label" for="selectFaculty">Select faculty: </label>
@@ -60,7 +60,7 @@
     <h4>Permissions</h4>
   </div>
 
-  <div class="mb-3 row d-flex justify-content-center main-inner-content border-content pd-10">
+  <div class="mb-3 row d-flex justify-content-center border-content pd-10">
     <div class="col-sm-4 d-flex justify-content-start flex-column">
       <div class="mb-3 d-flex justify-content-start" *ngFor="let permission of userPermissions; index as i">
         <label class="col-sm-10 form-check-label" [attr.for]="permission.name + i"> {{permission.name}}</label>
@@ -70,7 +70,7 @@
     </div>
   </div>
 
-  <div class="mb-4 d-flex justify-content-between main-inner-content">
+  <div class="mb-4 d-flex justify-content-between">
     <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/users">Back</button>
     <button type="submit" class="btn btn-primary btn-block text-center"> Edit</button>
   </div>

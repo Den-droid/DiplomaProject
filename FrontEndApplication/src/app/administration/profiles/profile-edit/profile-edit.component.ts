@@ -232,12 +232,16 @@ export class ProfileEditComponent implements OnInit {
   validateSelectedField() {
     if (this.selectedField === 0)
       return 'Select Field';
+    else if (this.possibleFields.length === 0)
+      return 'No more Fields available'
     return '';
   }
 
   validateSelectedLabel() {
     if (this.selectedLabel === 0)
       return 'Select Label';
+    else if (this.possibleLabels.length === 0)
+      return 'No more Labels available'
     return '';
   }
 

@@ -3,17 +3,21 @@
     <h2>Common Labels</h2>
   </div>
 
-  <div class="row d-flex justify-content-between main-inner-content">
+  <div class="row d-flex justify-content-between">
     <div class="mb-3 d-flex justify-content-center">
       <label class="col-sm-4 col-form-label" for="searchLabel">Search Label: </label>
-      <input class="col-sm-8" type="text" [(ngModel)]="labelSearchQuery" name="searchLabel" id="searchLabel">
+      <div class="col-sm-8">
+        <input class="form-control" type="text" [(ngModel)]="labelSearchQuery" name="searchLabel" id="searchLabel">
+      </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">
       <label class="col-sm-4 col-form-label" for="selectLabel">Select Label: </label>
-      <select class="col-sm-8" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
-        <option *ngFor="let label of displayedLabels" [value]="label.id">
-          {{label.name}}</option>
-      </select>
+      <div class="col-sm-8">
+        <select class="form-control" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
+          <option *ngFor="let label of displayedLabels" [value]="label.id">
+            {{label.name}}</option>
+        </select>
+      </div>
     </div>
     <div *ngIf="error.length > 0" class="row mb-3" style="color: red">
       <div class="col d-flex justify-content-center">
@@ -28,12 +32,12 @@
     </div>
   </div>
 
-  <div *ngIf="profiles.length === 0 && getProfilesClicked" class="text-center mb-2">
+  <div *ngIf="profiles.length === 0 && getProfilesClicked" class="text-center mb-4">
     <p>No records found</p>
   </div>
 
   <ng-template [ngIf]="profiles.length !== 0">
-    <table class="mb-3 main-inner-content pd-5 border-content" style="border-collapse: collapse">
+    <table class="mb-3 pd-5 border-content" style="width: 100%; border-collapse: collapse">
       <thead style="font-weight: bold">
         <tr>
           <td>Scientist</td>

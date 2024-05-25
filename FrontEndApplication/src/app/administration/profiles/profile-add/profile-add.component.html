@@ -3,17 +3,18 @@
     <h2>Add Profile</h2>
   </div>
 
-  <div class="mb-3 row justify-content-center main-inner-content">
+  <div class="mb-3 row justify-content-center">
     <label class="col-sm-4 col-form-label" for="selectSystem">Select Scientometric System: </label>
     <div class="col-sm-8">
-      <select id="selectSystem" name="system" [(ngModel)]="selectedScientometricSystem" class="form-control">
+      <select id="selectSystem" name="system" [value]="selectedScientometricSystem"
+        (change)="changeScientometricSystem($event)" class="form-control">
         <option *ngFor="let system of scientometricSystems" [value]="system.id">
           {{system.name}}</option>
       </select>
     </div>
   </div>
 
-  <div class="mb-3 row justify-content-center main-inner-content">
+  <div class="mb-3 row justify-content-center">
     <label class="col-sm-4 col-form-label" for="searchScientists">Search Scientist: </label>
     <div class="col-sm-8">
       <input type="text" [(ngModel)]="scientistSearchQuery" name="searchQuery" id="searchScientists"
@@ -21,10 +22,11 @@
     </div>
   </div>
 
-  <div class="mb-3 row justify-content-center main-inner-content">
+  <div class="mb-3 row justify-content-center">
     <label class="col-sm-4 col-form-label" for="scientists">Select Scientist: </label>
     <div class="col-sm-8">
-      <select id="scientists" name="scientist" [(ngModel)]="selectedScientist" class="form-control">
+      <select id="scientists" name="scientist" [value]="selectedScientist" (change)="changeScientist($event)"
+        class="form-control">
         <option *ngFor="let scientist of displayedScientists" [value]="scientist.id">
           {{scientist.name}}</option>
       </select>
@@ -37,7 +39,7 @@
     </div>
   </div>
 
-  <div class="mb-4 d-flex justify-content-between main-inner-content">
+  <div class="mb-4 d-flex justify-content-between">
     <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
     <button type="button" class="btn btn-primary btn-block text-center" (click)="canAddProfile()"> Add</button>
   </div>
@@ -47,7 +49,7 @@
       <h4>Add Fields</h4>
     </div>
 
-    <div class="mb-3 row d-flex justify-content-center main-inner-content border-content pd-10">
+    <div class="mb-3 row d-flex justify-content-center border-content pd-10">
       <div class="mb-3 row d-flex justify-content-center" *ngFor="let profileField of profileFields; index as i">
         <div class="col-sm-4 d-flex flex-column justify-content-center">
           <label [ngClass]="{'form-check-label' : profileField.field.fieldType.name == 'BOOLEAN',
@@ -105,7 +107,7 @@
       <h4>Add Labels</h4>
     </div>
 
-    <div class="mb-3 row d-flex justify-content-center main-inner-content border-content pd-10">
+    <div class="mb-3 row d-flex justify-content-center border-content pd-10">
       <div class="mb-3 row d-flex justify-content-center">
         <div class="col-sm-4 d-flex justify-content-center align-items-center"
           *ngFor="let label of profileLabels; index as i"
@@ -143,7 +145,7 @@
       </div>
     </div>
 
-    <div class="mb-4 d-flex justify-content-between main-inner-content">
+    <div class="mb-4 d-flex justify-content-between">
       <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
       <button type="submit" class="btn btn-primary btn-block text-center"> Add Profile</button>
     </div>

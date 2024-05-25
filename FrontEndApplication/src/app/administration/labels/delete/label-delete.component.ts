@@ -8,22 +8,15 @@ import { LabelService } from '../../../shared/services/label.service';
   templateUrl: './label-delete.component.html',
   styleUrls: ['./label-delete.component.css']
 })
-export class LabelDeleteComponent implements OnInit{
+export class LabelDeleteComponent implements OnInit {
   _searchQuery = '';
-
-  public get searchQuery(): string {
-    return this._searchQuery;
-  }
-
-  public set searchQuery(v: string) {
-    this._searchQuery = v;
-    this.selectedLabel = 0;
-  }
 
   selectedLabel = 0;
   error = '';
+
   currentLabel!: Label;
   labels: Label[] = [];
+  possibleLabels: Label[] = [];
 
   constructor(private readonly router: Router, private readonly labelService: LabelService,
     private readonly activatedRoute: ActivatedRoute) {
@@ -39,6 +32,8 @@ export class LabelDeleteComponent implements OnInit{
           this.labelService.getAllLabels().subscribe({
             next: (data: GetLabelsDto) => {
               this.labels = data.labels.filter(label => label.name !== this.currentLabel.name);
+
+              this.setPossibleLabels();
             }
           })
         },
@@ -47,6 +42,24 @@ export class LabelDeleteComponent implements OnInit{
         }
       });
     });
+  }
+
+  setLabelSearchQuery(value: Event) {
+    let valueText = (value.target as HTMLInputElement).value;
+
+    this._searchQuery = valueText;
+    this.selectedLabel = 0;
+
+    this.setPossibleLabels();
+  }
+
+  setPossibleLabels() {
+    this.possibleLabels = this.labels;
+
+    this.possibleLabels = this.possibleLabels.filter(x => x.name.toLowerCase().includes(this._searchQuery.toLowerCase()));
+
+    if (this.possibleLabels.length > 0)
+      this.selectedLabel = this.possibleLabels[0].id;
   }
 
   validate(): string {

@@ -2,8 +2,11 @@
   <div class="text-center mb-4">
     <h2>Users</h2>
   </div>
+  <div class="text-center mb-4" *ngIf="currentUserRole !== 'MAIN_ADMIN'">
+    <p> If you can't see actions you want to do, then ask main admin</p>
+  </div>
 
-  <div class="mb-3 row d-flex justify-content-between main-inner-content">
+  <div class="mb-3 row d-flex justify-content-between">
     <div [ngClass]="{'col-sm-8': currentUserRole === 'MAIN_ADMIN', 'col-sm-12': currentUserRole !== 'MAIN_ADMIN'}">
       <div>
         <div class="mb-3 d-flex justify-content-between">
@@ -65,10 +68,10 @@
   </div>
 
   <ng-template [ngIf]="displayedUsers.length !== 0">
-    <div class="mb-3 row justify-content-center align-items-center main-inner-content pd-5 border-content"
+    <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let user of displayedUsers">
-      <label class="col-sm-4"> {{user.email}}</label>
-      <label [ngClass]="{'col-sm-4' : user.isSignedUp, 'col-sm-8' : !user.isSignedUp}"> {{!user.isSignedUp ?
+      <label class="col-sm-4 text-center"> {{user.email}}</label>
+      <label class="text-center" [ngClass]="{'col-sm-4' : user.isSignedUp, 'col-sm-8' : !user.isSignedUp}"> {{!user.isSignedUp ?
         'This user needs to complete sign up by following link in email' : user.fullName}}</label>
       <div class="col-sm-4 d-flex align-items-center flex-column">
         <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"

@@ -1,10 +1,10 @@
 <form (ngSubmit)="editField()" class="main-content">
   <div class="text-center mb-4">
     <h2>Edit Field</h2>
-    <h4>Pay attention that you can't change field type!</h4>
+    <h5>Pay attention that you can't change field type!</h5>
   </div>
 
-  <div class="mb-3 row justify-content-center main-inner-content">
+  <div class="mb-3 row justify-content-center">
     <label class="col-sm-4 col-form-label" for="name">Name: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="name" name="name" type="text" id="name" class="form-control" />
@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <div class="mb-4 d-flex justify-content-between main-inner-content">
+  <div class="mb-4 d-flex justify-content-between">
     <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/fields">Back</button>
     <button type="submit" class="btn btn-primary btn-block text-center">Edit</button>
   </div>

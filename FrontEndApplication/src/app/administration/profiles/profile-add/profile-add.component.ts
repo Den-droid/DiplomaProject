@@ -87,22 +87,14 @@ export class ProfileAddComponent implements OnInit {
     this.labelService.getAllLabels().subscribe({
       next: (allLabels: GetLabelsDto) => {
         this.allLabels = allLabels.labels;
-        this.possibleLabels = this.allLabels;
-
-        if (this.possibleLabels.length > 0) {
-          this.selectedLabel = this.possibleLabels[0].id;
-        }
+        this.setPossibleLabels();
       }
     })
 
     this.fieldService.getAllFields().subscribe({
       next: (allFields: GetFieldsDto) => {
         this.allFields = allFields.fields.filter(x => x.fieldType.name != FieldTypeName.LABEL);
-        this.possibleFields = this.allFields;
-
-        if (this.possibleFields.length > 0) {
-          this.selectedField = this.possibleFields[0].id;
-        }
+        this.setPossibleFields();
       }
     })
 
@@ -127,6 +119,20 @@ export class ProfileAddComponent implements OnInit {
         }
       }
     })
+  }
+
+  changeScientometricSystem(event: Event) {
+    let eventTarget = event.target as HTMLSelectElement;
+    this.selectedScientometricSystem = parseInt(eventTarget.value);
+
+    this.profileCanBeAdded = false;
+  }
+
+  changeScientist(event: Event) {
+    let eventTarget = event.target as HTMLSelectElement;
+    this.selectedScientist = parseInt(eventTarget.value);
+
+    this.profileCanBeAdded = false;
   }
 
   canAddProfile() {
@@ -250,12 +256,16 @@ export class ProfileAddComponent implements OnInit {
   validateSelectedField() {
     if (this.selectedField === 0)
       return 'Select Field';
+    else if (this.possibleFields.length === 0)
+      return 'No more Fields available'
     return '';
   }
 
   validateSelectedLabel() {
     if (this.selectedLabel === 0)
       return 'Select Label';
+    else if (this.possibleLabels.length === 0)
+      return 'No more Labels available'
     return '';
   }
 

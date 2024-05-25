@@ -10,5 +10,8 @@ import java.util.Optional;
 @Repository
 public interface ExtractionProfileRepository extends CrudRepository<ExtractionProfile, Integer> {
     Optional<ExtractionProfile> findFirstByExtractionAndIsFinished(Extraction extraction,
-                                                                 boolean finished);
+                                                                   boolean finished);
+
+    Optional<ExtractionProfile> findFirstByExtractionAndIsFinishedAndErrorOccurred(Extraction extraction,
+                                                                                   boolean finished, boolean errorOccurred);
 }
