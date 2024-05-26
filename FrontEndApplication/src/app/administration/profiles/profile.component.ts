@@ -33,6 +33,7 @@ export class ProfileComponent implements OnInit {
   selectedScientometricSystem = 0;
   _selectedFaculty = 0;
   selectedChair = 0;
+  isChairDisabled = true;
 
   scientometricSystems: ScientometricSystem[] = [];
   faculties: Faculty[] = [];
@@ -54,6 +55,7 @@ export class ProfileComponent implements OnInit {
 
   public set selectedFaculty(value: number) {
     this._selectedFaculty = value;
+    this.isChairDisabled = false;
     this.setDisplayedChairs();
   }
 
@@ -175,6 +177,7 @@ export class ProfileComponent implements OnInit {
     this.selectedFaculty = 0;
     this.selectedChair = 0;
     this.searchQuery = '';
+    this.isChairDisabled = true;
   }
 
   goToEditPage(id: number) {

@@ -38,7 +38,8 @@
         <div class="mb-3 d-flex justify-content-between">
           <label class="col-sm-4 col-form-label" for="selectChair">Виберіть кафедру: </label>
           <div class="col-sm-8">
-            <select class="form-control" id="chairs" name="selectChair" [(ngModel)]="selectedChair">
+            <select class="form-control" id="chairs" name="selectChair" [(ngModel)]="selectedChair"
+              [disabled]="isChairDisabled">
               <option *ngFor="let chair of displayedChairs" [value]="chair.id">
                 {{chair.name}}</option>
             </select>
