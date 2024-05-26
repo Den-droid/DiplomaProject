@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ScientometricSystem, mapStringToScientometricSystemLabel } from '../../shared/models/scientometric.model';
+import { ExtractionErrors, ScientometricSystem, mapStringToScientometricSystemLabel } from '../../shared/models/scientometric.model';
 import { ExtractionService } from '../../shared/services/extraction.service';
 import { ScientometricSystemLabel } from 'src/app/shared/constants/scientometric-system.constant';
 import { ScientometricSystemService } from 'src/app/shared/services/scientometric-system.service';
@@ -14,6 +14,7 @@ export class ExtractionComponent implements OnInit {
   scientometricSystems: ScientometricSystem[] = [];
   scientometricSystemsLabels: ScientometricSystemLabel[] = [];
   dateNow = Date.now();
+  scientometricSystemErrors: ExtractionErrors[] = [];
 
   constructor(private readonly extractionService: ExtractionService,
     private readonly scientometricSystemService: ScientometricSystemService) {
@@ -33,6 +34,11 @@ export class ExtractionComponent implements OnInit {
               this.isRunning[i] = result;
             }
           });
+          this.scientometricSystemService.getExtractionErrors(data[i].id).subscribe({
+            next: (errors: ExtractionErrors) => {
+              this.scientometricSystemErrors[i] = errors;
+            }
+          })
         }
       }
     })

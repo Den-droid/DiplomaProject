@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { baseUrl } from "../constants/url.constant";
-import { ScientometricSystem } from "../models/scientometric.model";
+import { ExtractionErrors, ScientometricSystem } from "../models/scientometric.model";
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,14 @@ export class ScientometricSystemService {
   }
 
   getExtractionIsRunning(id: number): Observable<boolean> {
-    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/extraction/" + id + "/isRunning")
+    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/" + id + "/extraction/isRunning")
   }
 
   getExtractionIsPossible(id: number): Observable<boolean> {
-    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/extraction/" + id + "/isPossible")
+    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/" + id + "/extraction/isPossible")
+  }
+
+  getExtractionErrors(id: number): Observable<ExtractionErrors> {
+    return this.httpClient.get<ExtractionErrors>(this.scientometricSystemUrl + "/" + id + "/extraction/errors")
   }
 }

@@ -1,5 +1,6 @@
 package org.example.apiapplication.controllers;
 
+import org.example.apiapplication.dto.scientometric_system.ExtractionErrorsDto;
 import org.example.apiapplication.dto.scientometric_system.ScientometricSystemDto;
 import org.example.apiapplication.services.interfaces.ScientometricSystemService;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +24,21 @@ public class ScientometricSystemController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/extraction/{id}/isRunning")
+    @GetMapping("/{id}/extraction/isRunning")
     public ResponseEntity<?> getScientometricSystemIsRunning(@PathVariable Integer id) {
         boolean isRunning = scientometricSystemService.isExtractionRunningById(id);
         return ResponseEntity.ok(isRunning);
     }
 
-    @GetMapping("/extraction/{id}/isPossible")
+    @GetMapping("/{id}/extraction/isPossible")
     public ResponseEntity<?> getScientometricSystemIsPossible(@PathVariable Integer id) {
         boolean isPossible = scientometricSystemService.isExtractionPossibleById(id);
         return ResponseEntity.ok(isPossible);
+    }
+
+    @GetMapping("/{id}/extraction/errors")
+    public ResponseEntity<?> getScientometricSystemExtractionErrors(@PathVariable Integer id) {
+        ExtractionErrorsDto extractionErrorsDto = scientometricSystemService.getExtractionErrorsById(id);
+        return ResponseEntity.ok(extractionErrorsDto);
     }
 }

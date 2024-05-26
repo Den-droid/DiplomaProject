@@ -50,8 +50,9 @@ public class WebSecurityConfig {
             "/api/fields/delete/{id}",
             "/api/labels/delete/{id}",
             "/api/roles/updateDefaultPermissions",
-            "/api/scientometricSystems/extraction/{id}/isRunning",
-            "/api/scientometricSystems/extraction/{id}/isPossible",
+            "/api/scientometricSystems/{id}/extraction/isRunning",
+            "/api/scientometricSystems/{id}/extraction/isPossible",
+            "/api/scientometricSystems/{id}/extraction/errors",
             "/api/profiles/{id}/markDoubtful",
             "/api/profiles/{id}/unmarkDoubtful"
     };

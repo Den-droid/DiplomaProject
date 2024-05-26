@@ -36,7 +36,7 @@
           <div class="col-sm-4">
             <select class="form-control" id="chairs" name="selectChair" [disabled]="wholeFaculty"
               [(ngModel)]="selectedChair">
-              <option *ngFor="let chair of chairs | chairs_by_faculty : selectedFaculty" [value]="chair.id">
+              <option *ngFor="let chair of displayedChairs" [value]="chair.id">
                 {{chair.name}}</option>
             </select>
           </div>

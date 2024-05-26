@@ -4,15 +4,48 @@
     <h2>Extraction Statuses</h2>
   </div>
 
-  <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
+  <div class="mb-3 row justify-content-center align-items-center pd-10 border-content"
     *ngFor="let scientometricSystem of scientometricSystems; index as i">
-    <label class="col-sm-4 text-center"> {{scientometricSystemsLabels[i]}} </label>
-    <div class="col-sm-8 text-center">
-      <label *ngIf="isRunning[i]">This Extraction is already running</label>
-      <label *ngIf="!isRunning[i] && !isPossible[i]">This Extraction
-        can be launched after {{scientometricSystem.nextMinImportDate | date : 'dd.MM.yyyy'}}</label>
-      <button *ngIf="!isRunning[i] && isPossible[i]" type="button" class="btn btn-primary btn-block"
-        (click)="launchExtraction(i,scientometricSystem.name)">Launch Extraction</button>
+    <div class="mb-3 row">
+      <span class="col-sm-4 text-center"> {{scientometricSystemsLabels[i]}} </span>
+      <div class="col-sm-8 text-center">
+        <span *ngIf="isRunning[i]">This Extraction is already running</span>
+        <span *ngIf="!isRunning[i] && !isPossible[i]">This Extraction
+          can be launched after {{scientometricSystem.nextMinImportDate | date : 'dd.MM.yyyy'}}</span>
+        <button *ngIf="!isRunning[i] && isPossible[i]" type="button" class="btn btn-primary btn-block"
+          (click)="launchExtraction(i,scientometricSystem.name)">Launch Extraction</button>
+      </div>
+    </div>
+    <div class="mb-3 row">
+
+      <div class="accordion" [attr.id]="'accordion' + i">
+        <div class="accordion-item">
+          <h2 class="accordion-header" [attr.id]="'errorsHeader' + i">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              [attr.data-bs-target]="'#errors' + i" aria-expanded="true" [attr.aria-controls]="'#errors' + i">
+              Last Extraction Status
+            </button>
+          </h2>
+          <div [attr.id]="'errors' + i" class="accordion-collapse collapse" [attr.aria-labelledby]="'errorsHeader' + i"
+            [attr.data-bs-parent]="'accordion' + i" data-bs-toggle="collapse">
+            <div class="accordion-body">
+              <span *ngIf="scientometricSystemErrors[i].status === 'NO_EXTRACTIONS'">
+                No Extractions Were Launched
+              </span>
+              <span *ngIf="scientometricSystemErrors[i].status === 'NO_ERRORS'">
+                Extraction is going well. No errors occurred
+              </span>
+              <span *ngIf="scientometricSystemErrors[i].status === 'ERRORS_OCCURRED'">
+                Profiles for following scientists couldn't have been loaded:
+                {{scientometricSystemErrors[i].scientistsNames | join}}
+                <br>
+                Probably some of scientists profile ids were not found!
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

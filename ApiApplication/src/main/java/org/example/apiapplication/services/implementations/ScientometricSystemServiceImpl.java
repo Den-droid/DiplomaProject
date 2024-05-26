@@ -1,32 +1,38 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.dto.scientometric_system.ExtractionErrorsDto;
 import org.example.apiapplication.dto.scientometric_system.ScientometricSystemDto;
 import org.example.apiapplication.entities.ScientometricSystem;
+import org.example.apiapplication.entities.extraction.Extraction;
+import org.example.apiapplication.entities.extraction.ExtractionProfile;
+import org.example.apiapplication.enums.ExtractionStatus;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
+import org.example.apiapplication.repositories.ExtractionProfileRepository;
 import org.example.apiapplication.repositories.ExtractionRepository;
-import org.example.apiapplication.repositories.FieldRepository;
 import org.example.apiapplication.repositories.ScientometricSystemRepository;
 import org.example.apiapplication.services.interfaces.ScientometricSystemService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class ScientometricSystemServiceImpl implements ScientometricSystemService {
     private final ScientometricSystemRepository scientometricSystemRepository;
     private final ExtractionRepository extractionRepository;
-    private final FieldRepository fieldRepository;
+    private final ExtractionProfileRepository extractionProfileRepository;
 
     public ScientometricSystemServiceImpl(ScientometricSystemRepository scientometricSystemRepository,
                                           ExtractionRepository extractionRepository,
-                                          FieldRepository fieldRepository) {
+                                          ExtractionProfileRepository extractionProfileRepository) {
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.extractionRepository = extractionRepository;
-        this.fieldRepository = fieldRepository;
+        this.extractionProfileRepository = extractionProfileRepository;
     }
 
     @Override
@@ -54,5 +60,46 @@ public class ScientometricSystemServiceImpl implements ScientometricSystemServic
                 .orElseThrow(() -> new EntityWithIdNotExistsException("Scientometric System", id));
 
         return LocalDate.now().isAfter(scientometricSystem.getNextMinImportDate());
+    }
+
+    @Override
+    public ExtractionErrorsDto getExtractionErrorsById(Integer id) {
+        ScientometricSystem scientometricSystem = scientometricSystemRepository.findById(id)
+                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientometric System", id));
+
+        List<Extraction> extractions = extractionRepository
+                .findAllByScientometricSystem(scientometricSystem);
+
+        if (!extractions.isEmpty()) {
+            Optional<Extraction> isNotFinishedExtraction = extractions.stream()
+                    .filter(x -> !x.isFinished())
+                    .findFirst();
+
+            Extraction extraction;
+            if (isNotFinishedExtraction.isPresent()) {
+                extraction = isNotFinishedExtraction.get();
+            } else {
+                extraction = extractions.stream()
+                        .min(Comparator.comparing(Extraction::getDateStarted))
+                        .orElse(new Extraction());
+            }
+
+            List<ExtractionProfile> extractionProfiles = extractionProfileRepository
+                    .findAllByExtractionAndErrorOccurred(extraction, true);
+            List<String> scientistNames = extractionProfiles.stream()
+                    .map(x -> x.getProfile().getScientist().getFullName())
+                    .toList();
+
+            String status;
+            if (!scientistNames.isEmpty()) {
+                status = ExtractionStatus.ERRORS_OCCURRED.name();
+            } else {
+                status = ExtractionStatus.NO_ERRORS.name();
+            }
+
+            return new ExtractionErrorsDto(status, scientistNames);
+        } else {
+            return new ExtractionErrorsDto(ExtractionStatus.NO_EXTRACTIONS.name(), new ArrayList<>());
+        }
     }
 }

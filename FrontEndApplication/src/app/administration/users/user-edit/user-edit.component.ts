@@ -33,8 +33,9 @@ export class UserEditComponent implements OnInit {
 
   faculties: Faculty[] = [];
   chairs: Chair[] = [];
+  displayedChairs: Chair[] = [];
 
-  selectedFaculty = 0;
+  _selectedFaculty = 0;
   selectedChair = 0;
   wholeFaculty = false;
 
@@ -49,6 +50,15 @@ export class UserEditComponent implements OnInit {
 
   possiblePermissions: Permission[][] = [];
   defaultPermissions: boolean[][] = [];
+
+  public get selectedFaculty(): number {
+    return this._selectedFaculty;
+  }
+
+  public set selectedFaculty(value: number) {
+    this._selectedFaculty = value;
+    this.setDisplayedChairs();
+  }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
@@ -168,6 +178,15 @@ export class UserEditComponent implements OnInit {
     })
 
     this.currentUserRole = this.jwtService.getRoles()[0];
+  }
+
+  setDisplayedChairs() {
+    this.displayedChairs = [];
+    for (let chair of this.chairs) {
+      if (chair.facultyId == this.selectedFaculty) {
+        this.displayedChairs.push(chair);
+      }
+    }
   }
 
   updateWholeFaculty() {

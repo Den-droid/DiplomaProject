@@ -1,5 +1,6 @@
 package org.example.apiapplication.services.interfaces;
 
+import org.example.apiapplication.dto.scientometric_system.ExtractionErrorsDto;
 import org.example.apiapplication.dto.scientometric_system.ScientometricSystemDto;
 
 import java.util.List;
@@ -10,4 +11,6 @@ public interface ScientometricSystemService {
     boolean isExtractionRunningById(Integer id);
 
     boolean isExtractionPossibleById(Integer id);
+
+    ExtractionErrorsDto getExtractionErrorsById(Integer id);
 }

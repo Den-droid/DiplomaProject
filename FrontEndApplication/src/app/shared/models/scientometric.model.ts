@@ -6,6 +6,10 @@ export class ScientometricSystem {
   }
 }
 
+export class ExtractionErrors {
+  constructor(public status: string, public scientistsNames: string[]) { }
+}
+
 export function mapStringToScientometricSystemName(name: string): ScientometricSystemName {
   return ScientometricSystemName[name as keyof typeof ScientometricSystemName];
 }
@@ -13,3 +17,4 @@ export function mapStringToScientometricSystemName(name: string): ScientometricS
 export function mapStringToScientometricSystemLabel(name: string): ScientometricSystemLabel {
   return ScientometricSystemLabel[name as keyof typeof ScientometricSystemLabel];
 }
+

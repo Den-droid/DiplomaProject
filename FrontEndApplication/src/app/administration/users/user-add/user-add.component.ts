@@ -30,8 +30,9 @@ export class UserAddComponent implements OnInit {
 
   faculties: Faculty[] = [];
   chairs: Chair[] = [];
+  displayedChairs: Chair[] = [];
 
-  selectedFaculty = 0;
+  _selectedFaculty = 0;
   selectedChair = 0;
   wholeFaculty = false;
 
@@ -48,17 +49,37 @@ export class UserAddComponent implements OnInit {
 
   userRole: string = RoleName.CHAIR_ADMIN;
 
+  public get selectedFaculty(): number {
+    return this._selectedFaculty;
+  }
+
+  public set selectedFaculty(value: number) {
+    this._selectedFaculty = value;
+    this.setDisplayedChairs();
+  }
+
   ngOnInit(): void {
     this.facultyService.getAll().subscribe({
       next: (data: Faculty[]) => {
         this.faculties = data;
+
+        if (this.faculties.length > 0) {
+          this.selectedFaculty = this.faculties[0].id;
+        }
+
+        this.chairService.getAll().subscribe({
+          next: (data: Chair[]) => {
+            this.chairs = data;
+
+            if (this.selectedFaculty !== 0 && this.chairs.length > 0) {
+              this.selectedChair = this.chairs.filter(x => x.facultyId == this.selectedFaculty)[0].id;
+            }
+
+            this.setDisplayedChairs();
+          }
+        })
       }
     });
-    this.chairService.getAll().subscribe({
-      next: (data: Chair[]) => {
-        this.chairs = data;
-      }
-    })
     this.roleService.getAll().subscribe({
       next: (data: Role[]) => {
         this.allRoles = data.filter(x => x.name != RoleName.MAIN_ADMIN);
@@ -112,6 +133,15 @@ export class UserAddComponent implements OnInit {
     })
   }
 
+  setDisplayedChairs() {
+    this.displayedChairs = [];
+    for (let chair of this.chairs) {
+      if (chair.facultyId == this.selectedFaculty) {
+        this.displayedChairs.push(chair);
+      }
+    }
+  }
+
   updateWholeFaculty() {
     this.wholeFaculty = !this.wholeFaculty;
     if (this.wholeFaculty) {
@@ -152,16 +182,6 @@ export class UserAddComponent implements OnInit {
       this.errorEmail = '';
     }
 
-    if (!this.isMainAdminCreated) {
-      let facultyChairCorrect = this.validateFacultyChair();
-      if (facultyChairCorrect.length > 0) {
-        this.errorFaculty = facultyChairCorrect;
-        return;
-      } else {
-        this.errorFaculty = '';
-      }
-    }
-
     let addAdminDto;
     if (!this.isMainAdminCreated) {
       let permissionList = [];
@@ -197,16 +217,6 @@ export class UserAddComponent implements OnInit {
     }
     if (!ValidateEmails(this.email)) {
       return 'Enter correct email!'
-    }
-    return '';
-  }
-
-  validateFacultyChair(): string {
-    if (this.selectedFaculty === 0) {
-      return 'Select Faculty';
-    }
-    if (this.selectedChair === 0 && !this.wholeFaculty) {
-      return 'Select Chair';
     }
     return '';
   }
