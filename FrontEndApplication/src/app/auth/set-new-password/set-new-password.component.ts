@@ -54,12 +54,12 @@ export class SetNewPasswordComponent implements OnInit {
 
   validate(): string {
     if (this.password.length < 8) {
-      return "Password must be at least 8 characters long!";
+      return "Пароль має містити хоча б 8 символів!";
     } if (this.confirmPassword.length === 0) {
-      return "Enter confirm password!";
+      return "Введіть підтвердження паролю!";
     }
     if (this.confirmPassword !== this.password) {
-      return "Password and confirm password must match!";
+      return "Пароль та підтвердження паролю мають збігатися!";
     }
     return '';
   }

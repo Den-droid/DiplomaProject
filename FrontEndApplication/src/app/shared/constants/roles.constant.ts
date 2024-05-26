@@ -6,8 +6,8 @@ export enum RoleName {
 }
 
 export enum RoleLabel {
-  MAIN_ADMIN = 'Main Admin',
-  FACULTY_ADMIN = 'Faculty Admin',
-  CHAIR_ADMIN = 'Chair Admin',
-  USER = 'User'
+  MAIN_ADMIN = 'Головний адміністратор',
+  FACULTY_ADMIN = 'Адміністратор факультету',
+  CHAIR_ADMIN = 'Адміністратор кафедри',
+  USER = 'Користувач'
 }

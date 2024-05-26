@@ -1,10 +1,10 @@
 <form (ngSubmit)="editProfile()" class="main-content">
   <div class="text-center mb-4">
-    <h2>Edit Profile</h2>
+    <h2>Відредагуйте профіль</h2>
   </div>
 
   <div class="text-center mb-4">
-    <h4>Edit Fields</h4>
+    <h4>Відредагуйте поля</h4>
   </div>
 
   <div class="mb-3 row d-flex justify-content-center border-content pd-10">
@@ -16,7 +16,8 @@
         <small class="row" *ngIf="profileField.field.fieldType.name === 'CITATION' ||
         profileField.field.fieldType.name === 'H_INDEX'" class="text-muted"
           style="font-size: 13px">{{profileField.field.fieldType.name === 'CITATION' ?
-          'This value is counted as citations on graphs' : 'This value is counted as H Index on graphs'}}</small>
+          'Це поле визначається як індекс цитованості на графіках' : 'Це поле визначається як індекс Гірша на
+          графіках'}}</small>
       </div>
       <div class="col-sm-6 d-flex flex-column justify-content-center">
         <input name="fieldValue" class="fieldValue" [attr.type]="profileField.field.fieldType.name == 'BOOLEAN' ? 'checkbox' :
@@ -27,7 +28,7 @@
           (input)="changeProfileFieldValue(i, $event.target)" />
       </div>
       <div class="col-sm-2 text-center">
-        <button type="button" class="btn btn-primary btn-block" (click)="removeFieldFromProfile(i)"> Remove </button>
+        <button type="button" class="btn btn-primary btn-block" (click)="removeFieldFromProfile(i)"> Видалити </button>
       </div>
       <div *ngIf="profileFieldsError[i] && profileFieldsError[i].length > 0" class="row d-flex justify-content-center"
         style="color:red;">
@@ -37,14 +38,14 @@
       <div class="col-sm-8">
         <div>
           <div class="mb-3 d-flex justify-content-between">
-            <label class="col-sm-4 col-form-label" for="searchField">Search Field: </label>
+            <label class="col-sm-4 col-form-label" for="searchField">Знайдіть поле: </label>
             <div class="col-sm-8">
               <input class="form-control" type="text" [value]="_fieldSearchQuery" (input)="setFieldSearchQuery($event)"
                 name="searchField" id="searchField">
             </div>
           </div>
           <div class="d-flex justify-content-center">
-            <label class="col-sm-4 col-form-label" for="selectField">Select Field: </label>
+            <label class="col-sm-4 col-form-label" for="selectField">Виберіть поле: </label>
             <div class="col-sm-8">
               <select class="form-control" id="chairs" name="selectField" [(ngModel)]="selectedField">
                 <option *ngFor="let field of possibleFields" [value]="field.id">
@@ -55,14 +56,14 @@
         </div>
       </div>
       <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
-        <button type="button" class="btn btn-primary btn-block" (click)="addFieldToProfile()">Add Field</button>
+        <button type="button" class="btn btn-primary btn-block" (click)="addFieldToProfile()">Додати поле</button>
         <span *ngIf="selectedFieldError.length > 0" style="color: red"> {{selectedFieldError}} </span>
       </div>
     </div>
   </div>
 
   <div class="text-center mb-4 mt-4">
-    <h4>Edit Labels</h4>
+    <h4>Відредагуйте ключові слова</h4>
   </div>
 
   <div class="mb-3 row d-flex justify-content-center border-content pd-10">
@@ -71,21 +72,21 @@
         *ngFor="let label of profileLabels; index as i" style="border: 2px solid lightblue; margin: 5px; padding: 10px">
         <label class="col-sm-8 col-form-label" [attr.for]="label.name + i"> {{label.name}}</label>
         <button class="col-sm-4" type="button" class="btn btn-primary btn-block text-center"
-          (click)="removeLabel(label.id)">Remove</button>
+          (click)="removeLabel(label.id)">Видалити</button>
       </div>
     </div>
     <div class="row d-flex justify-content-between" style="border: 2px solid lightblue; padding: 10px;">
       <div class="col-sm-8">
         <div>
           <div class="mb-3 d-flex justify-content-center">
-            <label class="col-sm-4 col-form-label" for="searchLabel">Search Label: </label>
+            <label class="col-sm-4 col-form-label" for="searchLabel">Знайдіть ключове слово: </label>
             <div class="col-sm-8">
               <input class="form-control" type="text" [value]="_labelSearchQuery" (input)="setLabelSearchQuery($event)"
                 name="searchLabel" id="searchLabel">
             </div>
           </div>
           <div class="d-flex justify-content-center">
-            <label class="col-sm-4 col-form-label" for="selectLabel">Select Label: </label>
+            <label class="col-sm-4 col-form-label" for="selectLabel">Виберіть ключове слово: </label>
             <div class="col-sm-8">
               <select class="form-control" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
                 <option *ngFor="let label of possibleLabels" [value]="label.id">
@@ -96,15 +97,14 @@
         </div>
       </div>
       <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
-        <button type="button" class="btn btn-primary btn-block" (click)="addLabel()">Add
-          Label</button>
+        <button type="button" class="btn btn-primary btn-block" (click)="addLabel()">Додати ключове слово</button>
         <span *ngIf="selectedLabelError.length > 0" style="color: red"> {{selectedLabelError}} </span>
       </div>
     </div>
   </div>
 
   <div class="mb-4 d-flex justify-content-between">
-    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Back</button>
-    <button type="submit" class="btn btn-primary btn-block text-center"> Edit</button>
+    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Назад</button>
+    <button type="submit" class="btn btn-primary btn-block text-center"> Відредагувати</button>
   </div>
 </form>

@@ -17,25 +17,25 @@ public class AuthControllerAdvice {
                 ex.getMessage());
     }
 
-    @ExceptionHandler(value = UserWithTokenNotExistsException.class)
+    @ExceptionHandler(value = UserWithTokenNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public BaseExceptionDto handleAuthException(UserWithTokenNotExistsException ex, WebRequest request) {
+    public BaseExceptionDto handleAuthException(UserWithTokenNotFoundException ex, WebRequest request) {
         return new BaseExceptionDto(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage());
     }
 
-    @ExceptionHandler(value = UserWithInviteCodeNotExistsException.class)
+    @ExceptionHandler(value = UserWithInviteCodeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public BaseExceptionDto handleAuthException(UserWithInviteCodeNotExistsException ex, WebRequest request) {
+    public BaseExceptionDto handleAuthException(UserWithInviteCodeNotFoundException ex, WebRequest request) {
         return new BaseExceptionDto(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage());
     }
 
-    @ExceptionHandler(value = UserWithUsernameNotExistsException.class)
+    @ExceptionHandler(value = UserWithUsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public BaseExceptionDto handleAuthException(UserWithUsernameNotExistsException ex, WebRequest request) {
+    public BaseExceptionDto handleAuthException(UserWithUsernameNotFoundException ex, WebRequest request) {
         return new BaseExceptionDto(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage());

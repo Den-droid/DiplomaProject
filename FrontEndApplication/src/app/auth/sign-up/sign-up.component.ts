@@ -76,20 +76,20 @@ export class SignUpComponent implements OnInit {
 
   validate(): string {
     if (this.email.length === 0) {
-      return "Enter email!";
+      return "Введіть елетронну адресу!";
     } if (!ValidateEmails(this.email)) {
-      return "Enter correct email!";
+      return "Введіть правильну електронну адресу";
     }
     if (this.password.length < 8) {
-      return "Password must be at least 8 characters long!";
+      return "Пароль має містити хоча б 8 символів!!";
     } if (this.confirmPassword.length === 0) {
-      return "Enter confirm password!";
+      return "Введіть підтвердження пароля!";
     }
     if (this.confirmPassword !== this.password) {
-      return "Password and confirm password must match!";
+      return "Пароль та підтвердження пароля мають збігатись!";
     }
     if (this.selectedScientist === 0) {
-      return "Select scientist!";
+      return "Виберіть науковця!";
     }
     return '';
   }

@@ -1,12 +1,12 @@
 <!-- Page Content -->
 <form (ngSubmit)="signUp()" class="main-content">
   <div class="text-center mb-4">
-    <h2>Sign Up</h2>
+    <h2>Реєстрація</h2>
   </div>
 
   <!-- Email input -->
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="username">Email address: </label>
+    <label class="col-sm-4 col-form-label" for="username">Електронна адреса: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="email" name="username" type="email" id="username" class="form-control" />
     </div>
@@ -14,15 +14,15 @@
 
   <!-- Password input -->
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="password">Password: </label>
+    <label class="col-sm-4 col-form-label" for="password">Пароль: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="password" name="password" type="password" id="password" class="form-control" />
     </div>
-    <small class="text-muted" style="font-size: 13px">Password should be at least 8 characters long</small>
+    <small class="text-muted" style="font-size: 13px">Пароль має містити хоча б 8 символів!</small>
   </div>
 
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="confirmPassword">Confirm Password: </label>
+    <label class="col-sm-4 col-form-label" for="confirmPassword">Підтвердіть пароль: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" id="confirmPassword"
         class="form-control" />
@@ -30,14 +30,14 @@
   </div>
 
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="searchScientists">Search Scientist: </label>
+    <label class="col-sm-4 col-form-label" for="searchScientists">Знайдіть науковця: </label>
     <div class="col-sm-8">
       <input type="text" [(ngModel)]="searchQuery" name="searchQuery" id="searchScientists" class="form-control">
     </div>
   </div>
 
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="scientists">Select Scientist: </label>
+    <label class="col-sm-4 col-form-label" for="scientists">Виберіть науковця: </label>
     <div class="col-sm-8">
       <select id="scientists" name="scientist" [(ngModel)]="selectedScientist" class="form-control">
         <option *ngFor="let scientist of displayedScientists" [value]="scientist.id">
@@ -55,12 +55,12 @@
 
   <div class="row mb-4">
     <div class="col d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary btn-block text-center">Sign Up</button>
+      <button type="submit" class="btn btn-primary btn-block text-center">Зареєструватися</button>
     </div>
   </div>
 
   <div class="text-center">
-    <p>Already registered? <a routerLink="/auth/signin">Sign In</a></p>
+    <p>Вже зареєстровані? <a routerLink="/auth/signin">Увійдіть</a></p>
   </div>
 
 </form>

@@ -17,9 +17,9 @@ public class EntityControllerAdvice {
                 ex.getMessage());
     }
 
-    @ExceptionHandler(value = EntityWithIdNotExistsException.class)
+    @ExceptionHandler(value = EntityWithIdNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public BaseExceptionDto handleAuthException(EntityWithIdNotExistsException ex, WebRequest request) {
+    public BaseExceptionDto handleAuthException(EntityWithIdNotFoundException ex, WebRequest request) {
         return new BaseExceptionDto(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage());

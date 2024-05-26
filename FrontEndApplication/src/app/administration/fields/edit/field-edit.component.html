@@ -1,11 +1,11 @@
 <form (ngSubmit)="editField()" class="main-content">
   <div class="text-center mb-4">
-    <h2>Edit Field</h2>
-    <h5>Pay attention that you can't change field type!</h5>
+    <h2>Редагування поля</h2>
+    <h5>Зверніть увагу: ви не можете змінити тип поля!</h5>
   </div>
 
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="name">Name: </label>
+    <label class="col-sm-4 col-form-label" for="name">Назва: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="name" name="name" type="text" id="name" class="form-control" />
     </div>
@@ -18,7 +18,7 @@
   </div>
 
   <div class="mb-4 d-flex justify-content-between">
-    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/fields">Back</button>
-    <button type="submit" class="btn btn-primary btn-block text-center">Edit</button>
+    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/fields">Назад</button>
+    <button type="submit" class="btn btn-primary btn-block text-center">Відредагувати</button>
   </div>
 </form>

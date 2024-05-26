@@ -121,7 +121,7 @@ export class SettingsComponent implements OnInit {
 
   validateFullName(): string {
     if (this.fullName.length === 0) {
-      return 'Enter Fullname';
+      return 'Введіть ім\'я!';
     }
     return '';
   }

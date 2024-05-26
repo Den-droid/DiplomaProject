@@ -64,7 +64,7 @@ export class LabelDeleteComponent implements OnInit {
 
   validate(): string {
     if (this.selectedLabel === 0) {
-      return "Select label!";
+      return "Виберіть ключове слово!";
     }
     return '';
   }

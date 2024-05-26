@@ -1,7 +1,7 @@
 package org.example.apiapplication.exceptions.auth;
 
-public class UserWithInviteCodeNotExistsException extends RuntimeException {
-    public UserWithInviteCodeNotExistsException() {
+public class UserWithInviteCodeNotFoundException extends RuntimeException {
+    public UserWithInviteCodeNotFoundException() {
         super("Такого коду запрошення не існує!");
     }
 }

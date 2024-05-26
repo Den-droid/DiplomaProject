@@ -21,7 +21,8 @@ h1 {
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-size: 18px;
 }
 
 .wrapper {
@@ -36,8 +37,8 @@ body {
 }
 
 .main-expand {
-  margin-left: 230px;
-  width: calc(100% - 230px);
+  margin-left: 250px;
+  width: calc(100% - 250px);
 }
 
 .main-not-expand {
@@ -60,8 +61,8 @@ body {
 }
 
 #sidebar.expand {
-  width: 230px;
-  min-width: 230px;
+  width: 250px;
+  min-width: 250px;
 }
 
 .toggle-btn {

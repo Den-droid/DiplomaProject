@@ -1,7 +1,7 @@
 package org.example.apiapplication.exceptions.auth;
 
-public class UserWithTokenNotExistsException extends RuntimeException {
-    public UserWithTokenNotExistsException() {
+public class UserWithTokenNotFoundException extends RuntimeException {
+    public UserWithTokenNotFoundException() {
         super("Такого токену не існує!");
     }
 }

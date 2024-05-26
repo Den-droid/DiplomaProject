@@ -1,30 +1,34 @@
 <div class="main-content">
   <div class="text-center mb-4">
-    <h2>Labels</h2>
+    <h2>Ключові слова</h2>
   </div>
 
   <div class="mb-3 row d-flex justify-content-between">
     <div class="col-sm-8 d-flex justify-content-start">
-      <input type="text" [(ngModel)]="searchQuery" name="searchLabel" id="searchLabel" style="width: 100%" class="form-control">
+      <input type="text" [(ngModel)]="searchQuery" name="searchLabel" id="searchLabel" style="width: 100%"
+        class="form-control">
       <button type="submit" class="btn btn-primary btn-block" style="margin-left: 25px"
-        (click)="search(1)">Search</button>
+        (click)="search(1)">Знайти</button>
     </div>
     <div class="col-sm-4 d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/labels/add">Add Label</button>
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/labels/add">Додати ключове
+        слово</button>
     </div>
   </div>
 
   <div *ngIf="isEmpty" class="text-center mb-4">
-    <p>No records found</p>
+    <p>Записів не знайдено!</p>
   </div>
 
   <ng-template [ngIf]="!isEmpty">
     <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let label of displayedLabels">
-      <label class="col-sm-6 text-center"> {{label.name}}</label>
+      <span class="col-sm-6 text-center"> {{label.name}}</span>
       <div class="col-sm-6 d-flex align-items-center flex-column">
-        <button type="submit" style="margin-top: 10px; margin-bottom: 10px" class="btn btn-primary btn-block" (click)="goToEditPage(label.id)">Edit</button>
-        <button type="submit" style="margin-top: 10px; margin-bottom: 10px" class="btn btn-primary btn-block" (click)="goToDeletePage(label.id)">Delete</button>
+        <button type="submit" style="margin-top: 10px; margin-bottom: 10px" class="btn btn-primary btn-block"
+          (click)="goToEditPage(label.id)">Відредагувати</button>
+        <button type="submit" style="margin-top: 10px; margin-bottom: 10px" class="btn btn-primary btn-block"
+          (click)="goToDeletePage(label.id)">Видалити</button>
       </div>
     </div>
   </ng-template>

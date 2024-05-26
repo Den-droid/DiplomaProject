@@ -6,8 +6,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 
 const errorRoutes: Routes = [
-  { path: "404", component: NotFoundComponent, title: 'Page Not Found' },
-  { path: "403", component: ForbiddenComponent, title: 'No Access' }
+  { path: "404", component: NotFoundComponent, title: 'Сторінку не знайдено' },
+  { path: "403", component: ForbiddenComponent, title: 'Немає доступу' }
 ];
 
 @NgModule({

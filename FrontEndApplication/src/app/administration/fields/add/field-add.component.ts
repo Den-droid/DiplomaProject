@@ -55,10 +55,10 @@ export class FieldAddComponent implements OnInit {
 
   validate(): string {
     if (this.name.length === 0) {
-      return "Enter name!";
+      return "Введіть назву поля!";
     }
     if (this.selectedType === 0) {
-      return "Select type!";
+      return "Виберіть тип поля!";
     }
     return '';
   }

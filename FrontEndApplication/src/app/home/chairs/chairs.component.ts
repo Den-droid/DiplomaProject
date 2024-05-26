@@ -56,7 +56,7 @@ export class ChairsComponent {
     private readonly scientometricSystemService: ScientometricSystemService
   ) {
     this.chartOptions = {
-      noData: { text: "Loading..." },
+      noData: { text: "Завантаження..." },
       legend: {},
       series: [],
       chart: {
@@ -86,7 +86,7 @@ export class ChairsComponent {
       },
       yaxis: {
         title: {
-          text: "Faculty Indices"
+          text: "Індекси кафедр"
         }
       },
       fill: {
@@ -143,7 +143,7 @@ export class ChairsComponent {
         this.chart.updateOptions({
           xaxis: { categories: categories }
         });
-        this.chart.updateSeries([{ name: "Citation", data: citationData }, { name: "H Index", data: hirshData }]);
+        this.chart.updateSeries([{ name: "Цитування", data: citationData }, { name: "Індес Гірша", data: hirshData }]);
       }
     })
   }

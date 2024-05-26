@@ -1,13 +1,14 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.dto.fields.*;
 import org.example.apiapplication.dto.page.PageDto;
 import org.example.apiapplication.entities.extraction.FieldExtraction;
 import org.example.apiapplication.entities.fields.Field;
 import org.example.apiapplication.entities.fields.FieldType;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
-import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
+import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.exceptions.field.FieldAlreadyExistsException;
 import org.example.apiapplication.exceptions.field.FieldTypesNotMatchException;
 import org.example.apiapplication.repositories.FieldRepository;
@@ -83,7 +84,7 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public FieldDto getById(Integer id) {
         Field field = fieldRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Field", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD, id));
 
         return getFieldDto(field);
     }
@@ -99,7 +100,7 @@ public class FieldServiceImpl implements FieldService {
 
         FieldType fieldType = fieldTypeRepository.findById(addFieldDto.typeId())
                 .orElseThrow(() ->
-                        new EntityWithIdNotExistsException("FieldType", addFieldDto.typeId()));
+                        new EntityWithIdNotFoundException(EntityName.FIELD_TYPE, addFieldDto.typeId()));
         field.setType(fieldType);
 
         fieldRepository.save(field);
@@ -108,7 +109,7 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public void edit(Integer id, EditFieldDto editFieldDto) {
         Field field = fieldRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Field", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD, id));
 
         if (fieldRepository.findByNameIgnoreCaseAndIdNot(editFieldDto.name(), id).isPresent())
             throw new FieldAlreadyExistsException(editFieldDto.name());
@@ -121,13 +122,13 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public void delete(Integer id, DeleteFieldDto deleteFieldDto) {
         Field field = fieldRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Field", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD, id));
 
         Field replacementField = fieldRepository.findById(deleteFieldDto.replacementFieldId())
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Field",
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD,
                         deleteFieldDto.replacementFieldId()));
 
-        if (field.getType().getName().name()
+        if (!field.getType().getName().name()
                 .equals(replacementField.getType().getName().name())) {
             throw new FieldTypesNotMatchException();
         }

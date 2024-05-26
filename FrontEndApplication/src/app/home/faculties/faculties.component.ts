@@ -51,7 +51,7 @@ export class FacultiesComponent {
     public scientometricSystemService: ScientometricSystemService
   ) {
     this.chartOptions = {
-      noData: { text: "Loading..." },
+      noData: { text: "Завантаження..." },
       legend: {},
       series: [],
       chart: {
@@ -81,7 +81,7 @@ export class FacultiesComponent {
       },
       yaxis: {
         title: {
-          text: "Faculties Indices"
+          text: "Індекси факультетів"
         }
       },
       fill: {
@@ -125,7 +125,7 @@ export class FacultiesComponent {
         }
 
         this.chart.updateOptions({ xaxis: { categories: categories } });
-        this.chart.updateSeries([{ name: "Citation", data: citationData }, { name: "H Index", data: hirshData }]);
+        this.chart.updateSeries([{ name: "Цитування", data: citationData }, { name: "Індекс Гірша", data: hirshData }]);
       }
     })
   }

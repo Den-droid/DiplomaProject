@@ -1,11 +1,12 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.dto.labels.*;
 import org.example.apiapplication.dto.page.PageDto;
 import org.example.apiapplication.entities.Label;
 import org.example.apiapplication.entities.Profile;
-import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
+import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.exceptions.label.LabelAlreadyExistsException;
 import org.example.apiapplication.repositories.LabelRepository;
 import org.example.apiapplication.services.interfaces.LabelService;
@@ -67,7 +68,7 @@ public class LabelServiceImpl implements LabelService {
     @Override
     public LabelDto getById(Integer id) {
         Label label = labelRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Label", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.LABEL, id));
 
         return new LabelDto(label.getId(), label.getName());
     }
@@ -87,7 +88,7 @@ public class LabelServiceImpl implements LabelService {
     @Override
     public void edit(Integer id, EditLabelDto editLabelDto) {
         Label label = labelRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Label", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.LABEL, id));
 
         if (labelRepository.findByNameIgnoreCaseAndIdNot(editLabelDto.name(), id).isPresent()) {
             throw new LabelAlreadyExistsException(editLabelDto.name());
@@ -101,10 +102,10 @@ public class LabelServiceImpl implements LabelService {
     @Override
     public void delete(Integer id, DeleteLabelDto deleteLabelDto) {
         Label deletedLabel = labelRepository
-                .findById(id).orElseThrow(() -> new EntityWithIdNotExistsException("Label", id));
+                .findById(id).orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.LABEL, id));
         Label replacementLabel = labelRepository
                 .findById(deleteLabelDto.replacementLabelId())
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Label",
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.LABEL,
                         deleteLabelDto.replacementLabelId()));
 
         List<Profile> labelProfiles = deletedLabel.getProfiles();
@@ -140,7 +141,7 @@ public class LabelServiceImpl implements LabelService {
         List<Label> labels = new ArrayList<>();
         for (Integer labelId : labelIds) {
             Label label = labelRepository.findById(labelId)
-                    .orElseThrow(() -> new EntityWithIdNotExistsException("Label", labelId));
+                    .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.LABEL, labelId));
             labels.add(label);
             profile.getLabels().add(label);
         }

@@ -7,9 +7,9 @@ export enum PermissionName {
 }
 
 export enum PermissionLabel {
-  EDIT_USERS = "Edit Users",
-  DEACTIVATE_USERS = "Deactivate Users",
-  ADD_PROFILES = "Add Profiles",
-  EDIT_PROFILES = "Edit Profiles",
-  DEACTIVATE_PROFILES = "Deactivate Profiles"
+  EDIT_USERS = "Редагування користувача",
+  DEACTIVATE_USERS = "Деактивувація користувача",
+  ADD_PROFILES = "Додавання профіля",
+  EDIT_PROFILES = "Редагування профіля",
+  DEACTIVATE_PROFILES = "Деактивація профіля"
 }

@@ -55,15 +55,15 @@ export class SignUpByInviteComponent implements OnInit {
 
   validate(): string {
     if (this.fullname.length === 0) {
-      return "Enter fullname!";
+      return "Введіть ім'я!";
     }
     if (this.password.length < 8) {
-      return "Password must be at least 8 characters long!";
+      return "Пароль має містити хоча б 8 символів!";
     } if (this.confirmPassword.length === 0) {
-      return "Enter confirm password!";
+      return "Введіть підтвердження пароля!";
     }
     if (this.confirmPassword !== this.password) {
-      return "Password and confirm password must match!";
+      return "Пароль та підтвердження пароля мають збігатись!";
     }
     return '';
   }

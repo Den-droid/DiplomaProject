@@ -1,17 +1,18 @@
 <form (ngSubmit)="addAdmin()" class="main-content">
   <div class="text-center mb-4">
-    <h2>Add Admin</h2>
+    <h2>Додати адміністратора</h2>
   </div>
 
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="username">Email address: </label>
+    <label class="col-sm-4 col-form-label" for="username">Електронна адреса: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="email" name="username" type="email" id="username" class="form-control" />
     </div>
   </div>
 
   <div class="text-center mb-4">
-    <label class="col-sm-2 form-check-label" for="isMainAdminCreated"> Is Main Admin? </label>
+    <label class="col-sm-2 form-check-label" for="isMainAdminCreated"> Хочете створити головного адміністратора?
+    </label>
     <input type="checkbox" class="form-check-input" [(ngModel)]="isMainAdminCreated" id="isMainAdminCreated"
       name="isMainAdminCreated">
   </div>
@@ -24,20 +25,20 @@
 
   <ng-template [ngIf]="!isMainAdminCreated">
     <div class="text-center mb-4">
-      <h4>Select Faculty And Chair</h4>
+      <h4>Виберіть факультет та кафедру</h4>
     </div>
 
     <div class="mb-3 row d-flex justify-content-between border-content pd-10">
       <div class="mb-3 row d-flex justify-content-between">
         <div class="col-sm-12 d-flex justify-content-between">
-          <label class="col-sm-2 col-form-label" for="selectFaculty">Select faculty: </label>
+          <label class="col-sm-2 col-form-label" for="selectFaculty">Виберіть факультет: </label>
           <div class="col-sm-4">
             <select class="form-control" id="selectFaculty" [(ngModel)]="selectedFaculty" name="selectFaculty">
               <option *ngFor="let faculty of faculties" [value]="faculty.id">
                 {{faculty.name}}</option>
             </select>
           </div>
-          <label class="col-sm-2 col-form-label" style="margin-left: 15px" for="selectChair">Select chair: </label>
+          <label class="col-sm-2 col-form-label" style="margin-left: 15px" for="selectChair">Виберіть кафедру: </label>
           <div class="col-sm-4">
             <select class="form-control" id="chairs" name="selectChair" [disabled]="wholeFaculty"
               [(ngModel)]="selectedChair">
@@ -48,7 +49,7 @@
         </div>
       </div>
       <div class="mb-3 d-flex justify-content-start">
-        <label class="col-sm-2 form-check-label" for="wholeFaculty"> Whole Faculty? </label>
+        <label class="col-sm-2 form-check-label" for="wholeFaculty"> Весь факультет? </label>
         <input type="checkbox" class="form-check-input" [checked]="wholeFaculty" (click)="updateWholeFaculty()"
           name="wholeFaculty" id="wholeFaculty">
       </div>
@@ -61,7 +62,7 @@
     </div>
 
     <div class="text-center mb-4">
-      <h4>Permissions</h4>
+      <h4>Дозволи</h4>
     </div>
 
     <div class="mb-3 row d-flex justify-content-center border-content pd-10">
@@ -76,7 +77,7 @@
   </ng-template>
 
   <div class="mb-4 d-flex justify-content-between">
-    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/users">Back</button>
-    <button type="submit" class="btn btn-primary btn-block text-center"> Add</button>
+    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/users">Назад</button>
+    <button type="submit" class="btn btn-primary btn-block text-center"> Додати</button>
   </div>
 </form>

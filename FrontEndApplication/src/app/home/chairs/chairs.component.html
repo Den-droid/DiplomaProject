@@ -1,12 +1,12 @@
 <!-- Page Content -->
 <div class="main-content">
   <div class="text-center mb-4">
-    <h2>Chairs Compare</h2>
+    <h2>Порівняння по кафедрам</h2>
   </div>
 
   <div class="mb-3 row d-flex justify-content-between">
     <div class="mb-3 row d-flex justify-content-between">
-      <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Select system: </label>
+      <label class="col-sm-4 col-form-label" for="selectScientometricSystem">Виберіть наукометричну БД: </label>
       <div class="col-sm-8">
         <select class="form-control" id="selectScientometricSystem" name="scientometricSystem"
           [(ngModel)]="selectedScientometricSystem">
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="mb-3 row d-flex justify-content-between">
-      <label class="col-sm-4 col-form-label" for="selectFaculty">Select faculty: </label>
+      <label class="col-sm-4 col-form-label" for="selectFaculty">Виберіть факультет: </label>
       <div class="col-sm-8">
         <select class="form-control" id="selectFaculty" [(ngModel)]="selectedFaculty" name="selectFaculty">
           <option *ngFor="let faculty of faculties" [value]="faculty.id">
@@ -27,7 +27,8 @@
 
     <div class="mb-3">
       <div class="d-flex justify-content-center">
-        <button type="button" class="btn btn-primary btn-block text-center" (click)="getIndices()">Get Indices</button>
+        <button type="button" class="btn btn-primary btn-block text-center" (click)="getIndices()">Отримати
+          значення</button>
       </div>
     </div>
 

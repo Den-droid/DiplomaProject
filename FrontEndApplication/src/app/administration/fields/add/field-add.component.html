@@ -1,17 +1,17 @@
 <form (ngSubmit)="addField()" class="main-content">
   <div class="text-center mb-4">
-    <h2>Add Field</h2>
+    <h2>Додати поле</h2>
   </div>
 
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="name">Name: </label>
+    <label class="col-sm-4 col-form-label" for="name">Назва: </label>
     <div class="col-sm-8">
       <input [(ngModel)]="name" name="name" type="text" id="name" class="form-control" />
     </div>
   </div>
 
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-4 col-form-label" for="types">Select Type: </label>
+    <label class="col-sm-4 col-form-label" for="types">Виберіть тип: </label>
     <div class="col-sm-8">
       <select id="types" name="type" [(ngModel)]="selectedType" class="form-control">
         <option *ngFor="let fieldType of fieldTypes" [value]="fieldType.id">
@@ -28,7 +28,7 @@
   </div>
 
   <div class="mb-4 d-flex justify-content-between">
-    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/fields">Back</button>
-    <button type="submit" class="btn btn-primary btn-block text-center">Add</button>
+    <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/fields">Назад</button>
+    <button type="submit" class="btn btn-primary btn-block text-center">Додати</button>
   </div>
 </form>

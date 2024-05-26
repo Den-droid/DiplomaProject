@@ -1,13 +1,14 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.dto.faculties.FacultyDto;
 import org.example.apiapplication.dto.indices.EntityIndicesDto;
 import org.example.apiapplication.dto.indices.IndicesDto;
 import org.example.apiapplication.entities.*;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
 import org.example.apiapplication.enums.FieldTypeName;
-import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
+import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.repositories.FacultyRepository;
 import org.example.apiapplication.repositories.ProfileRepository;
 import org.example.apiapplication.repositories.ScientometricSystemRepository;
@@ -47,7 +48,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public FacultyDto getById(Integer id) {
         Faculty faculty = facultyRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FACULTY, id));
 
         return new FacultyDto(faculty.getId(), faculty.getUkrainianName());
     }
@@ -61,7 +62,7 @@ public class FacultyServiceImpl implements FacultyService {
 
         ScientometricSystem scientometricSystem = scientometricSystemRepository
                 .findById(scientometricSystemId)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientometric System",
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.SCIENTOMETRIC_SYSTEM,
                         scientometricSystemId));
 
         List<Scientist> scientists = new ArrayList<>();
@@ -91,11 +92,11 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public List<EntityIndicesDto> getChairsIndicesByFaculty(Integer facultyId, Integer scientometricSystemId) {
         Faculty faculty = facultyRepository.findById(facultyId)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", facultyId));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FACULTY, facultyId));
 
         ScientometricSystem scientometricSystem = scientometricSystemRepository
                 .findById(scientometricSystemId)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientometric System",
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.SCIENTOMETRIC_SYSTEM,
                         scientometricSystemId));
 
         List<EntityIndicesDto> chairsIndices = new ArrayList<>();

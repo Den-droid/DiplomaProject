@@ -38,7 +38,7 @@ export class LabelAddComponent {
 
   validate(): string {
     if (this.name.length === 0) {
-      return "Enter name!";
+      return "Введіть назву ключового слова!";
     }
     return '';
   }

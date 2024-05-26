@@ -1,12 +1,12 @@
 <!-- Page Content -->
 <form (ngSubmit)="signIn()" class="main-content">
   <div class="text-center mb-4">
-    <h2>Sign In</h2>
+    <h2>Увійти</h2>
   </div>
 
   <!-- Email input -->
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-3 col-form-label" for="username">Email address: </label>
+    <label class="col-sm-3 col-form-label" for="username">Електронна адреса: </label>
     <div class="col-sm-9">
       <input [(ngModel)]="email" name="username" type="email" id="username" class="form-control" />
     </div>
@@ -14,7 +14,7 @@
 
   <!-- Password input -->
   <div class="mb-3 row justify-content-center">
-    <label class="col-sm-3 col-form-label" for="password">Password: </label>
+    <label class="col-sm-3 col-form-label" for="password">Пароль: </label>
     <div class="col-sm-9">
       <input [(ngModel)]="password" name="password" type="password" id="password" class="form-control" />
     </div>
@@ -28,17 +28,17 @@
 
   <div class="row mb-4">
     <div class="col d-flex justify-content-center">
-      <a routerLink="/auth/forgotpassword">Forgot password?</a>
+      <a routerLink="/auth/forgotpassword">Забули пароль?</a>
     </div>
   </div>
 
   <div class="row mb-4">
     <div class="col d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary btn-block text-center">Sign In</button>
+      <button type="submit" class="btn btn-primary btn-block text-center">Увійти</button>
     </div>
   </div>
 
   <div class="text-center">
-    <p>Not a member? <a routerLink="/auth/signup">Sign Up</a></p>
+    <p>Ще не зареєстровані? <a routerLink="/auth/signup">Зареєструватись</a></p>
   </div>
 </form>

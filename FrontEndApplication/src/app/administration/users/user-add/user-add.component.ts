@@ -213,10 +213,10 @@ export class UserAddComponent implements OnInit {
 
   validateEmail(): string {
     if (this.email.length === 0) {
-      return 'Enter email!';
+      return 'Введіть електронну адресу!';
     }
     if (!ValidateEmails(this.email)) {
-      return 'Enter correct email!'
+      return 'Введіть правильну електронну адресу!'
     }
     return '';
   }

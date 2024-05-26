@@ -1,12 +1,13 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.dto.scientist.EditScientistDto;
 import org.example.apiapplication.dto.scientist.ScientistPreviewDto;
 import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
 import org.example.apiapplication.entities.Scientist;
-import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
+import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.repositories.ChairRepository;
 import org.example.apiapplication.repositories.FacultyRepository;
 import org.example.apiapplication.repositories.ScientistRepository;
@@ -33,7 +34,7 @@ public class ScientistServiceImpl implements ScientistService {
     @Override
     public void edit(Integer id, EditScientistDto editScientistDto) {
         Scientist scientist = scientistRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Scientist", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.SCIENTIST, id));
 
         scientist.setPosition(editScientistDto.position());
         scientist.setFullName(editScientistDto.fullName());
@@ -42,12 +43,12 @@ public class ScientistServiceImpl implements ScientistService {
 
         if (editScientistDto.chairId() != null) {
             Chair chair = chairRepository.findById(id)
-                    .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", id));
+                    .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.CHAIR, id));
 
             scientist.setChair(chair);
         } else if (editScientistDto.facultyId() != null) {
             Faculty faculty = facultyRepository.findById(id)
-                    .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", id));
+                    .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FACULTY, id));
 
             scientist.setFaculty(faculty);
         }

@@ -1,6 +1,7 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.dto.permissions.PermissionDto;
 import org.example.apiapplication.dto.roles.RoleDto;
 import org.example.apiapplication.dto.roles.UpdateDefaultPermissionsDto;
@@ -8,7 +9,7 @@ import org.example.apiapplication.entities.permissions.Permission;
 import org.example.apiapplication.entities.user.Role;
 import org.example.apiapplication.enums.UserRole;
 import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
-import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
+import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.repositories.PermissionRepository;
 import org.example.apiapplication.repositories.RoleRepository;
 import org.example.apiapplication.services.interfaces.RoleService;
@@ -46,7 +47,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<PermissionDto> getPossiblePermissions(Integer id) {
         Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Role", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.ROLE, id));
 
         return role.getPossiblePermissions().stream()
                 .map(permission -> new PermissionDto(permission.getId(), permission.getName().name()))
@@ -56,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<PermissionDto> getDefaultPermissions(Integer id) {
         Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Role", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.ROLE, id));
 
         return role.getDefaultPermissions().stream()
                 .map(permission -> new PermissionDto(permission.getId(), permission.getName().name()))
@@ -66,7 +67,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDto getByName(String roleName) {
         Role role = roleRepository.findByName(UserRole.valueOf(roleName))
-                .orElseThrow(() -> new EntityNotFoundException("Role", roleName));
+                .orElseThrow(() -> new EntityNotFoundException(EntityName.ROLE, roleName));
 
         return new RoleDto(role.getId(), role.getName().name());
     }
@@ -75,13 +76,13 @@ public class RoleServiceImpl implements RoleService {
     public void updateDefaultPermissions(List<UpdateDefaultPermissionsDto> defaultPermissionsDtos) {
         for (UpdateDefaultPermissionsDto updateDefaultPermissionsDto : defaultPermissionsDtos) {
             Role role = roleRepository.findById(updateDefaultPermissionsDto.roleId())
-                    .orElseThrow(() -> new EntityWithIdNotExistsException("Role",
+                    .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.ROLE,
                             updateDefaultPermissionsDto.roleId()));
 
             Set<Permission> newPermissions = updateDefaultPermissionsDto.defaultPermissionsIds()
                     .stream()
                     .map(x -> permissionRepository.findById(x)
-                            .orElseThrow(() -> new EntityWithIdNotExistsException("Permission", x)))
+                            .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PERMISSION, x)))
                     .collect(Collectors.toSet());
 
             role.setDefaultPermissions(newPermissions);

@@ -1,7 +1,7 @@
 package org.example.apiapplication.exceptions.auth;
 
-public class UserWithUsernameNotExistsException extends RuntimeException {
-    public UserWithUsernameNotExistsException(String username) {
+public class UserWithUsernameNotFoundException extends RuntimeException {
+    public UserWithUsernameNotFoundException(String username) {
         super("Користувача з іменем " + username + " не існує!");
     }
 }

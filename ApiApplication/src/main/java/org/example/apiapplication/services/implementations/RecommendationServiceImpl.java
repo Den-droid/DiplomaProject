@@ -1,6 +1,7 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.entities.Profile;
 import org.example.apiapplication.entities.fields.Field;
 import org.example.apiapplication.entities.fields.FieldType;
@@ -178,8 +179,8 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     private Field getLabelField() {
         FieldType labelType = fieldTypeRepository.findByName(FieldTypeName.LABEL)
-                .orElseThrow(() -> new EntityNotFoundException("Field Type", "Label"));
+                .orElseThrow(() -> new EntityNotFoundException(EntityName.FIELD, EntityName.LABEL));
         return fieldRepository.findByType(labelType)
-                .orElseThrow(() -> new EntityNotFoundException("Field", "Label"));
+                .orElseThrow(() -> new EntityNotFoundException(EntityName.FIELD, EntityName.LABEL));
     }
 }

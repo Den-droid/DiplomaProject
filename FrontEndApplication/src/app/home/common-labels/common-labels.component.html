@@ -1,17 +1,17 @@
 <div class="main-content">
   <div class="text-center mb-4">
-    <h2>Common Labels</h2>
+    <h2>Спільні ключові слова</h2>
   </div>
 
   <div class="row d-flex justify-content-between">
     <div class="mb-3 d-flex justify-content-center">
-      <label class="col-sm-4 col-form-label" for="searchLabel">Search Label: </label>
+      <label class="col-sm-4 col-form-label" for="searchLabel">Знайдіть ключове слово: </label>
       <div class="col-sm-8">
         <input class="form-control" type="text" [(ngModel)]="labelSearchQuery" name="searchLabel" id="searchLabel">
       </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">
-      <label class="col-sm-4 col-form-label" for="selectLabel">Select Label: </label>
+      <label class="col-sm-4 col-form-label" for="selectLabel">Виберіть ключове слово: </label>
       <div class="col-sm-8">
         <select class="form-control" id="chairs" name="selectLabel" [(ngModel)]="selectedLabel">
           <option *ngFor="let label of displayedLabels" [value]="label.id">
@@ -27,23 +27,23 @@
     <div class="mb-3">
       <div class="d-flex justify-content-center">
         <button type="button" class="btn btn-primary btn-block text-center" (click)="getProfiles()">
-          Get Profiles</button>
+          Отримати профілі</button>
       </div>
     </div>
   </div>
 
   <div *ngIf="profiles.length === 0 && getProfilesClicked" class="text-center mb-4">
-    <p>No records found</p>
+    <p>Записів не знайдено</p>
   </div>
 
   <ng-template [ngIf]="profiles.length !== 0">
     <table class="mb-3 pd-5 border-content" style="width: 100%; border-collapse: collapse">
       <thead style="font-weight: bold">
         <tr>
-          <td>Scientist</td>
-          <td>Faculty</td>
-          <td>Chair</td>
-          <td>Scientometric System</td>
+          <td>Науковець</td>
+          <td>Факультет</td>
+          <td>Кафедра</td>
+          <td>Наукометрична БД</td>
         </tr>
       </thead>
       <tbody>

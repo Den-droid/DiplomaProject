@@ -237,24 +237,24 @@ export class ProfileEditComponent implements OnInit {
 
   validateSelectedField() {
     if (this.selectedField === 0)
-      return 'Select Field';
+      return 'Виберіть поле!';
     else if (this.possibleFields.length === 0)
-      return 'No more Fields available'
+      return 'Більше полів не знайдено!'
     return '';
   }
 
   validateSelectedLabel() {
     if (this.selectedLabel === 0)
-      return 'Select Label';
+      return 'Виберіть ключове слово!';
     else if (this.possibleLabels.length === 0)
-      return 'No more Labels available'
+      return 'Більше ключових слів не знайдено!'
     return '';
   }
 
   validateFields() {
     for (let i = 0; i < this.updatedProfileFields.length; i++) {
       if (this.updatedProfileFields[i].value === '') {
-        this.profileFieldsError[i] = 'Enter field!';
+        this.profileFieldsError[i] = 'Введіть значення поля!';
         continue;
       }
 
@@ -266,7 +266,7 @@ export class ProfileEditComponent implements OnInit {
           }
           this.profileFieldsError[i] = '';
         } catch (e) {
-          this.profileFieldsError[i] = 'Enter number here!';
+          this.profileFieldsError[i] = 'Введіть число!';
         }
       }
       else if (this.updatedProfileFields[i].field.fieldType.name === FieldTypeName.CITATION ||
@@ -278,7 +278,7 @@ export class ProfileEditComponent implements OnInit {
           }
           this.profileFieldsError[i] = '';
         } catch (e) {
-          this.profileFieldsError[i] = 'Enter integer here!';
+          this.profileFieldsError[i] = 'Введіть ціле число!';
         }
       }
     }

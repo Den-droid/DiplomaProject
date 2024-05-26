@@ -55,7 +55,7 @@ export class LabelEditComponent implements OnInit {
 
   validate(): string {
     if (this.name.length === 0) {
-      return "Enter name!";
+      return "Введіть назву ключового слова!";
     }
     return '';
   }

@@ -56,7 +56,7 @@ export class FieldEditComponent implements OnInit {
 
   validate(): string {
     if (this.name.length === 0) {
-      return "Enter name!";
+      return "Введіть назву поля!";
     }
     return '';
   }

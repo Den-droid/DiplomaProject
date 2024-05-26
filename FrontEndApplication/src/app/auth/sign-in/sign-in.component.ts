@@ -34,7 +34,7 @@ export class SignInComponent {
         this.jwtService.setRefreshToken(result.refreshToken);
       },
       error: (error: any) => {
-        this.error = error?.error?.status == 401 ? "Invalid username or password. Try again!" : error?.error?.error;
+        this.error = error?.error?.status == 401 ? "Неправильна електронна адреса чи пароль! Спробуйте знову!" : error?.error?.error;
       },
       complete: () => {
         this.router.navigateByUrl("/user/profiles");
@@ -44,12 +44,13 @@ export class SignInComponent {
 
   validate(): string {
     if (this.email.length === 0) {
-      return "Enter email!";
+      return "Введіть електронну адресу!";
+    }
+    if (!ValidateEmails(this.email)) {
+      return "Введіть правильну електронну адресу!";
     }
     if (this.password.length < 8) {
-      return "Password must be at least 8 characters long!";
-    } if (!ValidateEmails(this.email)) {
-      return "Enter correct email!";
+      return "Пароль має містити хоча б 8 символів!";
     }
     return '';
   }

@@ -1,6 +1,6 @@
 <div class="main-content">
   <div class="text-center mb-4">
-    <h2>Fields</h2>
+    <h2>Поля</h2>
   </div>
 
   <div class="mb-3 row d-flex justify-content-between">
@@ -8,28 +8,28 @@
       <input type="text" [(ngModel)]="searchQuery" name="search" id="searchField" style="width: 100%"
         class="form-control">
       <button type="submit" class="btn btn-primary btn-block" style="margin-left: 25px"
-        (click)="search(1)">Search</button>
+        (click)="search(1)">Шукати</button>
     </div>
     <div class="col-sm-4 d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/fields/add">Add Field</button>
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/fields/add">Додати поле</button>
     </div>
   </div>
 
   <div *ngIf="displayedFields.length === 0" class="text-center mb-4">
-    <p>No records found</p>
+    <p>Записів не знайдено!</p>
   </div>
 
   <ng-template [ngIf]="displayedFields.length > 0">
     <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let field of displayedFields">
-      <label class="col-sm-6 text-center"> {{field.name}}</label>
+      <span class="col-sm-6 text-center"> {{field.name}}</span>
       <div class="col-sm-6 d-flex align-items-center flex-column">
         <button style="margin-top: 10px; margin-bottom: 10px" type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
         field.fieldType.name !== 'H_INDEX' && field.fieldType.name !== 'LABEL'" class="btn btn-primary btn-block"
-          (click)="goToEditPage(field.id)">Edit</button>
+          (click)="goToEditPage(field.id)">Відредагувати</button>
         <button style="margin-top: 10px; margin-bottom: 10px" type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
         field.fieldType.name !== 'H_INDEX' && field.fieldType.name !== 'LABEL'" class="btn btn-primary btn-block"
-          (click)="goToDeletePage(field.id)">Delete</button>
+          (click)="goToDeletePage(field.id)">Видалити</button>
       </div>
     </div>
   </ng-template>

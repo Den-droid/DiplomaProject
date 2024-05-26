@@ -67,7 +67,7 @@ export class FieldDeleteComponent implements OnInit {
 
   validate(): string {
     if (this.selectedField === 0) {
-      return "Select field!";
+      return "Виберіть поле!";
     }
     return '';
   }

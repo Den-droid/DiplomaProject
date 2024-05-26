@@ -1,10 +1,11 @@
 package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
+import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.dto.chairs.ChairDto;
 import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
-import org.example.apiapplication.exceptions.entity.EntityWithIdNotExistsException;
+import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.repositories.ChairRepository;
 import org.example.apiapplication.repositories.FacultyRepository;
 import org.example.apiapplication.services.interfaces.ChairService;
@@ -40,7 +41,7 @@ public class ChairServiceImpl implements ChairService {
     @Override
     public List<ChairDto> getByFaculty(Integer id) {
         Faculty faculty = facultyRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Faculty", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FACULTY, id));
 
         return getByFaculty(faculty);
     }
@@ -57,7 +58,7 @@ public class ChairServiceImpl implements ChairService {
     @Override
     public ChairDto getById(Integer id) {
         Chair chair = chairRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotExistsException("Chair", id));
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.CHAIR, id));
         return new ChairDto(chair.getId(), chair.getUkrainianName(), chair.getFaculty().getId());
     }
 }
