@@ -66,9 +66,15 @@
   <ng-template [ngIf]="displayedProfiles.length !== 0">
     <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let profile of displayedProfiles">
+<<<<<<< HEAD
       <span class="text-center col-sm-6"> {{profile.scientistName}}</span>
       <div *ngIf="canEditDeactivateProfiles || isMainAdmin" class="col-sm-6 d-flex align-items-center flex-column">
         <button *ngIf="isMainAdmin && profile.areWorksDoubtful" class="mb-3"
+=======
+      <label class="text-center" [ngClass]="{'col-sm-6': true}"> {{profile.scientistName}}</label>
+      <div class="col-sm-6 d-flex align-items-center flex-column">
+        <button *ngIf="currentUserRole === 'MAIN_ADMIN' && profile.areWorksDoubtful" class="mb-3"
+>>>>>>> 25c06c9d88d411411aad79ded7134bc10dea8c40
           style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="unmarkAsDoubtful(profile.id)">Unmark Works Doubtful</button>
         <button *ngIf="isMainAdmin && !profile.areWorksDoubtful" class="mb-3"
