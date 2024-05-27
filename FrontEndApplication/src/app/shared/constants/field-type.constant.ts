@@ -9,11 +9,11 @@ export enum FieldTypeName {
 }
 
 export enum FieldTypeLabel {
-  NUMBER = 'Number',
-  DATE = 'Date',
-  BOOLEAN = 'Boolean',
-  STRING = 'String',
-  CITATION = "Citation",
-  H_INDEX = "H Index",
-  LABEL = "Label"
+  NUMBER = 'Число',
+  DATE = 'Дата',
+  BOOLEAN = 'Логічна змінна',
+  STRING = 'Текст',
+  CITATION = "Цитування",
+  H_INDEX = "Індекс Гірша",
+  LABEL = "Ключове слово"
 }

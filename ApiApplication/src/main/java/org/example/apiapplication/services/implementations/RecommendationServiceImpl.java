@@ -58,7 +58,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                             profile, fieldRecommendation.getField());
 
             if (optionalProfileFieldValue.isEmpty()) {
-                recommendations.add("Enter field: " + fieldRecommendation.getField().getName());
+                recommendations.add("Введіть поле: " + fieldRecommendation.getField().getName());
             } else {
                 Optional<ProfileFieldRecommendation> optionalProfileFieldRecommendation =
                         profileFieldRecommendationRepository.findByProfileAndField(
@@ -82,7 +82,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                             profile, labelField);
 
             if (optionalProfileFieldRecommendation.isEmpty()) {
-                recommendations.add("Enter field: " + fieldRecommendation.get().getField().getName());
+                recommendations.add("Введіть поле: " + fieldRecommendation.get().getField().getName());
             } else {
                 if (!optionalProfileFieldRecommendation.get().isConditionFulfilled())
                     recommendations.add(fieldRecommendation.get().getText());

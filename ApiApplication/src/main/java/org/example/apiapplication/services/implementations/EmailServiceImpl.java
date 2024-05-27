@@ -25,65 +25,76 @@ public class EmailServiceImpl implements EmailService {
     @Value("${email_service.frontend-url}")
     private String frontendUrl;
 
-    private final String FORGOT_PASSWORD = "Follow the link to reset your password: " +
+    private final String FORGOT_PASSWORD_SUBJECT = "Відновлення паролю";
+    private final String FORGOT_PASSWORD_BODY = "Перейдіть за посиланням, щоб відновити пароль: " +
             "<a href=\"%s\">%s</a>";
-    private final String SIGNUP_INVITE = "Complete sign up by following the link: " +
+
+    private final String SIGNUP_INVITE_SUBJECT = "Завершіть реєстрацію!";
+    private final String SIGNUP_INVITE_BODY = "Завершіть реєстрацію перейшовши за посиланням: " +
             "<a href=\"%s\">%s</a>";
-    private final String APPROVE_USER = "You have been approved on the System. " +
-            "Follow the link to sign in: <a href=\"%s\">%s</a>";
-    private final String REJECT_USER = "You have been rejected from the System. " +
-            "Contact administrator to get details!";
-    private final String ACTIVATE_USER = "You have been activated on the System. " +
-            "Follow the link to sign in: <a href=\"%s\">%s</a>";
-    private final String DEACTIVATE_USER = "You have been deactivated on the System. " +
-            "Contact administrator to get details!";
+
+    private final String APPROVE_USER_SUBJECT = "Вас було підтверджено в Системі!";
+    private final String APPROVE_USER_BODY = "Вас було підтверджено в Системі. " +
+            "Перейдіть за посиланням, щоб увійти: <a href=\"%s\">%s</a>";
+
+    private final String REJECT_USER_SUBJECT = "Вас було відхилено Системою!";
+    private final String REJECT_USER_BODY = "Вас було відхилено Системою. " +
+            "Зверніться до адміністратора, щоб отримати деталі!";
+
+    private final String ACTIVATE_USER_SUBJECT = "Вас було активовано в Системі!";
+    private final String ACTIVATE_USER_BODY = "Вас було активовано в Системі. " +
+            "Перейдіть за посиланням, щоб увійти: <a href=\"%s\">%s</a>";
+
+    private final String DEACTIVATE_USER_SUBJECT = "Вас було деактивовано в Системі!";
+    private final String DEACTIVATE_USER_BODY = "Вас було деактивовано в Системі " +
+            "верніться до адміністратора, щоб отримати деталі!";
 
     @Override
     public void forgotPassword(String email, String token) {
         String forgotPasswordUrl = frontendUrl + "/auth/forgotpassword/" + token;
-        String body = String.format(FORGOT_PASSWORD, forgotPasswordUrl, forgotPasswordUrl);
+        String body = String.format(FORGOT_PASSWORD_BODY, forgotPasswordUrl, forgotPasswordUrl);
 
-        String subject = "Reset Password";
+        String subject = FORGOT_PASSWORD_SUBJECT;
         sendEmail(email, subject, body);
     }
 
     @Override
     public void signUpWithCode(String email, String code) {
         String signupInvite = frontendUrl + "/auth/signupbyinvitecode/" + code;
-        String body = String.format(SIGNUP_INVITE, signupInvite, signupInvite);
+        String body = String.format(SIGNUP_INVITE_BODY, signupInvite, signupInvite);
 
-        String subject = "Complete Sign Up!";
+        String subject = SIGNUP_INVITE_SUBJECT;
         sendEmail(email, subject, body);
     }
 
     @Override
     public void approveUser(String email) {
-        String subject = "You have been approved!";
         String loginUrl = frontendUrl + "/auth/signin";
-        String body = String.format(APPROVE_USER, loginUrl, loginUrl);
+        String body = String.format(APPROVE_USER_BODY, loginUrl, loginUrl);
 
+        String subject = APPROVE_USER_SUBJECT;
         sendEmail(email, subject, body);
     }
 
     @Override
     public void rejectUser(String email) {
-        String subject = "You have been rejected!";
-        sendEmail(email, subject, REJECT_USER);
+        String subject = REJECT_USER_SUBJECT;
+        sendEmail(email, subject, REJECT_USER_BODY);
     }
 
     @Override
     public void activateUser(String email) {
-        String subject = "You have been activated!";
         String loginUrl = frontendUrl + "/auth/signin";
-        String body = String.format(ACTIVATE_USER, loginUrl, loginUrl);
+        String body = String.format(ACTIVATE_USER_BODY, loginUrl, loginUrl);
 
+        String subject = ACTIVATE_USER_SUBJECT;
         sendEmail(email, subject, body);
     }
 
     @Override
     public void deactivateUser(String email) {
-        String subject = "You have been deactivated!";
-        sendEmail(email, subject, DEACTIVATE_USER);
+        String subject = DEACTIVATE_USER_SUBJECT;
+        sendEmail(email, subject, DEACTIVATE_USER_BODY);
     }
 
     private void sendEmail(String email, String subject, String body) {

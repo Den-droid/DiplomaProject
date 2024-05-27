@@ -57,18 +57,18 @@
       </thead>
       <tbody>
         <tr *ngFor="let profile of profiles">
-          <td style="width: 40%">{{profile.name}}</td>
+          <td style="width: 30%">{{profile.name}}</td>
           <td style="width: 10%">{{profile.indices.citationIndex >= 0 ? profile.indices.citationIndex : 'Не витягнено'}}
           </td>
           <td style="width: 10%">{{profile.indices.hirshIndex >= 0 ? profile.indices.hirshIndex : 'Не витягнено'}}</td>
-          <td style="width: 40%">
+          <td style="width: 50%">
             <ul style="text-align:left" *ngIf="profile.recommendations.length > 0">
               <li style="list-style-type: disc;" *ngFor="let recommendation of profile.recommendations">
                 {{recommendation}}
               </li>
             </ul>
             <label *ngIf="profile.recommendations.length == 0">
-              Вітаємо! Ваш профіль повінстю заповнено!
+              Вітаємо! Ваш профіль повністю заповнено!
             </label>
           </td>
         </tr>
