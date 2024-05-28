@@ -11,16 +11,16 @@
         (click)="search(1)">Знайти</button>
     </div>
     <div class="col-sm-4 d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/labels/add">Додати ключове
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/labels/add">Створити ключове
         слово</button>
     </div>
   </div>
 
-  <div *ngIf="isEmpty" class="text-center mb-4">
+  <div *ngIf="displayedLabels.length === 0" class="text-center mb-4">
     <p>Записів не знайдено!</p>
   </div>
 
-  <ng-template [ngIf]="!isEmpty">
+  <ng-template [ngIf]="displayedLabels.length > 0">
     <div class="mb-3 row justify-content-center align-items-center pd-5 border-content"
       *ngFor="let label of displayedLabels">
       <span class="col-sm-6 text-center"> {{label.name}}</span>

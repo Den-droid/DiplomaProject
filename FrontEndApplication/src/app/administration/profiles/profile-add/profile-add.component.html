@@ -1,6 +1,6 @@
 <form (ngSubmit)="addProfile()" class="main-content">
   <div class="text-center mb-4">
-    <h2>Додати профіль</h2>
+    <h2>Створення профілю</h2>
   </div>
 
   <div class="mb-3 row justify-content-center">
@@ -41,12 +41,12 @@
 
   <div class="mb-4 d-flex justify-content-between">
     <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Назад</button>
-    <button type="button" class="btn btn-primary btn-block text-center" (click)="canAddProfile()"> Додати</button>
+    <button type="button" class="btn btn-primary btn-block text-center" (click)="canAddProfile()"> Створити</button>
   </div>
 
   <ng-template [ngIf]="profileCanBeAdded">
     <div class="text-center mb-4">
-      <h4>Додати поля</h4>
+      <h4>Поля</h4>
     </div>
 
     <div class="mb-3 row d-flex justify-content-center border-content pd-10">
@@ -106,7 +106,7 @@
     </div>
 
     <div class="text-center" style="margin-top: 2%; margin-bottom: 2%">
-      <h4>Додати ключові слова</h4>
+      <h4>Ключові слова</h4>
     </div>
 
     <div class="mb-3 row d-flex justify-content-center border-content pd-10">
@@ -149,7 +149,7 @@
 
     <div class="mb-4 d-flex justify-content-between">
       <button type="button" class="btn btn-primary btn-block text-center" routerLink="/user/profiles">Назад</button>
-      <button type="submit" class="btn btn-primary btn-block text-center"> Додати профіль</button>
+      <button type="submit" class="btn btn-primary btn-block text-center"> Створити </button>
     </div>
   </ng-template>
 </form>

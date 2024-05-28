@@ -11,13 +11,11 @@ import { Router } from '@angular/router';
 export class LabelComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
-  isEmpty = false;
 
-  displayedLabels: Label[] | undefined = [];
+  displayedLabels: Label[] = [];
 
   searchQuery = '';
   isSearchMode = false;
-  searchedQuery = '';
 
   constructor(private readonly router: Router, private readonly labelService: LabelService) {
   }
@@ -30,11 +28,10 @@ export class LabelComponent implements OnInit {
     this.labelService.getLabelsByPage(page).subscribe({
       next: (data: GetLabelsDto) => {
         if (data.labels.length == 0) {
-          this.isEmpty = true;
+          this.displayedLabels = [];
           this.currentPage = 1;
           this.totalPages = 1;
         } else {
-          this.isEmpty = false;
           this.displayedLabels = data.labels;
           this.currentPage = page;
           this.totalPages = data.pageDto.totalPages;
@@ -63,15 +60,14 @@ export class LabelComponent implements OnInit {
       this.pageChange(1);
     } else {
       this.isSearchMode = true;
-      this.searchedQuery = this.searchQuery;
+
       this.labelService.getLabelsByPageAndName(page, this.searchQuery).subscribe({
         next: (data: GetLabelsDto) => {
           if (data.labels.length == 0) {
-            this.isEmpty = true;
+            this.displayedLabels = [];
             this.currentPage = 1;
             this.totalPages = 1;
           } else {
-            this.isEmpty = false;
             this.displayedLabels = data.labels;
             this.currentPage = page;
             this.totalPages = data.pageDto.totalPages;

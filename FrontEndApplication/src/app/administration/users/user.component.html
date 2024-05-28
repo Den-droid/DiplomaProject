@@ -3,7 +3,7 @@
     <h2>Користувачі</h2>
   </div>
   <div class="text-center mb-4" *ngIf="currentUserRole !== 'MAIN_ADMIN'">
-    <p> Якщо ви не володієте доступом на певну дію, спитайте головного адміністратора</p>
+    <p> Якщо ви не володієте доступом на певну дію, зверніться до головного адміністратора</p>
   </div>
 
   <div class="mb-3 row d-flex justify-content-between">
@@ -51,10 +51,10 @@
       </div>
     </div>
     <div *ngIf="isMainAdmin" class="col-sm-4 d-flex justify-content-end align-items-center">
-      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/users/add">Додати адмінстратора</button>
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/users/add">Створити адмінстратора</button>
     </div>
     <div *ngIf="!isMainAdmin" class="col-sm-4 d-flex justify-content-end align-items-center text-end">
-      <span>Тільки головний адміністратор може додати іншого адміністратора!</span>
+      <span>Тільки головний адміністратор може створити іншого адміністратора!</span>
     </div>
   </div>
 

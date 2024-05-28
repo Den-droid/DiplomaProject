@@ -56,7 +56,7 @@ public class LabelServiceImpl implements LabelService {
     @Override
     public GetLabelsDto searchLabelsByName(int page, String name) {
         Page<Label> labelPage = labelRepository.findByNameContainsIgnoreCase(name.trim(),
-                PageRequest.of(page - 1, 5));
+                PageRequest.of(page - 1, 25));
 
         List<LabelDto> labelDtos = labelPage.getContent().stream()
                 .map(x -> new LabelDto(x.getId(), x.getName()))

@@ -16,7 +16,6 @@ export class FieldComponent implements OnInit {
 
   searchQuery = '';
   isSearchMode = false;
-  searchedQuery = '';
 
   constructor(private readonly router: Router, private readonly fieldService: FieldService) {
   }
@@ -29,6 +28,7 @@ export class FieldComponent implements OnInit {
     this.fieldService.getFieldsByPage(page).subscribe({
       next: (data: GetFieldsDto) => {
         if (data.fields.length == 0) {
+          this.displayedFields = [];
           this.currentPage = 1;
           this.totalPages = 1;
         } else {
@@ -60,10 +60,11 @@ export class FieldComponent implements OnInit {
       this.pageChange(1);
     } else {
       this.isSearchMode = true;
-      this.searchedQuery = this.searchQuery;
+
       this.fieldService.getFieldsByPageAndName(page, this.searchQuery).subscribe({
         next: (data: GetFieldsDto) => {
           if (data.fields.length == 0) {
+            this.displayedFields = [];
             this.currentPage = 1;
             this.totalPages = 1;
           } else {

@@ -52,11 +52,11 @@
       </div>
     </div>
     <div *ngIf="isMainAdmin || canAddProfiles" class="col-sm-4 d-flex justify-content-end align-items-center">
-      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/profiles/add">Додати профіль</button>
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/profiles/add">Створити профіль</button>
     </div>
     <div *ngIf="!isMainAdmin && !canAddProfiles"
       class="col-sm-4 d-flex align-items-center justify-content-center text-end">
-      <span> У вас немає дозволу на додавання профілів!</span>
+      <span> У вас немає дозволу на створення профілів!</span>
     </div>
   </div>
 
