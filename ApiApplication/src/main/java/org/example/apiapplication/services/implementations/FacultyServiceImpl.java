@@ -46,14 +46,6 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public FacultyDto getById(Integer id) {
-        Faculty faculty = facultyRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FACULTY, id));
-
-        return new FacultyDto(faculty.getId(), faculty.getUkrainianName());
-    }
-
-    @Override
     public List<EntityIndicesDto> getFacultiesIndices(Integer scientometricSystemId) {
         List<Faculty> faculties = new ArrayList<>();
         for (Faculty faculty : facultyRepository.findAll()) {

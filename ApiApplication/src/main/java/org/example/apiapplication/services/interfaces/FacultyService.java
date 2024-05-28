@@ -8,8 +8,6 @@ import java.util.List;
 public interface FacultyService {
     List<FacultyDto> getAll();
 
-    FacultyDto getById(Integer id);
-
     List<EntityIndicesDto> getFacultiesIndices(Integer scientometricSystemId);
 
     List<EntityIndicesDto> getChairsIndicesByFaculty(Integer facultyId,

@@ -29,10 +29,4 @@ public class ChairController {
 
         return ResponseEntity.ok(chairDtos);
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getChairById(@PathVariable Integer id) {
-        ChairDto chairDto = chairService.getById(id);
-        return ResponseEntity.ok(chairDto);
-    }
 }

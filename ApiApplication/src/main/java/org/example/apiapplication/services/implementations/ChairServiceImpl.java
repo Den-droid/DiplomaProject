@@ -54,11 +54,4 @@ public class ChairServiceImpl implements ChairService {
                 .map(x -> new ChairDto(x.getId(), x.getUkrainianName(), x.getFaculty().getId()))
                 .toList();
     }
-
-    @Override
-    public ChairDto getById(Integer id) {
-        Chair chair = chairRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.CHAIR, id));
-        return new ChairDto(chair.getId(), chair.getUkrainianName(), chair.getFaculty().getId());
-    }
 }

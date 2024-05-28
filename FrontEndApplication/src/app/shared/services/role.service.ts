@@ -18,15 +18,6 @@ export class RoleService {
     return this.httpClient.get<Role[]>(this.url);
   }
 
-  getByName(name: string): Observable<Role> {
-    const options = name ?
-      {
-        params: new HttpParams()
-          .set('roleName', name)
-      } : {};
-    return this.httpClient.get<Role>(this.url);
-  }
-
   getPossiblePermissions(id: number): Observable<Permission[]> {
     return this.httpClient.get<Permission[]>(this.url + "/" + id + "/possiblePermissions");
   }

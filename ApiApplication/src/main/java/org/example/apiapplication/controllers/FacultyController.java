@@ -24,12 +24,6 @@ public class FacultyController {
         return ResponseEntity.ok(facultyDtos);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getFacultyById(@PathVariable Integer id) {
-        FacultyDto facultyDto = facultyService.getById(id);
-        return ResponseEntity.ok(facultyDto);
-    }
-
     @GetMapping("/indices")
     public ResponseEntity<?> getIndices(@RequestParam Integer scientometricSystemId) {
         List<EntityIndicesDto> facultiesIndicesDtos =

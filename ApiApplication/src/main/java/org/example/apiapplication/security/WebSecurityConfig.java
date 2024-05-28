@@ -25,54 +25,83 @@ public class WebSecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
 
-    private final String[] sharedUrls = {
-            "/api/auth/**",
-            "/api/chairs",
-            "/api/chairs/{id}",
+    private final String[] authUrl = {"/api/auth/**"};
+    private final String[] chairsUrls = {"/api/chairs"};
+    private final String[] facultiesUrls = {
             "/api/faculties",
-            "/api/faculties/{id}",
             "/api/faculties/indices",
-            "/api/faculties/{id}/indices",
-            "/api/fields",
+            "/api/faculties/{id}/indices"
+    };
+
+    private final String[] fieldsUrls = {
             "/api/fields/types",
+            "/api/fields/{id}/delete",
+            "/api/fields",
             "/api/fields/{id}",
-            "/api/fields/search",
+            "/api/fields/search"
+    };
+
+    private final String[] labelsUrls = {
             "/api/labels",
             "/api/labels/{id}",
             "/api/labels/search",
-            "/api/scientists/notRegistered",
-            "/api/scientometricSystems",
-            "/api/profiles/forUser",
-            "/api/profiles/commonLabels"
+            "/api/labels/{id}/delete"
     };
 
-    private final String[] mainAdminUrls = {
-            "/api/fields/delete/{id}",
-            "/api/labels/delete/{id}",
-            "/api/roles/updateDefaultPermissions",
+    private final String[] scientometricSystemsUrls = {
+            "/api/scientometricSystems",
             "/api/scientometricSystems/{id}/extraction/isRunning",
             "/api/scientometricSystems/{id}/extraction/isPossible",
-            "/api/scientometricSystems/{id}/extraction/errors",
-            "/api/profiles/{id}/markDoubtful",
-            "/api/profiles/{id}/unmarkDoubtful"
+            "/api/scientometricSystems/{id}/extraction/errors"
     };
 
-    private final String[] facultyChairMainAdminUrls = {
-            "/api/permissions",
-            "/api/roles/",
+    private final String[] scientistsUrls = {"/api/scientists/notRegistered"};
+    private final String[] permissionsUrls = {"/api/permissions"};
+    private final String[] rolesUrls = {
+            "/api/roles",
             "/api/roles/{id}/possiblePermissions",
             "/api/roles/{id}/defaultPermissions",
-            "/api/profiles/{id}/activate",
-            "/api/profiles/{id}/deactivate",
+            "/api/roles/updateDefaultPermissions"
     };
 
-    private final String[] userUrls = {
+    private final String[] profilesUrls = {
+            "/api/profiles",
+            "/api/profiles/{id}",
+            "/api/profiles/search",
+            "/api/profiles/forUser",
+            "/api/profiles/commonLabels",
+            "/api/profiles/{id}/labels",
+            "/api/profiles/{id}/fields",
+            "/api/profiles/{id}/markDoubtful",
+            "/api/profiles/{id}/unmarkDoubtful",
+            "/api/profiles/{id}/activate",
+            "/api/profiles/{id}/deactivate",
+            "/api/profiles/canAddProfile"
+    };
+
+    private final String[] usersUrls = {
+            "/api/users",
+            "/api/users/{id}",
+            "/api/users/{id}/activate",
+            "/api/users/{id}/deactivate",
+            "/api/users/{id}/approve",
+            "/api/users/{id}/reject",
+            "/api/users/search",
+            "/api/users/admins",
+            "/api/users/admins/{id}",
+            "/api/users/{id}/editDto",
+            "/api/users/{id}/roles",
+            "/api/users/{id}/permissions",
+            "/api/users/current",
             "/api/users/current/chairs",
             "/api/users/current/faculties",
             "/api/users/current/scientists",
-            "/api/profiles/canAddProfile",
-            "/api/users/current"
+            "/api/users/current/permissions",
+            "/api/users/current/canEditUser",
+            "/api/users/current/canEditProfile"
     };
+
+    private final String[] extractionUrls = {"/api/extraction/scholar"};
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
                              AuthEntryPointJwt unauthorizedHandler,
@@ -113,17 +142,19 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                                auth.requestMatchers(sharedUrls).permitAll()
-                                        .requestMatchers(mainAdminUrls).permitAll()
-                                        .requestMatchers(facultyChairMainAdminUrls).permitAll()
-                                        .requestMatchers(userUrls).permitAll()
-//                                        .requestMatchers(mainAdminUrls).hasAuthority("ROLE_" + UserRole.MAIN_ADMIN.name())
-//                                .requestMatchers(facultyChairAdminUrls).hasAnyAuthority("ROLE_" + UserRole.FACULTY_ADMIN.name(),
-//                                        "ROLE_" + UserRole.CHAIR_ADMIN.name(), "ROLE_" + UserRole.MAIN_ADMIN.name()")
-//                                .requestMatchers(userUrls).hasAnyAuthority("ROLE_" + UserRole.USER.name(),
-//                                "ROLE_" + UserRole.FACULTY_ADMIN.name(), "ROLE_" + UserRole.CHAIR_ADMIN.name(),
-////                                        "ROLE_" + UserRole.MAIN_ADMIN.name()")
-                                        .anyRequest().authenticated()
+                        auth.requestMatchers(authUrl).permitAll()
+                                .requestMatchers(chairsUrls).permitAll()
+                                .requestMatchers(facultiesUrls).permitAll()
+                                .requestMatchers(fieldsUrls).permitAll()
+                                .requestMatchers(labelsUrls).permitAll()
+                                .requestMatchers(scientometricSystemsUrls).permitAll()
+                                .requestMatchers(scientistsUrls).permitAll()
+                                .requestMatchers(permissionsUrls).permitAll()
+                                .requestMatchers(rolesUrls).permitAll()
+                                .requestMatchers(profilesUrls).permitAll()
+                                .requestMatchers(usersUrls).permitAll()
+                                .requestMatchers(extractionUrls).permitAll()
+                                .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());

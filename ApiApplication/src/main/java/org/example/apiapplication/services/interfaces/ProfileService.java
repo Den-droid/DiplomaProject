@@ -17,8 +17,6 @@ public interface ProfileService {
 
     List<ProfileFieldDto> getProfileFieldValuesById(Integer profileId);
 
-    ProfileFullDto getProfileFullById(Integer id);
-
     boolean canProfileBeAddedToSystemAndScientist(Integer scientistId, Integer scientometricSystemId);
 
     List<ProfileByLabelDto> getProfilesByLabelId(Integer labelId);

@@ -132,14 +132,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ProfileFullDto getProfileFullById(Integer id) {
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PROFILE, id));
-
-        return getProfileFullDtoByProfile(profile);
-    }
-
-    @Override
     public boolean canProfileBeAddedToSystemAndScientist(Integer scientistId, Integer scientometricSystemId) {
         Scientist scientist = scientistRepository.findById(scientistId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.SCIENTIST,
@@ -411,27 +403,6 @@ public class ProfileServiceImpl implements ProfileService {
     private ProfilePreviewDto getProfilePreviewDtoByProfile(Profile profile) {
         return new ProfilePreviewDto(profile.getId(), profile.getScientist().getFullName(),
                 profile.isAreWorksDoubtful(), profile.isActive());
-    }
-
-    private ProfileFullDto getProfileFullDtoByProfile(Profile profile) {
-        List<ProfileFieldDto> profileFieldDtos = profile.getProfileFieldValues()
-                .stream()
-                .map(x -> {
-                    Field field = x.getField();
-                    FieldType fieldType = x.getField().getType();
-                    FieldDto fieldDto = new FieldDto(field.getId(), field.getName(),
-                            new FieldTypeDto(fieldType.getId(), fieldType.getName().name()));
-                    return new ProfileFieldDto(x.getId(), x.getValue(), fieldDto);
-                })
-                .toList();
-
-        List<LabelDto> labelDtos = profile.getLabels()
-                .stream()
-                .map(x -> new LabelDto(x.getId(), x.getName()))
-                .toList();
-
-        return new ProfileFullDto(profile.getId(),
-                profile.isAreWorksDoubtful(), profile.isActive(), profileFieldDtos, labelDtos);
     }
 
     private List<Profile> getProfilesByUserAndScientometricSystem(User user, Integer scientometricSystemId) {

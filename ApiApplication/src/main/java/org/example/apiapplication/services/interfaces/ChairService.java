@@ -11,6 +11,4 @@ public interface ChairService {
     List<ChairDto> getByFaculty(Integer id);
 
     List<ChairDto> getByFaculty(Faculty faculty);
-
-    ChairDto getById(Integer id);
 }
