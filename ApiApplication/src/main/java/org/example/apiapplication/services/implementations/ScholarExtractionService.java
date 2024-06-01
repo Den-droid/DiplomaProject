@@ -208,7 +208,7 @@ public class ScholarExtractionService implements ExtractionService {
         try {
             profileFieldValues = scholarExtractionHelper
                     .extractScholarProfile(scholarQueryBuilder.toString(), fieldExtractions);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ProfileByProfileIdNotFoundException(userId);
         }
         profileFieldValues.forEach((x) -> x.setProfile(profile));
