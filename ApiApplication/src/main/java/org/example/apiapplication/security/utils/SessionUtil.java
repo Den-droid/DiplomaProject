@@ -18,7 +18,7 @@ public class SessionUtil {
     public User getUserFromSession() {
         UserDetailsImpl userDetails =
                 (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.username();
+        String username = userDetails.getUsername();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserWithUsernameNotFoundException(username));
     }
