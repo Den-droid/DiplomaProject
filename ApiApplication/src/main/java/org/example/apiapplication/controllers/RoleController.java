@@ -22,27 +22,27 @@ public class RoleController {
 
     @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN')")
     @GetMapping
-    public ResponseEntity<?> getAllRoles() {
-        List<RoleDto> roles = roleService.getRoles();
+    public ResponseEntity<?> getAll() {
+        List<RoleDto> roles = roleService.getAll();
         return ResponseEntity.ok(roles);
     }
 
     @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN')")
-    @GetMapping("/{id}/possiblePermissions")
+    @GetMapping("/{id}/possible-permissions")
     public ResponseEntity<?> getPossiblePermissions(@PathVariable Integer id) {
         List<PermissionDto> permissions = roleService.getPossiblePermissions(id);
         return ResponseEntity.ok(permissions);
     }
 
     @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN')")
-    @GetMapping("/{id}/defaultPermissions")
+    @GetMapping("/{id}/default-permissions")
     public ResponseEntity<?> getDefaultPermissions(@PathVariable Integer id) {
         List<PermissionDto> permissions = roleService.getDefaultPermissions(id);
         return ResponseEntity.ok(permissions);
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
-    @PutMapping("/updateDefaultPermissions")
+    @PutMapping("/update-default-permissions")
     public ResponseEntity<?> updateDefaultPermissions(
             @RequestBody List<UpdateDefaultPermissionsDto> updateDefaultPermissionsDtos) {
         roleService.updateDefaultPermissions(updateDefaultPermissionsDtos);

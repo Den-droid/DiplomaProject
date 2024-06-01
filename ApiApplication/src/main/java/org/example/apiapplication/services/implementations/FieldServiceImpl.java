@@ -47,7 +47,7 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    public GetFieldsDto getAllFields(Integer currentPage) {
+    public GetFieldsDto getAll(Integer currentPage) {
         Page<Field> fieldsPage = fieldRepository
                 .findAll(PageRequest.of(currentPage - 1, 25));
 
@@ -59,7 +59,7 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    public GetFieldsDto getAllFields() {
+    public GetFieldsDto getAll() {
         List<FieldDto> fields = new ArrayList<>();
 
         for (Field field : fieldRepository.findAll()) {
@@ -70,7 +70,7 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    public GetFieldsDto searchFieldsByName(Integer currentPage, String name) {
+    public GetFieldsDto search(Integer currentPage, String name) {
         Page<Field> fieldPage = fieldRepository.findAllByNameContainsIgnoreCase(name,
                 PageRequest.of(currentPage - 1, 25));
 
@@ -90,31 +90,31 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    public void add(AddFieldDto addFieldDto) {
-        if (fieldRepository.findByNameIgnoreCase(addFieldDto.name()).isPresent()) {
-            throw new FieldAlreadyExistsException(addFieldDto.name());
+    public void create(CreateFieldDto createFieldDto) {
+        if (fieldRepository.findByNameIgnoreCase(createFieldDto.name()).isPresent()) {
+            throw new FieldAlreadyExistsException(createFieldDto.name());
         }
 
         Field field = new Field();
-        field.setName(addFieldDto.name());
+        field.setName(createFieldDto.name());
 
-        FieldType fieldType = fieldTypeRepository.findById(addFieldDto.typeId())
+        FieldType fieldType = fieldTypeRepository.findById(createFieldDto.typeId())
                 .orElseThrow(() ->
-                        new EntityWithIdNotFoundException(EntityName.FIELD_TYPE, addFieldDto.typeId()));
+                        new EntityWithIdNotFoundException(EntityName.FIELD_TYPE, createFieldDto.typeId()));
         field.setType(fieldType);
 
         fieldRepository.save(field);
     }
 
     @Override
-    public void edit(Integer id, EditFieldDto editFieldDto) {
+    public void update(Integer id, UpdateFieldDto updateFieldDto) {
         Field field = fieldRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD, id));
 
-        if (fieldRepository.findByNameIgnoreCaseAndIdNot(editFieldDto.name(), id).isPresent())
-            throw new FieldAlreadyExistsException(editFieldDto.name());
+        if (fieldRepository.findByNameIgnoreCaseAndIdNot(updateFieldDto.name(), id).isPresent())
+            throw new FieldAlreadyExistsException(updateFieldDto.name());
 
-        field.setName(editFieldDto.name());
+        field.setName(updateFieldDto.name());
 
         fieldRepository.save(field);
     }

@@ -102,12 +102,12 @@ export class UserComponent implements OnInit {
         }
       }
     });
-    this.userService.getCurrentUserFaculties().subscribe({
+    this.facultyService.getForCurrentUser().subscribe({
       next: (data: Faculty[]) => {
         this.faculties = data;
       }
     });
-    this.userService.getCurrentUserChairs().subscribe({
+    this.chairService.getForCurrentUser().subscribe({
       next: (data: Chair[]) => {
         this.chairs = data;
       }
@@ -116,7 +116,7 @@ export class UserComponent implements OnInit {
       next: (data: Permission[]) => {
         this.userPermissions = data;
 
-        this.canEditDeactivateUsers = this.userPermissions.filter(x => x.name == PermissionName.EDIT_USERS ||
+        this.canEditDeactivateUsers = this.userPermissions.filter(x => x.name == PermissionName.UPDATE_USERS ||
           x.name == PermissionName.DEACTIVATE_USERS
         ).length > 0;
       }
@@ -139,7 +139,7 @@ export class UserComponent implements OnInit {
   }
 
   getAll(page: number) {
-    this.userService.getAllUsers(page).subscribe({
+    this.userService.getForCurrentUser(page).subscribe({
       next: (data: GetUsersDto) => {
         if (data.users.length == 0) {
           this.displayedUsers = [];
@@ -176,7 +176,7 @@ export class UserComponent implements OnInit {
     } else {
       this.isSearchMode = true;
 
-      this.userService.searchUsers(page, this.searchQuery, this.selectedRole,
+      this.userService.searchForCurrentUser(page, this.searchQuery, this.selectedRole,
         this.selectedFaculty, this.selectedChair).subscribe({
           next: (data: GetUsersDto) => {
             if (data.users.length == 0) {

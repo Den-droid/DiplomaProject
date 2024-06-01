@@ -20,11 +20,11 @@ export class GetProfilesDto {
 }
 
 
-export class EditProfileDto {
+export class UpdateProfileDto {
   constructor(public fields: ProfileField[], public labelsIds: number[]) { }
 }
 
-export class AddProfileDto {
+export class CreateProfileDto {
   constructor(public scientistId: number, public scientometricSystemId: number,
     public profileFields: ProfileField[], public labelsIds: number[]) { }
 }

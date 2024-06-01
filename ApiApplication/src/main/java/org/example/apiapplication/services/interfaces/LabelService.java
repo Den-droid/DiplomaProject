@@ -7,21 +7,21 @@ import org.example.apiapplication.entities.Profile;
 import java.util.List;
 
 public interface LabelService {
-    GetLabelsDto getAllLabels(int page);
+    GetLabelsDto getAll(int page);
 
-    GetLabelsDto getAllLabels();
+    GetLabelsDto getAll();
 
-    GetLabelsDto searchLabelsByName(int page, String name);
+    GetLabelsDto search(int page, String name);
 
     LabelDto getById(Integer id);
 
-    void add(AddLabelDto addLabelDto);
+    void create(CreateLabelDto createLabelDto);
 
-    void edit(Integer id, EditLabelDto editLabelDto);
+    void update(Integer id, UpdateLabelDto updateLabelDto);
 
     void delete(Integer id, DeleteLabelDto deleteLabelDto);
 
     List<Label> getAllByExtraction(List<String> labels);
 
-    void addLabelsToProfile(List<Integer> labelIds, Profile profile);
+    void addToProfile(List<Integer> labelIds, Profile profile);
 }

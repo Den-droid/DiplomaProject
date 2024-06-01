@@ -7,13 +7,11 @@ import org.example.apiapplication.dto.roles.UpdateDefaultPermissionsDto;
 import java.util.List;
 
 public interface RoleService {
-    List<RoleDto> getRoles();
+    List<RoleDto> getAll();
 
     List<PermissionDto> getPossiblePermissions(Integer id);
 
     List<PermissionDto> getDefaultPermissions(Integer id);
-
-    RoleDto getByName(String roleName);
 
     void updateDefaultPermissions(List<UpdateDefaultPermissionsDto> defaultPermissionsDtos);
 }

@@ -25,11 +25,11 @@ export class LabelDeleteComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
       let id = data['id'];
-      this.labelService.getLabelById(id).subscribe({
+      this.labelService.getById(id).subscribe({
         next: (result: Label) => {
           this.currentLabel = result;
 
-          this.labelService.getAllLabels().subscribe({
+          this.labelService.getAll().subscribe({
             next: (data: GetLabelsDto) => {
               this.labels = data.labels.filter(label => label.name !== this.currentLabel.name);
 
@@ -80,7 +80,7 @@ export class LabelDeleteComponent implements OnInit {
 
     let deleteLabelDto = new DeleteLabelDto(this.selectedLabel);
 
-    this.labelService.deleteLabel(this.currentLabel.id, deleteLabelDto).subscribe({
+    this.labelService.delete(this.currentLabel.id, deleteLabelDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
       },

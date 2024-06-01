@@ -51,7 +51,8 @@
       </div>
     </div>
     <div *ngIf="isMainAdmin" class="col-sm-4 d-flex justify-content-end align-items-center">
-      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/users/add">Створити адмінстратора</button>
+      <button type="submit" class="btn btn-primary btn-block" routerLink="/user/users/add">Створити
+        адмінстратора</button>
     </div>
     <div *ngIf="!isMainAdmin" class="col-sm-4 d-flex justify-content-end align-items-center text-end">
       <span>Тільки головний адміністратор може створити іншого адміністратора!</span>
@@ -69,14 +70,14 @@
       <span class="col-sm-4 text-center"> {{user.email}}</span>
       <span class="text-center" [ngClass]="{'col-sm-4' : user.isSignedUp, 'col-sm-8' : !user.isSignedUp}">
         {{!user.isSignedUp ?
-        'This user needs to complete sign up by following link in email' : user.fullName}}</span>
+        'Цьому користувачу треба пройти реєстрацію по отриманому посиланню' : user.fullName}}</span>
       <div *ngIf="(isMainAdmin || canEditDeactivateUsers) && user.isSignedUp"
         class="col-sm-4 d-flex align-items-center flex-column">
         <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
           type="button" class="btn btn-primary btn-block" (click)="approve(user.id)">Підтвердити</button>
         <button *ngIf="!user.isApproved && user.isSignedUp" class="mb-3" style="margin-top: 10px; margin-bottom: 10px"
           type="button" class="btn btn-primary btn-block" (click)="reject(user.id)">Відхилити</button>
-        <button *ngIf="user.isActive && (hasPermissionForAction('EDIT_USERS') || isMainAdmin)" class="mb-3"
+        <button *ngIf="user.isActive && (hasPermissionForAction('UPDATE_USERS') || isMainAdmin)" class="mb-3"
           style="margin-top: 10px; margin-bottom: 10px" type="button" class="btn btn-primary btn-block"
           (click)="goToEditPage(user.id)">Відредагувати</button>
         <button *ngIf="!user.isActive && user.isApproved && (hasPermissionForAction('DEACTIVATE_USERS')

@@ -18,19 +18,19 @@ public class LabelController {
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getLabelById(@PathVariable Integer id) {
+    public ResponseEntity<?> getById(@PathVariable Integer id) {
         LabelDto label = labelService.getById(id);
         return ResponseEntity.ok(label);
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllLabels(@RequestParam(required = false) Integer currentPage) {
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Integer currentPage) {
         GetLabelsDto labels;
 
         if (currentPage != null) {
-            labels = labelService.getAllLabels(currentPage);
+            labels = labelService.getAll(currentPage);
         } else {
-            labels = labelService.getAllLabels();
+            labels = labelService.getAll();
         }
 
         return ResponseEntity.ok(labels);
@@ -38,31 +38,31 @@ public class LabelController {
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @GetMapping("/search")
-    public ResponseEntity<?> searchLabelsByName(@RequestParam String name,
-                                                @RequestParam Integer currentPage) {
-        GetLabelsDto labels = labelService.searchLabelsByName(currentPage, name);
+    public ResponseEntity<?> search(@RequestParam String name,
+                                    @RequestParam Integer currentPage) {
+        GetLabelsDto labels = labelService.search(currentPage, name);
         return ResponseEntity.ok(labels);
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @PostMapping
-    public ResponseEntity<?> addLabel(@RequestBody AddLabelDto labelDto) {
-        labelService.add(labelDto);
+    public ResponseEntity<?> create(@RequestBody CreateLabelDto labelDto) {
+        labelService.create(labelDto);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> editLabel(@PathVariable Integer id,
-                                       @RequestBody EditLabelDto editLabelDto) {
-        labelService.edit(id, editLabelDto);
+    public ResponseEntity<?> update(@PathVariable Integer id,
+                                    @RequestBody UpdateLabelDto updateLabelDto) {
+        labelService.update(id, updateLabelDto);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @PutMapping("/{id}/delete")
-    public ResponseEntity<?> deleteLabel(@PathVariable Integer id,
-                                         @RequestBody DeleteLabelDto deleteLabelDto) {
+    public ResponseEntity<?> delete(@PathVariable Integer id,
+                                    @RequestBody DeleteLabelDto deleteLabelDto) {
         labelService.delete(id, deleteLabelDto);
         return ResponseEntity.ok().build();
     }

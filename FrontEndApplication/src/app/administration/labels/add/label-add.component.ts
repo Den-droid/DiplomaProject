@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { LabelService } from '../../../shared/services/label.service';
-import { AddLabelDto } from '../../../shared/models/label.model';
+import { CreateLabelDto } from '../../../shared/models/label.model';
 
 @Component({
   selector: 'app-administration-label-add',
@@ -24,9 +24,9 @@ export class LabelAddComponent {
       this.error = '';
     }
 
-    let addLabelDto = new AddLabelDto(this.name);
+    let createLabelDto = new CreateLabelDto(this.name);
 
-    this.labelService.addLabel(addLabelDto).subscribe({
+    this.labelService.create(createLabelDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
       },

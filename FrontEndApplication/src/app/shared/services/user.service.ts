@@ -1,12 +1,9 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { AddAdminDto, EditAdminDto, EditCurrentUserDto, EditUserDto, GetUsersDto, User } from "../models/user.model";
+import { CreateAdminDto, UpdateAdminDto, UpdateCurrentUserDto, UpdateUserDto, GetUsersDto, User } from "../models/user.model";
 import { Observable } from "rxjs/internal/Observable";
 import { Permission } from "../models/permission.model";
 import { Role } from "../models/role.model";
-import { Faculty } from "../models/faculty.model";
-import { Chair } from "../models/chair.model";
-import { ScientistPreview } from "../models/scientist.model";
 import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
@@ -18,15 +15,15 @@ export class UserService {
   constructor(private readonly httpClient: HttpClient) {
   }
 
-  getAllUsers(page: number): Observable<GetUsersDto> {
+  getForCurrentUser(page: number): Observable<GetUsersDto> {
     const options = page ?
       { params: new HttpParams().set('currentPage', page) } : {};
 
-    return this.httpClient.get<GetUsersDto>(this.url, options);
+    return this.httpClient.get<GetUsersDto>(this.url + "/accessible-for-current-user", options);
   }
 
-  getEditDto(id: number): Observable<EditAdminDto> {
-    return this.httpClient.get<EditAdminDto>(this.url + "/" + id + "/editDto");
+  getEditDto(id: number): Observable<UpdateAdminDto> {
+    return this.httpClient.get<UpdateAdminDto>(this.url + "/" + id + "/edit-dto");
   }
 
   getRoles(id: number): Observable<Role[]> {
@@ -34,26 +31,14 @@ export class UserService {
   }
 
   getCurrentUserPermissions(): Observable<Permission[]> {
-    return this.httpClient.get<Permission[]>(this.url + "/current/permissions");
-  }
-
-  getCurrentUserFaculties(): Observable<Faculty[]> {
-    return this.httpClient.get<Faculty[]>(this.url + "/current/faculties");
-  }
-
-  getCurrentUserChairs(): Observable<Chair[]> {
-    return this.httpClient.get<Chair[]>(this.url + "/current/chairs");
-  }
-
-  getCurrentUserScientists(): Observable<ScientistPreview[]> {
-    return this.httpClient.get<ScientistPreview[]>(this.url + "/current/scientists");
+    return this.httpClient.get<Permission[]>(this.url + "/current-user/permissions");
   }
 
   getUserPermissionsById(id: number): Observable<Permission[]> {
     return this.httpClient.get<Permission[]>(this.url + "/" + id + "/permissions");
   }
 
-  searchUsers(page: number, fullName: string, roleId: number, facultyId: number, chairId: number) {
+  searchForCurrentUser(page: number, fullName: string, roleId: number, facultyId: number, chairId: number) {
     const options = page ?
       {
         params: new HttpParams()
@@ -64,23 +49,27 @@ export class UserService {
           .set('chairId', chairId)
       } : {};
 
-    return this.httpClient.get<GetUsersDto>(this.url + "/search", options);
+    return this.httpClient.get<GetUsersDto>(this.url + "/accessible-for-current-user/search", options);
   }
 
-  addAdmin(addAdminDto: AddAdminDto): Observable<any> {
+  createAdmin(addAdminDto: CreateAdminDto): Observable<any> {
     return this.httpClient.post(this.url + "/admins", addAdminDto);
   }
 
-  editAdmin(id: number, editAdmin: EditAdminDto): Observable<any> {
+  updateAdmin(id: number, editAdmin: UpdateAdminDto): Observable<any> {
     return this.httpClient.put(this.url + "/admins/" + id, editAdmin);
   }
 
-  editUser(id: number, editUser: EditUserDto): Observable<any> {
+  updateUser(id: number, editUser: UpdateUserDto): Observable<any> {
     return this.httpClient.put(this.url + "/" + id, editUser);
   }
 
-  getUserById(id: number): Observable<User> {
+  getById(id: number): Observable<User> {
     return this.httpClient.get<User>(this.url + "/" + id);
+  }
+
+  getCurrentUser(): Observable<User> {
+    return this.httpClient.get<User>(this.url + "/current-user");
   }
 
   canEditUser(id: number): Observable<boolean> {
@@ -90,7 +79,7 @@ export class UserService {
           .set('userId', id)
       } : {};
 
-    return this.httpClient.get<boolean>(this.url + "/current/canEditUser", options);
+    return this.httpClient.get<boolean>(this.url + "/current-user/can-update-user", options);
   }
 
   canEditProfile(id: number): Observable<boolean> {
@@ -100,11 +89,11 @@ export class UserService {
           .set('profileId', id)
       } : {};
 
-    return this.httpClient.get<boolean>(this.url + "/current/canEditProfile", options);
+    return this.httpClient.get<boolean>(this.url + "/current-user/can-update-profile", options);
   }
 
-  editCurrentUser(editUser: EditCurrentUserDto): Observable<any> {
-    return this.httpClient.put(this.url + "/current", editUser);
+  updateCurrentUser(editUser: UpdateCurrentUserDto): Observable<any> {
+    return this.httpClient.put(this.url + "/current-user", editUser);
   }
 
   approve(id: number): Observable<any> {

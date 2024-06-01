@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FieldTypeName } from 'src/app/shared/constants/field-type.constant';
-import { AddFieldDto, FieldType, mapStringToFieldTypeLabel } from 'src/app/shared/models/field.model';
+import { CreateFieldDto, FieldType, mapStringToFieldTypeLabel } from 'src/app/shared/models/field.model';
 import { FieldService } from 'src/app/shared/services/field.service';
 
 @Component({
@@ -41,9 +41,9 @@ export class FieldAddComponent implements OnInit {
       this.error = '';
     }
 
-    let addFieldDto = new AddFieldDto(this.name, this.selectedType);
+    let createFieldDto = new CreateFieldDto(this.name, this.selectedType);
 
-    this.fieldService.addField(addFieldDto).subscribe({
+    this.fieldService.create(createFieldDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
       },

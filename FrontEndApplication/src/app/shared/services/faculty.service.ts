@@ -35,4 +35,8 @@ export class FacultyService {
 
     return this.httpClient.get<EntityIndices[]>(this.url + "/" + facultyId + "/indices", options);
   }
+
+  getForCurrentUser(): Observable<Faculty[]> {
+    return this.httpClient.get<Faculty[]>(this.url + "/accessible-for-current-user");
+  }
 }

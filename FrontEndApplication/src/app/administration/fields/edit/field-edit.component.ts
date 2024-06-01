@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { EditFieldDto, Field } from 'src/app/shared/models/field.model';
+import { UpdateFieldDto, Field } from 'src/app/shared/models/field.model';
 import { FieldService } from 'src/app/shared/services/field.service';
 
 @Component({
@@ -21,7 +21,7 @@ export class FieldEditComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
       this.id = data['id'];
-      this.fieldService.getFieldById(this.id).subscribe({
+      this.fieldService.getById(this.id).subscribe({
         next: (result: Field) => {
           this.id = result.id;
           this.name = result.name;
@@ -42,9 +42,9 @@ export class FieldEditComponent implements OnInit {
       this.error = '';
     }
 
-    let editFieldDto = new EditFieldDto(this.name);
+    let updateFieldDto = new UpdateFieldDto(this.name);
 
-    this.fieldService.editField(this.id, editFieldDto).subscribe({
+    this.fieldService.update(this.id, updateFieldDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
       },

@@ -8,10 +8,6 @@ export class TokensDto {
   }
 }
 
-export class SignUpScientistDto {
-  constructor(public id: number, public scientistName: string) { }
-}
-
 export class SignUpDto {
   constructor(public email: string, public password: string, public scientistId: number) { }
 }

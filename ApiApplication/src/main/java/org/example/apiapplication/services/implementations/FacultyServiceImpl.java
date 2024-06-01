@@ -7,16 +7,23 @@ import org.example.apiapplication.dto.indices.EntityIndicesDto;
 import org.example.apiapplication.dto.indices.IndicesDto;
 import org.example.apiapplication.entities.*;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
+import org.example.apiapplication.entities.user.Role;
+import org.example.apiapplication.entities.user.User;
 import org.example.apiapplication.enums.FieldTypeName;
+import org.example.apiapplication.enums.UserRole;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.repositories.FacultyRepository;
 import org.example.apiapplication.repositories.ProfileRepository;
+import org.example.apiapplication.repositories.RoleRepository;
 import org.example.apiapplication.repositories.ScientometricSystemRepository;
+import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.FacultyService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -24,13 +31,20 @@ public class FacultyServiceImpl implements FacultyService {
     private final FacultyRepository facultyRepository;
     private final ScientometricSystemRepository scientometricSystemRepository;
     private final ProfileRepository profileRepository;
+    private final RoleRepository roleRepository;
+
+    private final SessionUtil sessionUtil;
 
     public FacultyServiceImpl(FacultyRepository facultyRepository,
                               ScientometricSystemRepository scientometricSystemRepository,
-                              ProfileRepository profileRepository) {
+                              ProfileRepository profileRepository,
+                              RoleRepository roleRepository,
+                              SessionUtil sessionUtil) {
         this.facultyRepository = facultyRepository;
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.profileRepository = profileRepository;
+        this.roleRepository = roleRepository;
+        this.sessionUtil = sessionUtil;
     }
 
     @Override
@@ -110,6 +124,39 @@ public class FacultyServiceImpl implements FacultyService {
         }
 
         return chairsIndices;
+    }
+
+    @Override
+    public List<FacultyDto> getForCurrentUser() {
+        User user = sessionUtil.getUserFromSession();
+
+        Role adminRole = roleRepository.findByName(UserRole.MAIN_ADMIN).orElseThrow();
+        Role facultyRole = roleRepository.findByName(UserRole.FACULTY_ADMIN).orElseThrow();
+        Role chairRole = roleRepository.findByName(UserRole.CHAIR_ADMIN).orElseThrow();
+
+        if (user.getRoles().contains(facultyRole) || user.getRoles().contains(chairRole)) {
+            Set<Faculty> facultySet = new HashSet<>(user.getFaculties());
+            for (Chair chair : user.getChairs()) {
+                facultySet.add(chair.getFaculty());
+            }
+            facultySet.addAll(user.getFaculties());
+
+            return facultySet.stream()
+                    .map(x -> new FacultyDto(x.getId(), x.getUkrainianName()))
+                    .toList();
+        } else if (user.getRoles().contains(adminRole)) {
+            return getAll();
+        } else {
+            Scientist scientist = user.getScientists().get(0);
+
+            Faculty faculty = scientist.getFaculty();
+            if (faculty != null)
+                return List.of(new FacultyDto(faculty.getId(), faculty.getUkrainianName()));
+            else {
+                Faculty chairFaculty = scientist.getChair().getFaculty();
+                return List.of(new FacultyDto(chairFaculty.getId(), chairFaculty.getUkrainianName()));
+            }
+        }
     }
 
     private int[] getIndicesSumByProfiles(List<Profile> profiles) {

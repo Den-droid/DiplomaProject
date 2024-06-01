@@ -14,6 +14,10 @@ export class ScientistService {
   }
 
   getNotRegisteredScientists(): Observable<ScientistPreview[]> {
-    return this.httpClient.get<ScientistPreview[]>(this.url + "/notRegistered");
+    return this.httpClient.get<ScientistPreview[]>(this.url + "/not-registered");
+  }
+
+  getForCurrentUser(): Observable<ScientistPreview[]> {
+    return this.httpClient.get<ScientistPreview[]>(this.url + "/accessible-for-current-user");
   }
 }

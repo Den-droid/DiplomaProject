@@ -25,7 +25,7 @@ export class LabelComponent implements OnInit {
   }
 
   getPageElements(page: number) {
-    this.labelService.getLabelsByPage(page).subscribe({
+    this.labelService.getAllByPage(page).subscribe({
       next: (data: GetLabelsDto) => {
         if (data.labels.length == 0) {
           this.displayedLabels = [];
@@ -61,7 +61,7 @@ export class LabelComponent implements OnInit {
     } else {
       this.isSearchMode = true;
 
-      this.labelService.getLabelsByPageAndName(page, this.searchQuery).subscribe({
+      this.labelService.search(page, this.searchQuery).subscribe({
         next: (data: GetLabelsDto) => {
           if (data.labels.length == 0) {
             this.displayedLabels = [];

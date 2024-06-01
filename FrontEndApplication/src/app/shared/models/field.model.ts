@@ -17,12 +17,12 @@ export class GetFieldsDto {
   constructor(public fields: Field[], public pageDto: Page) { }
 }
 
-export class AddFieldDto {
+export class CreateFieldDto {
   constructor(public name: string, public typeId: number) {
   }
 }
 
-export class EditFieldDto {
+export class UpdateFieldDto {
   constructor(public name: string) { }
 }
 

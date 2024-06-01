@@ -28,7 +28,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public GetLabelsDto getAllLabels(int page) {
+    public GetLabelsDto getAll(int page) {
         Page<Label> labelPage = labelRepository.findAll(PageRequest.of(page - 1, 25));
 
         List<LabelDto> labelDtos = labelPage.getContent().stream()
@@ -39,7 +39,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public GetLabelsDto getAllLabels() {
+    public GetLabelsDto getAll() {
         List<Label> labels = new ArrayList<>();
 
         for (Label label : labelRepository.findAll()) {
@@ -54,7 +54,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public GetLabelsDto searchLabelsByName(int page, String name) {
+    public GetLabelsDto search(int page, String name) {
         Page<Label> labelPage = labelRepository.findByNameContainsIgnoreCase(name.trim(),
                 PageRequest.of(page - 1, 25));
 
@@ -74,27 +74,27 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public void add(AddLabelDto addLabelDto) {
-        if (labelRepository.findByNameIgnoreCase(addLabelDto.name()).isPresent()) {
-            throw new LabelAlreadyExistsException(addLabelDto.name());
+    public void create(CreateLabelDto createLabelDto) {
+        if (labelRepository.findByNameIgnoreCase(createLabelDto.name()).isPresent()) {
+            throw new LabelAlreadyExistsException(createLabelDto.name());
         }
 
         Label label = new Label();
-        label.setName(addLabelDto.name());
+        label.setName(createLabelDto.name());
 
         labelRepository.save(label);
     }
 
     @Override
-    public void edit(Integer id, EditLabelDto editLabelDto) {
+    public void update(Integer id, UpdateLabelDto updateLabelDto) {
         Label label = labelRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.LABEL, id));
 
-        if (labelRepository.findByNameIgnoreCaseAndIdNot(editLabelDto.name(), id).isPresent()) {
-            throw new LabelAlreadyExistsException(editLabelDto.name());
+        if (labelRepository.findByNameIgnoreCaseAndIdNot(updateLabelDto.name(), id).isPresent()) {
+            throw new LabelAlreadyExistsException(updateLabelDto.name());
         }
 
-        label.setName(editLabelDto.name());
+        label.setName(updateLabelDto.name());
 
         labelRepository.save(label);
     }
@@ -137,7 +137,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public void addLabelsToProfile(List<Integer> labelIds, Profile profile) {
+    public void addToProfile(List<Integer> labelIds, Profile profile) {
         List<Label> labels = new ArrayList<>();
         for (Integer labelId : labelIds) {
             Label label = labelRepository.findById(labelId)

@@ -12,6 +12,8 @@ import { UserService } from 'src/app/shared/services/user.service';
 import { ScientometricSystemLabel } from 'src/app/shared/constants/scientometric-system.constant';
 import { PermissionName } from 'src/app/shared/constants/permissions.constant';
 import { RoleName } from 'src/app/shared/constants/roles.constant';
+import { FacultyService } from 'src/app/shared/services/faculty.service';
+import { ChairService } from 'src/app/shared/services/chair.service';
 
 @Component({
   selector: 'app-administration-profile',
@@ -21,7 +23,8 @@ import { RoleName } from 'src/app/shared/constants/roles.constant';
 export class ProfileComponent implements OnInit {
   constructor(private readonly router: Router, private readonly profileService: ProfileService,
     private readonly scientometricSystemService: ScientometricSystemService, private readonly jwtService: JWTTokenService,
-    private readonly userService: UserService) {
+    private readonly userService: UserService, private readonly facultyService: FacultyService,
+    private readonly chairService: ChairService) {
   }
 
   currentPage = 1;
@@ -81,11 +84,11 @@ export class ProfileComponent implements OnInit {
         this.getAll(this.currentPage);
       }
     })
-    this.userService.getCurrentUserFaculties().subscribe({
+    this.facultyService.getForCurrentUser().subscribe({
       next: (data: Faculty[]) => {
         this.faculties = data;
 
-        this.userService.getCurrentUserChairs().subscribe({
+        this.chairService.getForCurrentUser().subscribe({
           next: (data: Chair[]) => {
             this.chairs = data;
           }
@@ -97,10 +100,10 @@ export class ProfileComponent implements OnInit {
         this.userPermissions = data;
 
         this.canEditDeactivateProfiles = this.userPermissions.filter(x => x.name == PermissionName.DEACTIVATE_PROFILES ||
-          x.name == PermissionName.EDIT_PROFILES
+          x.name == PermissionName.UPDATE_PROFILES
         ).length > 0;
 
-        this.canAddProfiles = this.userPermissions.filter(x => x.name == PermissionName.ADD_PROFILES
+        this.canAddProfiles = this.userPermissions.filter(x => x.name == PermissionName.CREATE_PROFILES
         ).length > 0;
       }
     })
@@ -120,7 +123,7 @@ export class ProfileComponent implements OnInit {
   }
 
   getAll(page: number) {
-    this.profileService.getAllProfiles(page, this.selectedScientometricSystem).subscribe({
+    this.profileService.getForCurrentUser(page, this.selectedScientometricSystem).subscribe({
       next: (data: GetProfilesDto) => {
         if (data.profiles.length == 0) {
           this.displayedProfiles = [];
@@ -156,7 +159,7 @@ export class ProfileComponent implements OnInit {
     } else {
       this.isSearchMode = true;
 
-      this.profileService.searchProfiles(page, this.selectedScientometricSystem,
+      this.profileService.searchForCurrentUser(page, this.selectedScientometricSystem,
         this.searchQuery, this.selectedFaculty, this.selectedChair).subscribe({
           next: (data: GetProfilesDto) => {
             if (data.profiles.length == 0) {
@@ -192,14 +195,14 @@ export class ProfileComponent implements OnInit {
     let profile = this.displayedProfiles.filter(profile => profile.id == id);
     profile[0].areWorksDoubtful = true;
 
-    this.profileService.markAsDoubtful(id).subscribe();
+    this.profileService.markDoubtful(id).subscribe();
   }
 
   unmarkAsDoubtful(id: number) {
     let profile = this.displayedProfiles.filter(profile => profile.id == id);
     profile[0].areWorksDoubtful = false;
 
-    this.profileService.unmarkAsDoubtful(id).subscribe();
+    this.profileService.unmarkDoubtful(id).subscribe();
   }
 
   activate(id: number) {

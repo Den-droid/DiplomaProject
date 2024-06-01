@@ -55,10 +55,6 @@ export class JWTTokenService {
     return (token !== '');
   }
 
-  getId(){
-    return +this.decodedToken['id'];
-  }
-
   getRoles() {
     return this.decodedToken['roles'];
   }

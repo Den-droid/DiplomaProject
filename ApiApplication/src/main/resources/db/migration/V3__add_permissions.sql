@@ -1,6 +1,6 @@
 insert into permissions(name)
-values ('ADD_PROFILES'),
-       ('EDIT_PROFILES'),
+values ('CREATE_PROFILES'),
+       ('UPDATE_PROFILES'),
        ('DEACTIVATE_PROFILES'),
-       ('EDIT_USERS'),
+       ('UPDATE_USERS'),
        ('DEACTIVATE_USERS');

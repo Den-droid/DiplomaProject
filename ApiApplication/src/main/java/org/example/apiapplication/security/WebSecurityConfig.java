@@ -25,12 +25,25 @@ public class WebSecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
 
-    private final String[] authUrl = {"/api/auth/**"};
-    private final String[] chairsUrls = {"/api/chairs"};
+    private final String[] authUrl = {
+            "/api/auth/sign-in",
+            "/api/auth/refresh-token",
+            "/api/auth/sign-up",
+            "/api/auth/sign-up/{inviteCode}",
+            "/api/auth/forgot-password/token-exists",
+            "/api/auth/sign-up/exists-by-invite-code",
+            "/api/auth/forgot-password/create",
+            "/api/auth/forgot-password/change/{token}"
+    };
+    private final String[] chairsUrls = {
+            "/api/chairs",
+            "/api/accessible-for-current-user",
+    };
     private final String[] facultiesUrls = {
             "/api/faculties",
             "/api/faculties/indices",
-            "/api/faculties/{id}/indices"
+            "/api/faculties/{id}/indices",
+            "/api/faculties/accessible-for-current-user"
     };
 
     private final String[] fieldsUrls = {
@@ -49,34 +62,38 @@ public class WebSecurityConfig {
     };
 
     private final String[] scientometricSystemsUrls = {
-            "/api/scientometricSystems",
-            "/api/scientometricSystems/{id}/extraction/isRunning",
-            "/api/scientometricSystems/{id}/extraction/isPossible",
-            "/api/scientometricSystems/{id}/extraction/errors"
+            "/api/scientometric-systems",
+            "/api/scientometric-systems/{id}/extraction/is-running",
+            "/api/scientometric-systems/{id}/extraction/is-possible",
+            "/api/scientometric-systems/{id}/extraction/errors"
     };
 
-    private final String[] scientistsUrls = {"/api/scientists/notRegistered"};
+    private final String[] scientistsUrls = {
+            "/api/scientists/not-registered",
+            "/api/scientists/accessible-for-current-user"};
+
     private final String[] permissionsUrls = {"/api/permissions"};
     private final String[] rolesUrls = {
             "/api/roles",
-            "/api/roles/{id}/possiblePermissions",
-            "/api/roles/{id}/defaultPermissions",
-            "/api/roles/updateDefaultPermissions"
+            "/api/roles/{id}/possible-permissions",
+            "/api/roles/{id}/default-permissions",
+            "/api/roles/update-default-permissions"
     };
 
     private final String[] profilesUrls = {
             "/api/profiles",
             "/api/profiles/{id}",
             "/api/profiles/search",
-            "/api/profiles/forUser",
-            "/api/profiles/commonLabels",
+            "/api/profiles/common-labels",
             "/api/profiles/{id}/labels",
             "/api/profiles/{id}/fields",
-            "/api/profiles/{id}/markDoubtful",
-            "/api/profiles/{id}/unmarkDoubtful",
+            "/api/profiles/{id}/mark-doubtful",
+            "/api/profiles/{id}/unmark-doubtful",
             "/api/profiles/{id}/activate",
             "/api/profiles/{id}/deactivate",
-            "/api/profiles/canAddProfile"
+            "/api/profiles/can-add-profile",
+            "/api/profiles/accessible-for-current-user",
+            "/api/profiles/accessible-for-current-user/search"
     };
 
     private final String[] usersUrls = {

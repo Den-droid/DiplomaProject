@@ -51,6 +51,7 @@ export class ExtractionComponent implements OnInit {
         this.extractionService.launchScholarExtraction().subscribe({
           complete: () => {
             this.isRunning[index] = true;
+            this.scientometricSystemErrors[index] = new ExtractionErrors("NO_ERRORS", []);
           }
         })
         break;

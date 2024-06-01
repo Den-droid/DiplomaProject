@@ -89,7 +89,7 @@ export class ProfilesComponent implements OnInit {
   }
 
   getProfiles() {
-    this.profileService.getProfilesForUser(this.selectedScientometricSystem, this.selectedChair).subscribe({
+    this.profileService.getAll(this.selectedScientometricSystem, this.selectedChair).subscribe({
       next: (data: ProfileForUser[]) => {
         this.profiles = data;
 

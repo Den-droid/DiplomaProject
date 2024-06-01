@@ -1,53 +1,45 @@
 package org.example.apiapplication.services.interfaces;
 
-import org.example.apiapplication.dto.chairs.ChairDto;
-import org.example.apiapplication.dto.faculties.FacultyDto;
 import org.example.apiapplication.dto.permissions.PermissionDto;
 import org.example.apiapplication.dto.roles.RoleDto;
-import org.example.apiapplication.dto.scientist.ScientistPreviewDto;
 import org.example.apiapplication.dto.user.*;
-import org.example.apiapplication.entities.user.User;
 
 import java.util.List;
 
 public interface UserService {
-    GetUsersDto getUsersByUser(User user, Integer page);
+    GetUsersDto getForCurrentUser(Integer page);
 
-    GetUsersDto searchUsersByUser(User user, String fullName, Integer roleId, Integer facultyId, Integer chairId, Integer page);
+    GetUsersDto searchForCurrentUser(String fullName, Integer roleId,
+                                     Integer facultyId, Integer chairId,
+                                     Integer page);
 
-    UserDto getById(Integer id);
+    UserDto getCurrentUser();
 
-    List<PermissionDto> getUserPermissions(User user);
+    List<PermissionDto> getCurrentUserPermissions();
 
     List<PermissionDto> getUserPermissionsById(Integer id);
 
     List<RoleDto> getUserRoles(Integer userId);
 
-    List<ChairDto> getUserChairs(User user);
+    UpdateAdminDto getEditDto(Integer userId);
 
-    List<FacultyDto> getUserFaculties(User user);
+    boolean currentUserCanEditProfile(Integer editProfileId);
 
-    List<ScientistPreviewDto> getUserScientists(User user);
-
-    EditAdminDto getEditDto(Integer userId);
-
-    boolean canEditProfile(User user, Integer editProfileId);
-
-    boolean canEditUser(User user, Integer editUserId);
+    boolean currentUserCanEditUser(Integer editUserId);
 
     void createAdmin(CreateAdminDto createAdminDto);
 
-    void editAdmin(Integer id, EditAdminDto editAdminDto);
+    void updateAdmin(Integer id, UpdateAdminDto updateAdminDto);
 
-    void editUser(Integer id, EditUserDto editUserDto);
+    void updateUser(Integer id, UpdateUserDto updateUserDto);
 
-    void editCurrentUser(User user, EditCurrentUserDto editUserDto);
+    void updateCurrentUser(UpdateCurrentUserDto editUserDto);
 
-    void activateUser(Integer userId);
+    void activate(Integer userId);
 
-    void deactivateUser(Integer userId);
+    void deactivate(Integer userId);
 
-    void approveUser(Integer id);
+    void approve(Integer id);
 
-    void rejectUser(Integer id);
+    void reject(Integer id);
 }

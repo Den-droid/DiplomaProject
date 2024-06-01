@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FieldTypeName } from 'src/app/shared/constants/field-type.constant';
 import { Field, GetFieldsDto, ProfileField } from 'src/app/shared/models/field.model';
 import { GetLabelsDto, Label } from 'src/app/shared/models/label.model';
-import { EditProfileDto } from 'src/app/shared/models/profile.model';
+import { UpdateProfileDto } from 'src/app/shared/models/profile.model';
 import { FieldService } from 'src/app/shared/services/field.service';
 import { LabelService } from 'src/app/shared/services/label.service';
 import { ProfileService } from 'src/app/shared/services/profile.service';
@@ -78,7 +78,7 @@ export class ProfileEditComponent implements OnInit {
             next: (labels: Label[]) => {
               this.profileLabels = labels;
 
-              this.labelService.getAllLabels().subscribe({
+              this.labelService.getAll().subscribe({
                 next: (allLabels: GetLabelsDto) => {
                   this.allLabels = allLabels.labels;
                   this.possibleLabels = this.allLabels;
@@ -104,7 +104,7 @@ export class ProfileEditComponent implements OnInit {
                 this.profileFieldsError.push('');
               }
 
-              this.fieldService.getAllFields().subscribe({
+              this.fieldService.getAll().subscribe({
                 next: (allFields: GetFieldsDto) => {
                   this.allFields = allFields.fields.filter(x => x.fieldType.name != FieldTypeName.LABEL);
                   this.possibleFields = this.allFields;
@@ -226,7 +226,7 @@ export class ProfileEditComponent implements OnInit {
       return;
     }
 
-    let editProfileDto = new EditProfileDto(this.updatedProfileFields, this.profileLabels.map(x => x.id));
+    let editProfileDto = new UpdateProfileDto(this.updatedProfileFields, this.profileLabels.map(x => x.id));
 
     this.profileService.editProfile(this.profileId, editProfileDto).subscribe({
       complete: () => {

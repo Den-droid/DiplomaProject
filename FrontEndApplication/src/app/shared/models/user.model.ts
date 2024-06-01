@@ -10,21 +10,21 @@ export class GetUsersDto {
   }
 }
 
-export class AddAdminDto {
+export class CreateAdminDto {
   constructor(public email: string, public facultyIds: number[], public chairIds: number[],
     public isMainAdmin: boolean, public permissions: number[]
   ) { }
 }
 
-export class EditAdminDto {
+export class UpdateAdminDto {
   constructor(public fullName: string, public facultyIds: number[], public chairIds: number[], public permissions: number[]
   ) { }
 }
 
-export class EditUserDto {
+export class UpdateUserDto {
   constructor(public fullName: string, public permissionIds: number[]) { }
 }
 
-export class EditCurrentUserDto {
+export class UpdateCurrentUserDto {
   constructor(public fullName: string) { }
 }

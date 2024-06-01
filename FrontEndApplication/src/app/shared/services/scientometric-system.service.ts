@@ -8,7 +8,7 @@ import { baseUrl } from "../constants/url.constant";
   providedIn: 'root'
 })
 export class ScientometricSystemService {
-  private scientometricSystemUrl: string = baseUrl + "/scientometricSystems";
+  private scientometricSystemUrl: string = baseUrl + "/scientometric-systems";
 
   constructor(private readonly httpClient: HttpClient) {
   }
@@ -18,11 +18,11 @@ export class ScientometricSystemService {
   }
 
   getExtractionIsRunning(id: number): Observable<boolean> {
-    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/" + id + "/extraction/isRunning")
+    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/" + id + "/extraction/is-running")
   }
 
   getExtractionIsPossible(id: number): Observable<boolean> {
-    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/" + id + "/extraction/isPossible")
+    return this.httpClient.get<boolean>(this.scientometricSystemUrl + "/" + id + "/extraction/is-possible")
   }
 
   getExtractionErrors(id: number): Observable<ExtractionErrors> {

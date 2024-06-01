@@ -3,6 +3,7 @@ package org.example.apiapplication.controllers;
 import org.example.apiapplication.dto.chairs.ChairDto;
 import org.example.apiapplication.services.interfaces.ChairService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class ChairController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllChairs(@RequestParam(required = false) Integer facultyId) {
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Integer facultyId) {
         List<ChairDto> chairDtos;
 
         if (facultyId != null) {
@@ -28,5 +29,12 @@ public class ChairController {
         }
 
         return ResponseEntity.ok(chairDtos);
+    }
+
+    @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN', 'USER')")
+    @GetMapping("/accessible-for-current-user")
+    public ResponseEntity<?> getForCurrentUser() {
+        List<ChairDto> chairs = chairService.getForCurrentUser();
+        return ResponseEntity.ok(chairs);
     }
 }

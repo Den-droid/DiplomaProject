@@ -4,6 +4,7 @@ import org.example.apiapplication.dto.faculties.FacultyDto;
 import org.example.apiapplication.dto.indices.EntityIndicesDto;
 import org.example.apiapplication.services.interfaces.FacultyService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class FacultyController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllFaculties() {
+    public ResponseEntity<?> getAll() {
         List<FacultyDto> facultyDtos = facultyService.getAll();
         return ResponseEntity.ok(facultyDtos);
     }
@@ -37,5 +38,12 @@ public class FacultyController {
         List<EntityIndicesDto> facultyIndicesDtos =
                 facultyService.getChairsIndicesByFaculty(id, scientometricSystemId);
         return ResponseEntity.ok(facultyIndicesDtos);
+    }
+
+    @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN', 'USER')")
+    @GetMapping("/accessible-for-current-user")
+    public ResponseEntity<?> getByCurrentUser() {
+        List<FacultyDto> faculties = facultyService.getForCurrentUser();
+        return ResponseEntity.ok(faculties);
     }
 }

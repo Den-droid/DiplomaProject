@@ -20,57 +20,57 @@ public class FieldController {
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @GetMapping("/types")
-    public ResponseEntity<?> getFieldTypes() {
+    public ResponseEntity<?> getTypes() {
         List<FieldTypeDto> fieldTypes = fieldService.getAllFieldTypes();
         return ResponseEntity.ok(fieldTypes);
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFieldById(@PathVariable Integer id) {
+    public ResponseEntity<?> getById(@PathVariable Integer id) {
         FieldDto fieldDto = fieldService.getById(id);
         return ResponseEntity.ok(fieldDto);
     }
 
     @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN', 'USER')")
     @GetMapping
-    public ResponseEntity<?> getAllFields(@RequestParam(required = false) Integer currentPage) {
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Integer currentPage) {
         GetFieldsDto fields;
         if (currentPage == null) {
-            fields = fieldService.getAllFields();
+            fields = fieldService.getAll();
         } else {
-            fields = fieldService.getAllFields(currentPage);
+            fields = fieldService.getAll(currentPage);
         }
         return ResponseEntity.ok(fields);
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @GetMapping("/search")
-    public ResponseEntity<?> searchFieldsByName(@RequestParam Integer currentPage,
-                                                @RequestParam String name) {
-        GetFieldsDto fields = fieldService.searchFieldsByName(currentPage, name);
+    public ResponseEntity<?> search(@RequestParam Integer currentPage,
+                                    @RequestParam String name) {
+        GetFieldsDto fields = fieldService.search(currentPage, name);
         return ResponseEntity.ok(fields);
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @PostMapping
-    public ResponseEntity<?> addField(@RequestBody AddFieldDto addFieldDto) {
-        fieldService.add(addFieldDto);
+    public ResponseEntity<?> create(@RequestBody CreateFieldDto createFieldDto) {
+        fieldService.create(createFieldDto);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> editField(@PathVariable Integer id,
-                                       @RequestBody EditFieldDto editFieldDto) {
-        fieldService.edit(id, editFieldDto);
+    public ResponseEntity<?> update(@PathVariable Integer id,
+                                    @RequestBody UpdateFieldDto updateFieldDto) {
+        fieldService.update(id, updateFieldDto);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @PutMapping("/{id}/delete")
-    public ResponseEntity<?> deleteField(@PathVariable Integer id,
-                                         @RequestBody DeleteFieldDto deleteFieldDto) {
+    public ResponseEntity<?> delete(@PathVariable Integer id,
+                                    @RequestBody DeleteFieldDto deleteFieldDto) {
         fieldService.delete(id, deleteFieldDto);
         return ResponseEntity.ok().build();
     }

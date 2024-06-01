@@ -25,7 +25,7 @@ export class FieldComponent implements OnInit {
   }
 
   getPageElements(page: number) {
-    this.fieldService.getFieldsByPage(page).subscribe({
+    this.fieldService.getAllByPage(page).subscribe({
       next: (data: GetFieldsDto) => {
         if (data.fields.length == 0) {
           this.displayedFields = [];
@@ -61,7 +61,7 @@ export class FieldComponent implements OnInit {
     } else {
       this.isSearchMode = true;
 
-      this.fieldService.getFieldsByPageAndName(page, this.searchQuery).subscribe({
+      this.fieldService.search(page, this.searchQuery).subscribe({
         next: (data: GetFieldsDto) => {
           if (data.fields.length == 0) {
             this.displayedFields = [];

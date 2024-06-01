@@ -26,11 +26,11 @@ export class FieldDeleteComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
       let id = data['id'];
-      this.fieldService.getFieldById(id).subscribe({
+      this.fieldService.getById(id).subscribe({
         next: (result: Field) => {
           this.currentField = result;
 
-          this.fieldService.getAllFields().subscribe({
+          this.fieldService.getAll().subscribe({
             next: (data: GetFieldsDto) => {
               this.fields = data.fields.filter(field => field.name !== this.currentField.name &&
                 field.fieldType.id === this.currentField.fieldType.id
@@ -83,7 +83,7 @@ export class FieldDeleteComponent implements OnInit {
 
     let deleteFieldDto = new DeleteFieldDto(this.selectedField);
 
-    this.fieldService.deleteField(this.currentField.id, deleteFieldDto).subscribe({
+    this.fieldService.delete(this.currentField.id, deleteFieldDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
       },

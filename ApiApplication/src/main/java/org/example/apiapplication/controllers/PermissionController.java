@@ -23,7 +23,7 @@ public class PermissionController {
 
     @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN')")
     @GetMapping
-    public ResponseEntity<?> getAllPermissions() {
+    public ResponseEntity<?> getAll() {
         List<PermissionDto> permissionDtos = permissionService.getAll();
         return ResponseEntity.ok(permissionDtos);
     }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { EditLabelDto, Label } from '../../../shared/models/label.model';
+import { UpdateLabelDto, Label } from '../../../shared/models/label.model';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { LabelService } from '../../../shared/services/label.service';
 
@@ -20,7 +20,7 @@ export class LabelEditComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((data: Params) => {
       this.id = data['id'];
-      this.labelService.getLabelById(this.id).subscribe({
+      this.labelService.getById(this.id).subscribe({
         next: (result: Label) => {
           this.id = result.id;
           this.name = result.name;
@@ -41,9 +41,9 @@ export class LabelEditComponent implements OnInit {
       this.error = '';
     }
 
-    let editLabelDto = new EditLabelDto(this.name);
+    let updateLabelDto = new UpdateLabelDto(this.name);
 
-    this.labelService.editLabel(this.id, editLabelDto).subscribe({
+    this.labelService.update(this.id, updateLabelDto).subscribe({
       error: (error: any) => {
         this.error = error?.error?.error;
       },

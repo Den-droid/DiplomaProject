@@ -35,7 +35,7 @@ export class CommonLabelsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labelService.getAllLabels().subscribe({
+    this.labelService.getAll().subscribe({
       next: (labels: GetLabelsDto) => {
         this.allLabels = labels.labels;
         this.displayedLabels = this.allLabels;
@@ -54,7 +54,7 @@ export class CommonLabelsComponent implements OnInit {
       return;
     }
 
-    this.profileService.getProfilesByLabel(this.selectedLabel).subscribe({
+    this.profileService.getByLabel(this.selectedLabel).subscribe({
       next: (data: ProfileByLabel[]) => {
         this.profiles = data;
 

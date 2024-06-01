@@ -3,35 +3,37 @@ package org.example.apiapplication.services.interfaces;
 import org.example.apiapplication.dto.fields.ProfileFieldDto;
 import org.example.apiapplication.dto.labels.LabelDto;
 import org.example.apiapplication.dto.profile.*;
-import org.example.apiapplication.entities.user.User;
 
 import java.util.List;
 
 public interface ProfileService {
-    GetProfilesDto getByUserAndScientometricSystemId(User user, Integer scientometricSystemId, Integer page);
+    GetProfilesDto getForCurrentUser(Integer scientometricSystemId, Integer page);
 
-    GetProfilesDto searchByUserAndScientometricSystemId(User user, Integer scientometricSystemId,
-                                                        String fullName, Integer facultyId, Integer chairId, Integer page);
+    GetProfilesDto searchForCurrentUser(Integer scientometricSystemId,
+                                        String fullName, Integer facultyId,
+                                        Integer chairId, Integer page);
 
     List<LabelDto> getLabelsById(Integer profileId);
 
     List<ProfileFieldDto> getProfileFieldValuesById(Integer profileId);
 
-    boolean canProfileBeAddedToSystemAndScientist(Integer scientistId, Integer scientometricSystemId);
+    boolean canProfileBeCreatedBySystemAndScientist(Integer scientistId,
+                                                    Integer scientometricSystemId);
 
-    List<ProfileByLabelDto> getProfilesByLabelId(Integer labelId);
+    List<ProfileByLabelDto> getByLabelId(Integer labelId);
 
-    List<ProfileForUserDto> getProfilesForUser(Integer scientometricSystemId, Integer chairId);
+    List<ProfileForUserDto> getAll(Integer scientometricSystemId,
+                                   Integer chairId);
 
-    void add(AddProfileDto addProfileDto);
+    void create(CreateProfileDto createProfileDto);
 
-    void edit(Integer id, EditProfileDto editProfileDto);
+    void update(Integer id, UpdateProfileDto updateProfileDto);
 
     void deactivate(Integer id);
 
     void activate(Integer id);
 
-    void markWorksDoubtful(Integer id);
+    void markDoubtful(Integer id);
 
-    void unmarkWorksDoubtful(Integer id);
+    void unmarkDoubtful(Integer id);
 }

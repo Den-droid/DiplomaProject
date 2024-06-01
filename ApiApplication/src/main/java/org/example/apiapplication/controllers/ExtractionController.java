@@ -20,7 +20,7 @@ public class ExtractionController {
 
     @PreAuthorize("hasRole('MAIN_ADMIN')")
     @GetMapping("/scholar")
-    public ResponseEntity<?> scholarExtraction() {
+    public ResponseEntity<?> startScholar() {
         scholarExtractionService.startExtraction();
         return ResponseEntity.ok().build();
     }

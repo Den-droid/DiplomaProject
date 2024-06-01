@@ -78,7 +78,7 @@
           {{profileFieldsError[i]}}</div>
       </div>
       <div class="row d-flex justify-content-between" style="border: 2px solid lightblue; padding: 10px;">
-        <div class="col-sm-8">
+        <div class="col-sm-9">
           <div>
             <div class="mb-3 d-flex justify-content-between">
               <label class="col-sm-4 col-form-label" for="searchField">Знайдіть поле: </label>
@@ -98,7 +98,7 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
+        <div class="col-sm-3 d-flex flex-column justify-content-center align-items-center">
           <button type="button" class="btn btn-primary btn-block" (click)="addFieldToProfile()">Додати поле</button>
           <span *ngIf="selectedFieldError.length > 0" style="color: red"> {{selectedFieldError}} </span>
         </div>
@@ -120,7 +120,7 @@
         </div>
       </div>
       <div class="row d-flex justify-content-between" style="border: 2px solid lightblue; padding: 10px;">
-        <div class="col-sm-8">
+        <div class="col-sm-9">
           <div>
             <div class="mb-3 d-flex justify-content-center">
               <label class="col-sm-4 col-form-label" for="searchLabel">Знайдіть ключове слово: </label>
@@ -140,7 +140,7 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
+        <div class="col-sm-3 d-flex flex-column justify-content-center align-items-center">
           <button type="button" class="btn btn-primary btn-block" (click)="addLabel()">Додати ключове слово</button>
           <span *ngIf="selectedLabelError.length > 0" style="color: red"> {{selectedLabelError}} </span>
         </div>

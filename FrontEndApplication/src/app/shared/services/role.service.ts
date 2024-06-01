@@ -19,14 +19,14 @@ export class RoleService {
   }
 
   getPossiblePermissions(id: number): Observable<Permission[]> {
-    return this.httpClient.get<Permission[]>(this.url + "/" + id + "/possiblePermissions");
+    return this.httpClient.get<Permission[]>(this.url + "/" + id + "/possible-permissions");
   }
 
   getDefaultPermissions(id: number): Observable<Permission[]> {
-    return this.httpClient.get<Permission[]>(this.url + "/" + id + "/defaultPermissions");
+    return this.httpClient.get<Permission[]>(this.url + "/" + id + "/default-permissions");
   }
 
   updateDefaultPermissions(updateDefaultPermissionsDto: UpdateDefaultPermissions[]): Observable<any> {
-    return this.httpClient.put(this.url + "/updateDefaultPermissions", updateDefaultPermissionsDto);
+    return this.httpClient.put(this.url + "/update-default-permissions", updateDefaultPermissionsDto);
   }
 }

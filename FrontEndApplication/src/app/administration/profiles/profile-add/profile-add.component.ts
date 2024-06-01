@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { FieldTypeName } from 'src/app/shared/constants/field-type.constant';
 import { Field, ProfileField, GetFieldsDto } from 'src/app/shared/models/field.model';
 import { Label, GetLabelsDto } from 'src/app/shared/models/label.model';
-import { AddProfileDto } from 'src/app/shared/models/profile.model';
+import { CreateProfileDto } from 'src/app/shared/models/profile.model';
 import { ScientistPreview } from 'src/app/shared/models/scientist.model';
 import { ScientometricSystem, mapStringToScientometricSystemLabel } from 'src/app/shared/models/scientometric.model';
 import { FieldService } from 'src/app/shared/services/field.service';
 import { LabelService } from 'src/app/shared/services/label.service';
 import { ProfileService } from 'src/app/shared/services/profile.service';
+import { ScientistService } from 'src/app/shared/services/scientist.service';
 import { ScientometricSystemService } from 'src/app/shared/services/scientometric-system.service';
 import { UserService } from 'src/app/shared/services/user.service';
 
@@ -20,7 +21,8 @@ import { UserService } from 'src/app/shared/services/user.service';
 export class ProfileAddComponent implements OnInit {
   constructor(private readonly router: Router, private readonly fieldService: FieldService,
     private readonly profileService: ProfileService, private readonly labelService: LabelService,
-    private readonly scientometricSystemService: ScientometricSystemService, private readonly userService: UserService
+    private readonly scientometricSystemService: ScientometricSystemService, private readonly userService: UserService,
+    private readonly scientistService: ScientistService
   ) {
   }
 
@@ -83,21 +85,21 @@ export class ProfileAddComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labelService.getAllLabels().subscribe({
+    this.labelService.getAll().subscribe({
       next: (allLabels: GetLabelsDto) => {
         this.allLabels = allLabels.labels;
         this.setPossibleLabels();
       }
     })
 
-    this.fieldService.getAllFields().subscribe({
+    this.fieldService.getAll().subscribe({
       next: (allFields: GetFieldsDto) => {
         this.allFields = allFields.fields.filter(x => x.fieldType.name != FieldTypeName.LABEL);
         this.setPossibleFields();
       }
     })
 
-    this.userService.getCurrentUserScientists().subscribe({
+    this.scientistService.getForCurrentUser().subscribe({
       next: (data: ScientistPreview[]) => {
         this.scientists = data;
         this.displayedScientists = this.scientists;
@@ -148,7 +150,7 @@ export class ProfileAddComponent implements OnInit {
         if (result) {
           this.profileCanBeAdded = true;
         } else {
-          this.errorCanAddProfile = 'Profile for this scientist and scientometric system already exists!';
+          this.errorCanAddProfile = 'Профіль для наукометричної системи вже існує!';
         }
       }
     })
@@ -242,7 +244,7 @@ export class ProfileAddComponent implements OnInit {
       return;
     }
 
-    let addProfileDto = new AddProfileDto(this.selectedScientist, this.selectedScientometricSystem,
+    let addProfileDto = new CreateProfileDto(this.selectedScientist, this.selectedScientometricSystem,
       this.profileFields, this.profileLabels.map(x => x.id));
 
     this.profileService.addProfile(addProfileDto).subscribe({

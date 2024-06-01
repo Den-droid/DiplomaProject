@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { UserService } from 'src/app/shared/services/user.service';
 import { Faculty } from 'src/app/shared/models/faculty.model';
 import { Chair } from 'src/app/shared/models/chair.model';
-import { EditAdminDto, EditUserDto } from 'src/app/shared/models/user.model';
+import { UpdateAdminDto, UpdateUserDto } from 'src/app/shared/models/user.model';
 import { JWTTokenService } from 'src/app/shared/services/jwt-token.service';
 import { ChairService } from 'src/app/shared/services/chair.service';
 import { FacultyService } from 'src/app/shared/services/faculty.service';
@@ -65,7 +65,7 @@ export class UserEditComponent implements OnInit {
       this.userId = data['id'];
 
       this.userService.getEditDto(this.userId).subscribe({
-        next: (result: EditAdminDto) => {
+        next: (result: UpdateAdminDto) => {
           this.fullName = result.fullName;
 
           this.userService.canEditUser(this.userId).subscribe({
@@ -248,22 +248,22 @@ export class UserEditComponent implements OnInit {
     }
 
     if (this.userRole === RoleName.FACULTY_ADMIN || this.userRole === RoleName.CHAIR_ADMIN) {
-      let editAdminDto;
+      let updateAdminDto;
       if (this.wholeFaculty) {
-        editAdminDto = new EditAdminDto(this.fullName, [this.selectedFaculty], [], permissionList);
+        updateAdminDto = new UpdateAdminDto(this.fullName, [this.selectedFaculty], [], permissionList);
       } else {
-        editAdminDto = new EditAdminDto(this.fullName, [], [this.selectedChair], permissionList);
+        updateAdminDto = new UpdateAdminDto(this.fullName, [], [this.selectedChair], permissionList);
       }
 
-      this.userService.editAdmin(this.userId, editAdminDto).subscribe({
+      this.userService.updateAdmin(this.userId, updateAdminDto).subscribe({
         complete: () => {
           this.router.navigateByUrl('/user/users');
         }
       });
     } else {
-      let editUserDto = new EditUserDto(this.fullName, permissionList);
+      let updateUserDto = new UpdateUserDto(this.fullName, permissionList);
 
-      this.userService.editUser(this.userId, editUserDto).subscribe({
+      this.userService.updateUser(this.userId, updateUserDto).subscribe({
         complete: () => {
           this.router.navigateByUrl('/user/users');
         }

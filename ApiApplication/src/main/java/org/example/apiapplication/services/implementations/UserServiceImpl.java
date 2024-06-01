@@ -2,12 +2,9 @@ package org.example.apiapplication.services.implementations;
 
 import jakarta.transaction.Transactional;
 import org.example.apiapplication.constants.EntityName;
-import org.example.apiapplication.dto.chairs.ChairDto;
-import org.example.apiapplication.dto.faculties.FacultyDto;
 import org.example.apiapplication.dto.page.PageDto;
 import org.example.apiapplication.dto.permissions.PermissionDto;
 import org.example.apiapplication.dto.roles.RoleDto;
-import org.example.apiapplication.dto.scientist.ScientistPreviewDto;
 import org.example.apiapplication.dto.user.*;
 import org.example.apiapplication.entities.Chair;
 import org.example.apiapplication.entities.Faculty;
@@ -21,6 +18,7 @@ import org.example.apiapplication.exceptions.auth.UserWithUsernameExistsExceptio
 import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.repositories.*;
+import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.EmailService;
 import org.example.apiapplication.services.interfaces.UserService;
 import org.springframework.stereotype.Service;
@@ -38,7 +36,8 @@ public class UserServiceImpl implements UserService {
     private final PermissionRepository permissionRepository;
     private final ProfileRepository profileRepository;
     private final EmailService emailService;
-    private final ScientistRepository scientistRepository;
+
+    private final SessionUtil sessionUtil;
 
     public UserServiceImpl(UserRepository userRepository,
                            FacultyRepository facultyRepository,
@@ -46,7 +45,7 @@ public class UserServiceImpl implements UserService {
                            RoleRepository roleRepository,
                            PermissionRepository permissionRepository,
                            ProfileRepository profileRepository,
-                           EmailService emailService, ScientistRepository scientistRepository) {
+                           EmailService emailService, SessionUtil sessionUtil) {
         this.userRepository = userRepository;
         this.facultyRepository = facultyRepository;
         this.chairRepository = chairRepository;
@@ -54,11 +53,13 @@ public class UserServiceImpl implements UserService {
         this.permissionRepository = permissionRepository;
         this.profileRepository = profileRepository;
         this.emailService = emailService;
-        this.scientistRepository = scientistRepository;
+        this.sessionUtil = sessionUtil;
     }
 
     @Override
-    public GetUsersDto searchUsersByUser(User user, String fullName, Integer roleId, Integer facultyId, Integer chairId, Integer page) {
+    public GetUsersDto searchForCurrentUser(String fullName, Integer roleId, Integer facultyId, Integer chairId, Integer page) {
+        User user = sessionUtil.getUserFromSession();
+
         List<User> users = getUsersByUser(user);
 
         if (fullName != null && !fullName.isEmpty()) {
@@ -77,15 +78,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getById(Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, id));
+    public UserDto getCurrentUser() {
+        User user = sessionUtil.getUserFromSession();
         return new UserDto(user.getId(), user.getEmail(), user.getFullName(),
                 user.isApproved(), user.isActive(), user.isSignedUp());
     }
 
     @Override
-    public List<PermissionDto> getUserPermissions(User user) {
+    public List<PermissionDto> getCurrentUserPermissions() {
+        User user = sessionUtil.getUserFromSession();
+
         return user.getPermissions().stream()
                 .map(permission -> new PermissionDto(permission.getId(), permission.getName().name()))
                 .toList();
@@ -96,7 +98,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, id));
 
-        return getUserPermissions(user);
+        return user.getPermissions().stream()
+                .map(permission -> new PermissionDto(permission.getId(), permission.getName().name()))
+                .toList();
     }
 
     @Override
@@ -110,121 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ChairDto> getUserChairs(User user) {
-        Role adminRole = roleRepository.findByName(UserRole.MAIN_ADMIN).orElseThrow();
-        Role facultyRole = roleRepository.findByName(UserRole.FACULTY_ADMIN).orElseThrow();
-        Role chairRole = roleRepository.findByName(UserRole.CHAIR_ADMIN).orElseThrow();
-
-        if (user.getRoles().contains(facultyRole) || user.getRoles().contains(chairRole)) {
-            Set<Chair> chairSet = new HashSet<>(user.getChairs());
-            for (Faculty faculty : user.getFaculties()) {
-                chairSet.addAll(faculty.getChairs());
-            }
-
-            return chairSet.stream()
-                    .map(x -> new ChairDto(x.getId(), x.getUkrainianName(), x.getFaculty().getId()))
-                    .toList();
-        } else if (user.getRoles().contains(adminRole)) {
-            List<Chair> chairs = new ArrayList<>();
-            for (Chair chair : chairRepository.findAll()) {
-                chairs.add(chair);
-            }
-
-            return chairs.stream()
-                    .map(x -> new ChairDto(x.getId(), x.getUkrainianName(),
-                            x.getFaculty().getId()))
-                    .toList();
-        } else {
-            Chair chair = user.getScientists().get(0).getChair();
-            return List.of(new ChairDto(chair.getId(), chair.getUkrainianName(),
-                    chair.getFaculty().getId()));
-        }
-    }
-
-    @Override
-    public List<FacultyDto> getUserFaculties(User user) {
-        Role adminRole = roleRepository.findByName(UserRole.MAIN_ADMIN).orElseThrow();
-        Role facultyRole = roleRepository.findByName(UserRole.FACULTY_ADMIN).orElseThrow();
-        Role chairRole = roleRepository.findByName(UserRole.CHAIR_ADMIN).orElseThrow();
-
-        if (user.getRoles().contains(facultyRole) || user.getRoles().contains(chairRole)) {
-            Set<Faculty> facultySet = new HashSet<>(user.getFaculties());
-            for (Chair chair : user.getChairs()) {
-                facultySet.add(chair.getFaculty());
-            }
-            facultySet.addAll(user.getFaculties());
-
-            return facultySet.stream()
-                    .map(x -> new FacultyDto(x.getId(), x.getUkrainianName()))
-                    .toList();
-        } else if (user.getRoles().contains(adminRole)) {
-            List<Faculty> faculties = new ArrayList<>();
-            for (Faculty faculty : facultyRepository.findAll()) {
-                faculties.add(faculty);
-            }
-            return faculties.stream()
-                    .map(x -> new FacultyDto(x.getId(), x.getUkrainianName()))
-                    .toList();
-        } else {
-            Scientist scientist = user.getScientists().get(0);
-
-            Faculty faculty = scientist.getFaculty();
-            if (faculty != null)
-                return List.of(new FacultyDto(faculty.getId(), faculty.getUkrainianName()));
-            else {
-                Faculty chairFaculty = scientist.getChair().getFaculty();
-                return List.of(new FacultyDto(chairFaculty.getId(), chairFaculty.getUkrainianName()));
-            }
-        }
-    }
-
-    @Override
-    public List<ScientistPreviewDto> getUserScientists(User user) {
-        String userRole = user.getRoles().get(0).getName().name();
-
-        if (userRole.equals(UserRole.MAIN_ADMIN.name())) {
-            List<Scientist> scientists = new ArrayList<>();
-            for (Scientist scientist : scientistRepository.findAll()) {
-                scientists.add(scientist);
-            }
-
-            return scientists.stream()
-                    .map((x) -> new ScientistPreviewDto(x.getId(), x.getFullName()))
-                    .toList();
-        } else if (userRole.equals(UserRole.USER.name())) {
-            Scientist scientist = user.getScientists().get(0);
-            return List.of(new ScientistPreviewDto(scientist.getId(), scientist.getFullName()));
-        } else if (userRole.equals(UserRole.CHAIR_ADMIN.name())) {
-            List<Scientist> scientists = new ArrayList<>();
-
-            Set<Chair> chairs = user.getChairs();
-            for (Chair chair : chairs) {
-                scientists.addAll(chair.getScientists());
-            }
-
-            return scientists.stream()
-                    .map(x -> new ScientistPreviewDto(x.getId(), x.getFullName()))
-                    .toList();
-        } else {
-            List<Scientist> scientists = new ArrayList<>();
-
-            Set<Faculty> faculties = user.getFaculties();
-            for (Faculty faculty : faculties) {
-                scientists.addAll(faculty.getScientists());
-
-                for (Chair chair : faculty.getChairs()) {
-                    scientists.addAll(chair.getScientists());
-                }
-            }
-
-            return scientists.stream()
-                    .map(x -> new ScientistPreviewDto(x.getId(), x.getFullName()))
-                    .toList();
-        }
-    }
-
-    @Override
-    public EditAdminDto getEditDto(Integer userId) {
+    public UpdateAdminDto getEditDto(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, userId));
         List<Integer> facultyIds = user.getFaculties().stream()
@@ -239,11 +129,13 @@ public class UserServiceImpl implements UserService {
                 .map(Permission::getId)
                 .toList();
 
-        return new EditAdminDto(user.getFullName(), facultyIds, chairIds, permissionsIds);
+        return new UpdateAdminDto(user.getFullName(), facultyIds, chairIds, permissionsIds);
     }
 
     @Override
-    public boolean canEditProfile(User user, Integer editProfileId) {
+    public boolean currentUserCanEditProfile(Integer editProfileId) {
+        User user = sessionUtil.getUserFromSession();
+
         Profile profile = profileRepository.findById(editProfileId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PROFILE, editProfileId));
 
@@ -264,7 +156,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean canEditUser(User user, Integer editUserId) {
+    public boolean currentUserCanEditUser(Integer editUserId) {
+        User user = sessionUtil.getUserFromSession();
+
         User editUser = userRepository.findById(editUserId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, editUserId));
 
@@ -288,8 +182,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public GetUsersDto getUsersByUser(User user, Integer page) {
+    public GetUsersDto getForCurrentUser(Integer page) {
+        User user = sessionUtil.getUserFromSession();
         List<User> users = getUsersByUser(user);
+
         return getUserPageByListAndPage(users, page);
     }
 
@@ -354,24 +250,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editAdmin(Integer id, EditAdminDto editAdminDto) {
+    public void updateAdmin(Integer id, UpdateAdminDto updateAdminDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, id));
 
-        user.setFullName(editAdminDto.fullName());
+        user.setFullName(updateAdminDto.fullName());
 
         Role facultyAdmin = roleRepository.findByName(UserRole.FACULTY_ADMIN)
                 .orElseThrow(() -> new EntityNotFoundException(EntityName.ROLE, UserRole.FACULTY_ADMIN.name()));
         Role chairAdmin = roleRepository.findByName(UserRole.CHAIR_ADMIN)
                 .orElseThrow(() -> new EntityNotFoundException(EntityName.ROLE, UserRole.CHAIR_ADMIN.name()));
 
-        if (!editAdminDto.facultyIds().isEmpty()) {
+        if (!updateAdminDto.facultyIds().isEmpty()) {
             if (!user.getRoles().contains(facultyAdmin)) {
                 user.getRoles().add(facultyAdmin);
             }
 
             List<Faculty> facultyList = new ArrayList<>();
-            for (Integer facultyId : editAdminDto.facultyIds()) {
+            for (Integer facultyId : updateAdminDto.facultyIds()) {
                 Faculty faculty = facultyRepository.findById(facultyId)
                         .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FACULTY, facultyId));
 
@@ -385,12 +281,12 @@ public class UserServiceImpl implements UserService {
             user.getRoles().remove(facultyAdmin);
         }
 
-        if (!editAdminDto.chairIds().isEmpty()) {
+        if (!updateAdminDto.chairIds().isEmpty()) {
             if (!user.getRoles().contains(chairAdmin)) {
                 user.getRoles().add(chairAdmin);
             }
             List<Chair> chairList = new ArrayList<>();
-            for (Integer chairId : editAdminDto.chairIds()) {
+            for (Integer chairId : updateAdminDto.chairIds()) {
                 Chair chair = chairRepository.findById(chairId)
                         .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.CHAIR, chairId));
 
@@ -404,7 +300,7 @@ public class UserServiceImpl implements UserService {
             user.getRoles().remove(chairAdmin);
         }
 
-        List<Integer> permissionIds = editAdminDto.permissions();
+        List<Integer> permissionIds = updateAdminDto.permissions();
         Set<Permission> permissions = permissionIds.stream()
                 .map(x -> permissionRepository.findById(x).orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PERMISSION, x)))
                 .collect(Collectors.toSet());
@@ -414,29 +310,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(Integer id, EditUserDto editUserDto) {
+    public void updateUser(Integer id, UpdateUserDto updateUserDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, id));
 
-        Set<Permission> permissions = editUserDto.permissionIds().stream()
+        Set<Permission> permissions = updateUserDto.permissionIds().stream()
                 .map(x -> permissionRepository.findById(x).orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PERMISSION, x)))
                 .collect(Collectors.toSet());
 
-        user.setFullName(editUserDto.fullName());
+        user.setFullName(updateUserDto.fullName());
         user.setPermissions(permissions);
 
         userRepository.save(user);
     }
 
     @Override
-    public void editCurrentUser(User user, EditCurrentUserDto editUserDto) {
+    public void updateCurrentUser(UpdateCurrentUserDto editUserDto) {
+        User user = sessionUtil.getUserFromSession();
+
         user.setFullName(editUserDto.fullName());
 
         userRepository.save(user);
     }
 
     @Override
-    public void activateUser(Integer userId) {
+    public void activate(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, userId));
         user.setActive(true);
@@ -447,7 +345,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deactivateUser(Integer userId) {
+    public void deactivate(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, userId));
         user.setActive(false);
@@ -458,7 +356,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void approveUser(Integer id) {
+    public void approve(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, id));
         user.setApproved(true);
@@ -470,7 +368,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void rejectUser(Integer id) {
+    public void reject(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.USER, id));
 

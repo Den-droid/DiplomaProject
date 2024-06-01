@@ -12,13 +12,13 @@ export class GetLabelsDto {
   }
 }
 
-export class AddLabelDto {
+export class CreateLabelDto {
   constructor(public name: string) {
 
   }
 }
 
-export class EditLabelDto {
+export class UpdateLabelDto {
   constructor(public name: string) {
 
   }

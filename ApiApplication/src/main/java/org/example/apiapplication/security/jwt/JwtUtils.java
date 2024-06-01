@@ -28,10 +28,9 @@ public class JwtUtils {
     @Value("${app.jwt.refresh-expiration-ms}")
     private long refreshTokenExpirationMs;
 
-    public String generateAccessToken(String username, List<String> roles, Integer id) {
+    public String generateAccessToken(String username, List<String> roles) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles);
-        claims.put("id", id);
         return generateTokenFromUsername(username, claims, accessTokenSecret, accessTokenExpirationMs);
     }
 

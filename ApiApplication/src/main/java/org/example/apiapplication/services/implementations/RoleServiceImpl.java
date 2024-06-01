@@ -7,8 +7,6 @@ import org.example.apiapplication.dto.roles.RoleDto;
 import org.example.apiapplication.dto.roles.UpdateDefaultPermissionsDto;
 import org.example.apiapplication.entities.permissions.Permission;
 import org.example.apiapplication.entities.user.Role;
-import org.example.apiapplication.enums.UserRole;
-import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.repositories.PermissionRepository;
 import org.example.apiapplication.repositories.RoleRepository;
@@ -33,7 +31,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<RoleDto> getRoles() {
+    public List<RoleDto> getAll() {
         List<Role> roles = new ArrayList<>();
         for (Role role : roleRepository.findAll()) {
             roles.add(role);
@@ -62,14 +60,6 @@ public class RoleServiceImpl implements RoleService {
         return role.getDefaultPermissions().stream()
                 .map(permission -> new PermissionDto(permission.getId(), permission.getName().name()))
                 .toList();
-    }
-
-    @Override
-    public RoleDto getByName(String roleName) {
-        Role role = roleRepository.findByName(UserRole.valueOf(roleName))
-                .orElseThrow(() -> new EntityNotFoundException(EntityName.ROLE, roleName));
-
-        return new RoleDto(role.getId(), role.getName().name());
     }
 
     @Override

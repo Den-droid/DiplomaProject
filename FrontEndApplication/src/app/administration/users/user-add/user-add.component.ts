@@ -5,7 +5,7 @@ import { Chair } from 'src/app/shared/models/chair.model';
 import { Faculty } from 'src/app/shared/models/faculty.model';
 import { Permission, mapStringToPermissionLabel } from 'src/app/shared/models/permission.model';
 import { Role } from 'src/app/shared/models/role.model';
-import { AddAdminDto } from 'src/app/shared/models/user.model';
+import { CreateAdminDto } from 'src/app/shared/models/user.model';
 import { ChairService } from 'src/app/shared/services/chair.service';
 import { FacultyService } from 'src/app/shared/services/faculty.service';
 import { PermissionService } from 'src/app/shared/services/permission.service';
@@ -55,6 +55,11 @@ export class UserAddComponent implements OnInit {
 
   public set selectedFaculty(value: number) {
     this._selectedFaculty = value;
+
+    if (this.chairs.length > 0) {
+      this.selectedChair = this.chairs.filter(x => x.facultyId == this.selectedFaculty)[0].id;
+    }
+
     this.setDisplayedChairs();
   }
 
@@ -182,7 +187,7 @@ export class UserAddComponent implements OnInit {
       this.errorEmail = '';
     }
 
-    let addAdminDto;
+    let createAdminDto;
     if (!this.isMainAdminCreated) {
       let permissionList = [];
 
@@ -193,15 +198,15 @@ export class UserAddComponent implements OnInit {
       }
 
       if (this.wholeFaculty) {
-        addAdminDto = new AddAdminDto(this.email, [this.selectedFaculty], [], this.isMainAdminCreated, permissionList);
+        createAdminDto = new CreateAdminDto(this.email, [this.selectedFaculty], [], this.isMainAdminCreated, permissionList);
       } else {
-        addAdminDto = new AddAdminDto(this.email, [], [this.selectedChair], this.isMainAdminCreated, permissionList);
+        createAdminDto = new CreateAdminDto(this.email, [], [this.selectedChair], this.isMainAdminCreated, permissionList);
       }
     } else {
-      addAdminDto = new AddAdminDto(this.email, [], [], this.isMainAdminCreated, []);
+      createAdminDto = new CreateAdminDto(this.email, [], [], this.isMainAdminCreated, []);
     }
 
-    this.userService.addAdmin(addAdminDto).subscribe({
+    this.userService.createAdmin(createAdminDto).subscribe({
       error: (error: any) => {
         this.errorEmail = error?.error?.error;
       },

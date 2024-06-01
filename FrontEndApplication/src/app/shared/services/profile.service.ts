@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { AddProfileDto, EditProfileDto, GetProfilesDto, ProfileByLabel, ProfileForUser } from "../models/profile.model";
+import { CreateProfileDto, UpdateProfileDto, GetProfilesDto, ProfileByLabel, ProfileForUser } from "../models/profile.model";
 import { Observable } from "rxjs";
 import { ProfileField } from "../models/field.model";
 import { Label } from "../models/label.model";
@@ -15,17 +15,17 @@ export class ProfileService {
   constructor(private readonly httpClient: HttpClient) {
   }
 
-  getAllProfiles(page: number, scientometricSystemId: number): Observable<GetProfilesDto> {
+  getForCurrentUser(page: number, scientometricSystemId: number): Observable<GetProfilesDto> {
     const options = page ?
       {
         params: new HttpParams().set('currentPage', page)
           .set('scientometricSystemId', scientometricSystemId)
       } : {};
 
-    return this.httpClient.get<GetProfilesDto>(this.url, options);
+    return this.httpClient.get<GetProfilesDto>(this.url + "/accessible-for-current-user", options);
   }
 
-  searchProfiles(page: number, scientometricSystemId: number, fullName: string,
+  searchForCurrentUser(page: number, scientometricSystemId: number, fullName: string,
     facultyId: number, chairId: number): Observable<GetProfilesDto> {
     const options = page ?
       {
@@ -37,14 +37,14 @@ export class ProfileService {
           .set('scientometricSystemId', scientometricSystemId)
       } : {};
 
-    return this.httpClient.get<GetProfilesDto>(this.url + "/search", options);
+    return this.httpClient.get<GetProfilesDto>(this.url + "/accessible-for-current-user/search", options);
   }
 
-  editProfile(id: number, editProfileDto: EditProfileDto): Observable<any> {
+  editProfile(id: number, editProfileDto: UpdateProfileDto): Observable<any> {
     return this.httpClient.put(this.url + "/" + id, editProfileDto);
   }
 
-  addProfile(addProfileDto: AddProfileDto): Observable<any> {
+  addProfile(addProfileDto: CreateProfileDto): Observable<any> {
     return this.httpClient.post(this.url, addProfileDto);
   }
 
@@ -56,15 +56,15 @@ export class ProfileService {
         .set('scientometricSystemId', scientometricSystemId)
     };
 
-    return this.httpClient.get<boolean>(this.url + "/canAddProfile", options);
+    return this.httpClient.get<boolean>(this.url + "/can-create-profile", options);
   }
 
-  markAsDoubtful(id: number): Observable<any> {
-    return this.httpClient.get(this.url + "/" + id + "/markDoubtful");
+  markDoubtful(id: number): Observable<any> {
+    return this.httpClient.get(this.url + "/" + id + "/mark-doubtful");
   }
 
-  unmarkAsDoubtful(id: number): Observable<any> {
-    return this.httpClient.get(this.url + "/" + id + "/unmarkDoubtful");
+  unmarkDoubtful(id: number): Observable<any> {
+    return this.httpClient.get(this.url + "/" + id + "/unmark-doubtful");
   }
 
   activate(id: number): Observable<any> {
@@ -83,17 +83,17 @@ export class ProfileService {
     return this.httpClient.get<Label[]>(this.url + "/" + id + "/labels");
   }
 
-  getProfilesByLabel(labelId: number): Observable<ProfileByLabel[]> {
+  getByLabel(labelId: number): Observable<ProfileByLabel[]> {
     const options =
     {
       params: new HttpParams()
         .set('labelId', labelId)
     };
 
-    return this.httpClient.get<ProfileByLabel[]>(this.url + "/commonLabels", options);
+    return this.httpClient.get<ProfileByLabel[]>(this.url + "/common-labels", options);
   }
 
-  getProfilesForUser(scientometricSystemId: number, chairId: number): Observable<ProfileForUser[]> {
+  getAll(scientometricSystemId: number, chairId: number): Observable<ProfileForUser[]> {
     const options =
     {
       params: new HttpParams()
@@ -101,6 +101,6 @@ export class ProfileService {
         .set('chairId', chairId)
     };
 
-    return this.httpClient.get<ProfileForUser[]>(this.url + "/forUser", options);
+    return this.httpClient.get<ProfileForUser[]>(this.url, options);
   }
 }

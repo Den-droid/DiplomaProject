@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { AddFieldDto, DeleteFieldDto, EditFieldDto, Field, FieldType, GetFieldsDto } from "../models/field.model";
+import { CreateFieldDto, DeleteFieldDto, UpdateFieldDto, Field, FieldType, GetFieldsDto } from "../models/field.model";
 import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
@@ -17,18 +17,18 @@ export class FieldService {
     return this.httpClient.get<FieldType[]>(this.url + "/types");
   }
 
-  getAllFields(): Observable<GetFieldsDto> {
+  getAll(): Observable<GetFieldsDto> {
     return this.httpClient.get<GetFieldsDto>(this.url);
   }
 
-  getFieldsByPage(currentPage: number): Observable<GetFieldsDto> {
+  getAllByPage(currentPage: number): Observable<GetFieldsDto> {
     const options = currentPage ?
       { params: new HttpParams().set('currentPage', currentPage) } : {};
 
     return this.httpClient.get<GetFieldsDto>(this.url, options);
   }
 
-  getFieldsByPageAndName(currentPage: number, name: string): Observable<GetFieldsDto> {
+  search(currentPage: number, name: string): Observable<GetFieldsDto> {
     const options = currentPage ?
       {
         params: new HttpParams().set('currentPage', currentPage)
@@ -38,19 +38,19 @@ export class FieldService {
     return this.httpClient.get<GetFieldsDto>(this.url + "/search", options);
   }
 
-  getFieldById(id: number): Observable<Field> {
+  getById(id: number): Observable<Field> {
     return this.httpClient.get<Field>(this.url + "/" + id);
   }
 
-  addField(addFieldDto: AddFieldDto): Observable<any> {
+  create(addFieldDto: CreateFieldDto): Observable<any> {
     return this.httpClient.post(this.url, addFieldDto);
   }
 
-  editField(id: number, editFieldDto: EditFieldDto): Observable<any> {
+  update(id: number, editFieldDto: UpdateFieldDto): Observable<any> {
     return this.httpClient.put(this.url + "/" + id, editFieldDto);
   }
 
-  deleteField(id: number, deleteFieldDto: DeleteFieldDto): Observable<any> {
-    return this.httpClient.put(this.url + "/delete/" + id, deleteFieldDto);
+  delete(id: number, deleteFieldDto: DeleteFieldDto): Observable<any> {
+    return this.httpClient.put(this.url + "/" + id + "/delete", deleteFieldDto);
   }
 }

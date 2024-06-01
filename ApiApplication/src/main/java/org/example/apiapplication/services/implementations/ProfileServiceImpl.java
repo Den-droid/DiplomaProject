@@ -22,6 +22,7 @@ import org.example.apiapplication.exceptions.entity.EntityNotFoundException;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.exceptions.profile.ProfileScientistScientometricSystemExists;
 import org.example.apiapplication.repositories.*;
+import org.example.apiapplication.security.utils.SessionUtil;
 import org.example.apiapplication.services.interfaces.LabelService;
 import org.example.apiapplication.services.interfaces.ProfileService;
 import org.example.apiapplication.services.interfaces.RecommendationService;
@@ -49,6 +50,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final LabelService labelService;
     private final RecommendationService recommendationService;
 
+    private final SessionUtil sessionUtil;
+
     public ProfileServiceImpl(ScientometricSystemRepository scientometricSystemRepository,
                               ProfileRepository profileRepository,
                               ScientistRepository scientistRepository,
@@ -60,7 +63,8 @@ public class ProfileServiceImpl implements ProfileService {
                               ProfileFieldRecommendationRepository profileFieldRecommendationRepository,
                               LabelRepository labelRepository,
                               LabelService labelService,
-                              RecommendationService recommendationService) {
+                              RecommendationService recommendationService,
+                              SessionUtil sessionUtil) {
         this.scientometricSystemRepository = scientometricSystemRepository;
         this.profileRepository = profileRepository;
         this.scientistRepository = scientistRepository;
@@ -74,16 +78,22 @@ public class ProfileServiceImpl implements ProfileService {
 
         this.labelService = labelService;
         this.recommendationService = recommendationService;
+
+        this.sessionUtil = sessionUtil;
     }
 
     @Override
-    public GetProfilesDto getByUserAndScientometricSystemId(User user, Integer scientometricSystemId, Integer page) {
+    public GetProfilesDto getForCurrentUser(Integer scientometricSystemId, Integer page) {
+        User user = sessionUtil.getUserFromSession();
+
         List<Profile> profiles = getProfilesByUserAndScientometricSystem(user, scientometricSystemId);
         return getProfilePageByListAndPage(profiles, page);
     }
 
     @Override
-    public GetProfilesDto searchByUserAndScientometricSystemId(User user, Integer scientometricSystemId, String fullName, Integer facultyId, Integer chairId, Integer page) {
+    public GetProfilesDto searchForCurrentUser(Integer scientometricSystemId, String fullName, Integer facultyId, Integer chairId, Integer page) {
+        User user = sessionUtil.getUserFromSession();
+
         List<Profile> profiles = getProfilesByUserAndScientometricSystem(user, scientometricSystemId);
 
         if (fullName != null && !fullName.isEmpty()) {
@@ -132,7 +142,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public boolean canProfileBeAddedToSystemAndScientist(Integer scientistId, Integer scientometricSystemId) {
+    public boolean canProfileBeCreatedBySystemAndScientist(Integer scientistId, Integer scientometricSystemId) {
         Scientist scientist = scientistRepository.findById(scientistId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.SCIENTIST,
                         scientistId));
@@ -149,7 +159,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public List<ProfileByLabelDto> getProfilesByLabelId(Integer labelId) {
+    public List<ProfileByLabelDto> getByLabelId(Integer labelId) {
         Label label = labelRepository.findById(labelId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.LABEL, labelId));
 
@@ -175,7 +185,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public List<ProfileForUserDto> getProfilesForUser(Integer scientometricSystemId, Integer chairId) {
+    public List<ProfileForUserDto> getAll(Integer scientometricSystemId, Integer chairId) {
         Chair chair = chairRepository.findById(chairId)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.CHAIR, chairId));
 
@@ -223,15 +233,15 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void add(AddProfileDto addProfileDto) {
-        Scientist scientist = scientistRepository.findById(addProfileDto.scientistId())
+    public void create(CreateProfileDto createProfileDto) {
+        Scientist scientist = scientistRepository.findById(createProfileDto.scientistId())
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.SCIENTIST,
-                        addProfileDto.scientistId()));
+                        createProfileDto.scientistId()));
 
         ScientometricSystem scientometricSystem = scientometricSystemRepository
-                .findById(addProfileDto.scientometricSystemId())
+                .findById(createProfileDto.scientometricSystemId())
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.SCIENTOMETRIC_SYSTEM,
-                        addProfileDto.scientometricSystemId()));
+                        createProfileDto.scientometricSystemId()));
 
         Optional<Profile> isExistsProfile = profileRepository
                 .findByScientometricSystemAndScientist(scientometricSystem, scientist);
@@ -240,7 +250,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ProfileScientistScientometricSystemExists();
         }
 
-        List<ProfileFieldValue> profileFieldValues = addProfileDto.profileFields().stream()
+        List<ProfileFieldValue> profileFieldValues = createProfileDto.profileFields().stream()
                 .map(x -> {
                     Field field = fieldRepository.findById(x.field().id())
                             .orElseThrow(() ->
@@ -261,19 +271,19 @@ public class ProfileServiceImpl implements ProfileService {
 
         profileFieldValues.forEach(x -> x.setProfile(profile));
 
-        labelService.addLabelsToProfile(addProfileDto.labelsIds(), profile);
-        recommendationService.updateRecommendations(profile, profileFieldValues, !addProfileDto.labelsIds().isEmpty());
+        labelService.addToProfile(createProfileDto.labelsIds(), profile);
+        recommendationService.updateRecommendations(profile, profileFieldValues, !createProfileDto.labelsIds().isEmpty());
 
         profileRepository.save(profile);
         profileFieldValueRepository.saveAll(profileFieldValues);
     }
 
     @Override
-    public void edit(Integer id, EditProfileDto editProfileDto) {
+    public void update(Integer id, UpdateProfileDto updateProfileDto) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PROFILE, id));
 
-        List<ProfileFieldValue> profileFieldValues = editProfileDto.fields().stream()
+        List<ProfileFieldValue> profileFieldValues = updateProfileDto.fields().stream()
                 .map(x -> {
                     if (x.id() == -1) {
                         Field field = fieldRepository.findById(x.field().id())
@@ -316,9 +326,9 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         // update labels and recommendations
-        labelService.addLabelsToProfile(editProfileDto.labelsIds(), profile);
+        labelService.addToProfile(updateProfileDto.labelsIds(), profile);
         recommendationService.updateRecommendations(profile, profileFieldValues,
-                !editProfileDto.labelsIds().isEmpty());
+                !updateProfileDto.labelsIds().isEmpty());
 
         profileFieldRecommendationRepository.deleteAll(profileFieldRecommendationsToRemove);
         profileFieldValueRepository.deleteAll(profileFieldValuesToRemove);
@@ -347,7 +357,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void markWorksDoubtful(Integer id) {
+    public void markDoubtful(Integer id) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PROFILE, id));
 
@@ -357,7 +367,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void unmarkWorksDoubtful(Integer id) {
+    public void unmarkDoubtful(Integer id) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.PROFILE, id));
 

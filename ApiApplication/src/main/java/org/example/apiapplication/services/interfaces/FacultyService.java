@@ -12,4 +12,6 @@ public interface FacultyService {
 
     List<EntityIndicesDto> getChairsIndicesByFaculty(Integer facultyId,
                                                      Integer scientometricSystemId);
+
+    List<FacultyDto> getForCurrentUser();
 }

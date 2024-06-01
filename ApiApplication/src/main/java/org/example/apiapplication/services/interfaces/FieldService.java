@@ -7,17 +7,17 @@ import java.util.List;
 public interface FieldService {
     List<FieldTypeDto> getAllFieldTypes();
 
-    GetFieldsDto getAllFields(Integer currentPage);
+    GetFieldsDto getAll(Integer currentPage);
 
-    GetFieldsDto getAllFields();
+    GetFieldsDto getAll();
 
-    GetFieldsDto searchFieldsByName(Integer currentPage, String name);
+    GetFieldsDto search(Integer currentPage, String name);
 
     FieldDto getById(Integer id);
 
-    void add(AddFieldDto addFieldDto);
+    void create(CreateFieldDto createFieldDto);
 
-    void edit(Integer id, EditFieldDto editFieldDto);
+    void update(Integer id, UpdateFieldDto updateFieldDto);
 
     void delete(Integer id, DeleteFieldDto deleteFieldDto);
 }
