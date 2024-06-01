@@ -56,7 +56,6 @@ public class ScholarExtractionHelper {
     private ProfileFieldValue extractOrdered(Document document, FieldExtraction fieldExtraction) {
         ProfileFieldValue profileFieldValue = new ProfileFieldValue();
         profileFieldValue.setField(fieldExtraction.getField());
-        profileFieldValue.setKey(fieldExtraction.getKey());
 
         Elements fieldElements = document
                 .select(fieldExtraction.getRule());
@@ -75,7 +74,6 @@ public class ScholarExtractionHelper {
     private ProfileFieldValue extractProperty(Document document, FieldExtraction fieldExtraction) {
         ProfileFieldValue profileFieldValue = new ProfileFieldValue();
         profileFieldValue.setField(fieldExtraction.getField());
-        profileFieldValue.setKey(fieldExtraction.getKey());
 
         Elements fieldElements = document
                 .select(fieldExtraction.getRule());

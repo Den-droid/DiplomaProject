@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { baseUrl } from "src/app/shared/constants/url.constant";
 import { AddLabelDto, DeleteLabelDto, EditLabelDto, GetLabelsDto, Label } from "../models/label.model";
+import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
   providedIn: 'root'

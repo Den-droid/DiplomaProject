@@ -4,30 +4,32 @@ spring:
   application:
     name: APIApplication
   datasource:
-    url: jdbc:postgresql://localhost:5432/scientometric_project
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: true
+      ddl-auto: none
+    show-sql: false
   flyway:
     baseline-on-migrate: true
     enabled: true
-    user: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL}
+    user: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     baseline-version: 0
+    validate-on-migrate: false
 
 email_service:
   api-key: ${SENDGRID_API_KEY}
-  from-email: "amerscan8+from@gmail.com"
-  frontend-url: "http://localhost:4200"
+  from-email: ${FROM_EMAIL}
+  frontend-url: ${FRONTEND_URL}
 
 app:
   jwt:
-    access-token-secret: "==================ApiApplicationSecretAccessTokenKey====================="
-    refresh-token-secret: "==================ApiApplicationSecretRefreshTokenKey====================="
+    access-token-secret: ${ACCESS_TOKEN_SECRET}
+    refresh-token-secret: ${REFRESH_TOKEN_SECRET}
     expiration-ms: 3600000
     refresh-expiration-ms: 86400000
 

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { LocalStorageService } from "./local-storage.service";
 import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'

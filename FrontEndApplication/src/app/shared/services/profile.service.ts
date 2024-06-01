@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { baseUrl } from "../constants/url.constant";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { AddProfileDto, EditProfileDto, GetProfilesDto, ProfileByLabel, ProfileForUser } from "../models/profile.model";
 import { Observable } from "rxjs";
 import { ProfileField } from "../models/field.model";
 import { Label } from "../models/label.model";
+import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
   providedIn: 'root'

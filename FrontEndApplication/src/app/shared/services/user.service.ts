@@ -1,6 +1,5 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { baseUrl } from "src/app/shared/constants/url.constant";
 import { AddAdminDto, EditAdminDto, EditCurrentUserDto, EditUserDto, GetUsersDto, User } from "../models/user.model";
 import { Observable } from "rxjs/internal/Observable";
 import { Permission } from "../models/permission.model";
@@ -8,6 +7,7 @@ import { Role } from "../models/role.model";
 import { Faculty } from "../models/faculty.model";
 import { Chair } from "../models/chair.model";
 import { ScientistPreview } from "../models/scientist.model";
+import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
   providedIn: 'root'

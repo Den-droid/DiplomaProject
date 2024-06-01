@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { baseUrl } from "../constants/url.constant";
 import { ExtractionErrors, ScientometricSystem } from "../models/scientometric.model";
+import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
   providedIn: 'root'

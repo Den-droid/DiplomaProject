@@ -1,10 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ChangePasswordDto, ForgotPasswordDto, RefreshTokenDto, SignInDto, SignUpByInviteDto, SignUpDto, SignUpScientistDto, TokensDto } from "../models/auth.model";
-import { baseUrl } from "src/app/shared/constants/url.constant";
 import { Observable } from "rxjs";
 import { JWTTokenService } from "./jwt-token.service";
 import { RoleName } from "../constants/roles.constant";
+import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
   providedIn: 'root'

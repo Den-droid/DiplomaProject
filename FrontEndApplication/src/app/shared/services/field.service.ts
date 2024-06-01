@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { baseUrl } from "../constants/url.constant";
 import { AddFieldDto, DeleteFieldDto, EditFieldDto, Field, FieldType, GetFieldsDto } from "../models/field.model";
+import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
   providedIn: 'root'

@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { baseUrl } from "src/app/shared/constants/url.constant";
+import { baseUrl } from "../constants/url.constant";
 
 @Injectable({
   providedIn: 'root'

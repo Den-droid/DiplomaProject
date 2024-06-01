@@ -11,7 +11,6 @@ public class ProfileFieldValue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String key;
     private String value;
 
     @ManyToOne

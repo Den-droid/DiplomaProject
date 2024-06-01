@@ -31,7 +31,6 @@ public class ProfileController {
         return ResponseEntity.ok(profiles);
     }
 
-    @PreAuthorize("hasAnyRole('MAIN_ADMIN', 'FACULTY_ADMIN', 'CHAIR_ADMIN', 'USER')")
     @GetMapping("/forUser")
     public ResponseEntity<?> getProfilesForUser(@RequestParam Integer chairId,
                                                 @RequestParam Integer scientometricSystemId) {
