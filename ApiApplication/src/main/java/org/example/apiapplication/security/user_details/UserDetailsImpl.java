@@ -19,7 +19,7 @@ public class UserDetailsImpl implements UserDetails {
     private final String username;
     private final String email;
     @JsonIgnore
-    private String password;
+    private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Integer id, String username, String email, String password,
@@ -49,7 +49,7 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
-    public Integer getId() {
+    public Integer id() {
         return id;
     }
 

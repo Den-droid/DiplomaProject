@@ -32,9 +32,6 @@ public class ExcelImportService implements ImportService {
     @Value("${scholar.chair_prefix}")
     private String chairPrefix;
 
-    @Value("${scholar.faculty_prefix}")
-    private String facultyPrefix;
-
     @Value("${scholar.faculty_source}")
     private String facultiesFilename;
 
@@ -60,7 +57,7 @@ public class ExcelImportService implements ImportService {
         List<Chair> chairs = new ArrayList<>();
 
         for (int i = 2; i < data.size(); i++) {
-            if (data.get(i).get(4).equalsIgnoreCase("f")) {
+            if ("f".equalsIgnoreCase(data.get(i).get(4))) {
                 Faculty faculty = new Faculty();
                 faculty.setUkrainianName(data.get(i).get(5));
                 faculty.setUkrainianAbbreviation(data.get(i).get(6));
@@ -68,8 +65,8 @@ public class ExcelImportService implements ImportService {
                 faculty.setEnglishAbbreviation(data.get(i).get(8));
 
                 faculties.add(faculty);
-            } else if (data.get(i).get(4).equalsIgnoreCase("k") ||
-                    data.get(i).get(4).equalsIgnoreCase("ko")) {
+            } else if ("k".equalsIgnoreCase(data.get(i).get(4)) ||
+                    "ko".equalsIgnoreCase(data.get(i).get(4))) {
                 Chair chair = new Chair();
                 chair.setUkrainianName(data.get(i).get(5));
                 chair.setUkrainianAbbreviation(data.get(i).get(6));
@@ -78,7 +75,7 @@ public class ExcelImportService implements ImportService {
                 chair.setFaculty(faculties.get(faculties.size() - 1));
 
                 chairs.add(chair);
-            } else if (data.get(i).get(4).equalsIgnoreCase("o")) {
+            } else if ("o".equalsIgnoreCase(data.get(i).get(4))) {
                 break;
             }
         }
@@ -99,7 +96,7 @@ public class ExcelImportService implements ImportService {
                 .orElseThrow(() -> new EntityNotFoundException("ScientometricSystem " + ScientometricSystemName.SCHOLAR.name()));
 
         for (int i = 1; i < data.size(); i++) {
-            if (data.get(i).get(0).equals("2408")) {
+            if ("2408".equals(data.get(i).get(0))) {
                 break;
             } else {
                 List<String> row = data.get(i);

@@ -25,28 +25,28 @@ public class EmailServiceImpl implements EmailService {
     @Value("${email_service.frontend-url}")
     private String frontendUrl;
 
-    private final String FORGOT_PASSWORD_SUBJECT = "Відновлення паролю";
-    private final String FORGOT_PASSWORD_BODY = "Перейдіть за посиланням, щоб відновити пароль: " +
+    private final static String FORGOT_PASSWORD_SUBJECT = "Відновлення паролю";
+    private final static String FORGOT_PASSWORD_BODY = "Перейдіть за посиланням, щоб відновити пароль: " +
             "<a href=\"%s\">%s</a>";
 
-    private final String SIGNUP_INVITE_SUBJECT = "Завершіть реєстрацію!";
-    private final String SIGNUP_INVITE_BODY = "Завершіть реєстрацію перейшовши за посиланням: " +
+    private final static String SIGNUP_INVITE_SUBJECT = "Завершіть реєстрацію!";
+    private final static String SIGNUP_INVITE_BODY = "Завершіть реєстрацію перейшовши за посиланням: " +
             "<a href=\"%s\">%s</a>";
 
-    private final String APPROVE_USER_SUBJECT = "Вас було підтверджено в Системі!";
-    private final String APPROVE_USER_BODY = "Вас було підтверджено в Системі. " +
+    private final static String APPROVE_USER_SUBJECT = "Вас було підтверджено в Системі!";
+    private final static String APPROVE_USER_BODY = "Вас було підтверджено в Системі. " +
             "Перейдіть за посиланням, щоб увійти: <a href=\"%s\">%s</a>";
 
-    private final String REJECT_USER_SUBJECT = "Вас було відхилено Системою!";
-    private final String REJECT_USER_BODY = "Вас було відхилено Системою. " +
+    private final static String REJECT_USER_SUBJECT = "Вас було відхилено Системою!";
+    private final static String REJECT_USER_BODY = "Вас було відхилено Системою. " +
             "Зверніться до адміністратора, щоб отримати деталі!";
 
-    private final String ACTIVATE_USER_SUBJECT = "Вас було активовано в Системі!";
-    private final String ACTIVATE_USER_BODY = "Вас було активовано в Системі. " +
+    private final static String ACTIVATE_USER_SUBJECT = "Вас було активовано в Системі!";
+    private final static String ACTIVATE_USER_BODY = "Вас було активовано в Системі. " +
             "Перейдіть за посиланням, щоб увійти: <a href=\"%s\">%s</a>";
 
-    private final String DEACTIVATE_USER_SUBJECT = "Вас було деактивовано в Системі!";
-    private final String DEACTIVATE_USER_BODY = "Вас було деактивовано в Системі " +
+    private final static String DEACTIVATE_USER_SUBJECT = "Вас було деактивовано в Системі!";
+    private final static String DEACTIVATE_USER_BODY = "Вас було деактивовано в Системі " +
             "верніться до адміністратора, щоб отримати деталі!";
 
     @Override
