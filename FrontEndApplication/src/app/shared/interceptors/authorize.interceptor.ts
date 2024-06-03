@@ -1,8 +1,7 @@
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from "@angular/common/http";
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, share, catchError, switchMap, filter, take, BehaviorSubject, throwError, tap } from "rxjs";
+import { BehaviorSubject, Observable, catchError, concatMap, filter, finalize, take, throwError } from "rxjs";
 import { JWTTokenService } from "../services/jwt-token.service";
-import { isApiRequest } from "../helpers/interceptors.helper";
 import { AuthService } from "../services/auth.service";
 import { RefreshTokenDto, TokensDto } from "../models/auth.model";
 import { Router } from "@angular/router";
@@ -11,77 +10,62 @@ import { Router } from "@angular/router";
   providedIn: 'root',
 })
 export class AuthorizeInterceptor implements HttpInterceptor {
-  constructor(private readonly jwtService: JWTTokenService, private readonly authService: AuthService) { }
+  constructor(private readonly jwtService: JWTTokenService, private readonly authService: AuthService,
+    private readonly router: Router
+  ) { }
+  isRefreshingToken = false;
 
-  // intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  //   return this.processRequestWithToken(req, next);
-  // }
+  tokenRefreshed$ = new BehaviorSubject<boolean>(false);
 
-  // // Checks if there is an access_token available in the authorize service
-  // // and adds it to the request in case it's targeted at the same origin as the
-  // // single page application.
-  // private processRequestWithToken(req: HttpRequest<any>, next: HttpHandler) {
-  //   if (this.jwtService.jwtToken && isApiRequest(req)) {
-  //     console.log();
-  //     if (this.jwtService.isTokenExpired() && !req.url.includes('refreshToken')) {
-  //       this.authService.refreshToken(new RefreshTokenDto(this.jwtService.getRefreshToken())).pipe(
-  //         switchMap((data : TokensDto) => {
-  //           this.jwtService.setToken(data.accessToken);
-  //           this.jwtService.setRefreshToken(data.refreshToken);
+  addToken(req: HttpRequest<any>): HttpRequest<any> {
+    const token = this.jwtService.getToken();
+    return token ? req.clone({ setHeaders: { Authorization: 'Bearer ' + token } }) : req;
+  }
 
-  //           req = req.clone({
-  //             setHeaders: {
-  //               Authorization: `Bearer ${this.jwtService.jwtToken}`,
-  //             },
-  //           });
-  //           return next.handle(req);
-  //         })
-  //       )
-  //     }
-  //     req = req.clone({
-  //       setHeaders: {
-  //         Authorization: `Bearer ${this.jwtService.jwtToken}`,
-  //       },
-  //     });
-  //   }
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(this.addToken(req)).pipe(
+      catchError(err => {
+        if (err.status === 401) {
+          return this.handle401Error(req, next);
+        }
 
-  //   return next.handle(req);
-  // }
+        return throwError(err);
+      })
+    );
+  }
 
-  // refresh = false;
+  private handle401Error(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
+    if (this.isRefreshingToken) {
+      return this.tokenRefreshed$.pipe(
+        filter(Boolean),
+        take(1),
+        concatMap(() => next.handle(this.addToken(req)))
+      );
+    }
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const req = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${this.jwtService.getToken()}`
-      }
-    });
+    this.isRefreshingToken = true;
 
-    return next.handle(req);
+    // Reset here so that the following requests wait until the token
+    // comes back from the refreshToken call.
+    this.tokenRefreshed$.next(false);
 
-    // return next.handle(req).pipe(catchError((err: HttpErrorResponse) => {
-    //   if (err.status === 401 && !this.refresh) {
-    //     this.refresh = true;
+    return this.authService.refreshToken(new RefreshTokenDto(this.jwtService.getRefreshToken())).pipe(
+      concatMap((res: TokensDto) => {
+        this.jwtService.setToken(res.accessToken);
+        this.jwtService.setRefreshToken(res.refreshToken);
 
-    //     console.log("refresh");
-
-    //     return this.authService.refreshToken(new RefreshTokenDto(this.jwtService.getRefreshToken())).pipe(
-    //       switchMap((res: TokensDto) => {
-    //         console.log(res);
-
-    //         this.jwtService.setToken(res.accessToken);
-    //         this.jwtService.setRefreshToken(res.refreshToken);
-
-    //         return next.handle(request.clone({
-    //           setHeaders: {
-    //             Authorization: `Bearer ${this.jwtService.getToken()}`
-    //           }
-    //         }));
-    //       })
-    //     );
-    //   }
-    //   this.refresh = false;
-    //   return throwError(() => err);
-    // }));
+        this.tokenRefreshed$.next(true);
+        return next.handle(this.addToken(req));
+      }),
+      catchError((err) => {
+        this.authService.logout();
+        this.router.navigateByUrl("/auth/signin");
+        return throwError(err);
+      }),
+      finalize(() => {
+        this.isRefreshingToken = false;
+      })
+    );
   }
 }
+
