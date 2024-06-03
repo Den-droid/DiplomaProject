@@ -2,7 +2,7 @@ import { FieldTypeLabel, FieldTypeName } from "../constants/field-type.constant"
 import { Page } from "./page.model";
 
 export class Field {
-  constructor(public id: number, public name: string, public fieldType: FieldType) { }
+  constructor(public id: number, public name: string, public canBeDeleted: boolean, public fieldType: FieldType) { }
 }
 
 export class FieldType {

@@ -23,6 +23,7 @@ import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundExceptio
 import org.example.apiapplication.exceptions.profile.ProfileScientistScientometricSystemExists;
 import org.example.apiapplication.repositories.*;
 import org.example.apiapplication.security.utils.SessionUtil;
+import org.example.apiapplication.services.interfaces.FieldService;
 import org.example.apiapplication.services.interfaces.LabelService;
 import org.example.apiapplication.services.interfaces.ProfileService;
 import org.example.apiapplication.services.interfaces.RecommendationService;
@@ -49,6 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final LabelService labelService;
     private final RecommendationService recommendationService;
+    private final FieldService fieldService;
 
     private final SessionUtil sessionUtil;
 
@@ -63,6 +65,7 @@ public class ProfileServiceImpl implements ProfileService {
                               ProfileFieldRecommendationRepository profileFieldRecommendationRepository,
                               LabelRepository labelRepository,
                               LabelService labelService,
+                              FieldService fieldService,
                               RecommendationService recommendationService,
                               SessionUtil sessionUtil) {
         this.scientometricSystemRepository = scientometricSystemRepository;
@@ -80,6 +83,7 @@ public class ProfileServiceImpl implements ProfileService {
         this.recommendationService = recommendationService;
 
         this.sessionUtil = sessionUtil;
+        this.fieldService = fieldService;
     }
 
     @Override
@@ -134,7 +138,7 @@ public class ProfileServiceImpl implements ProfileService {
                     FieldTypeDto fieldTypeDto = new FieldTypeDto(fieldType.getId(),
                             fieldType.getName().name());
                     FieldDto fieldDto = new FieldDto(field.getId(),
-                            field.getName(), fieldTypeDto);
+                            field.getName(), fieldService.canBeDeleted(field), fieldTypeDto);
                     return new ProfileFieldDto(x.getId(), x.getValue(),
                             fieldDto);
                 })

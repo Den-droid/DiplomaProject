@@ -100,7 +100,8 @@
         </div>
         <div class="col-sm-3 d-flex flex-column justify-content-center align-items-center">
           <button type="button" class="btn btn-primary btn-block" (click)="addFieldToProfile()">Додати поле</button>
-          <span *ngIf="selectedFieldError.length > 0" style="color: red"> {{selectedFieldError}} </span>
+          <span class="text-center" *ngIf="selectedFieldError.length > 0" style="font-size: 15px;
+            color: red"> {{selectedFieldError}} </span>
         </div>
       </div>
     </div>
@@ -142,7 +143,8 @@
         </div>
         <div class="col-sm-3 d-flex flex-column justify-content-center align-items-center">
           <button type="button" class="btn btn-primary btn-block" (click)="addLabel()">Додати ключове слово</button>
-          <span *ngIf="selectedLabelError.length > 0" style="color: red"> {{selectedLabelError}} </span>
+          <span class="text-center" *ngIf="selectedLabelError.length > 0" style="font-size: 15px;
+            color: red"> {{selectedLabelError}} </span>
         </div>
       </div>
     </div>

@@ -3,9 +3,9 @@ package org.example.apiapplication.entities.fields;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.example.apiapplication.entities.extraction.FieldExtraction;
+import org.example.apiapplication.entities.recommendation.FieldRecommendation;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "fields")
@@ -25,6 +25,9 @@ public class Field {
 
     @OneToMany(mappedBy = "field")
     private List<FieldExtraction> fieldExtractions;
+
+    @OneToMany(mappedBy = "field")
+    private List<FieldRecommendation> fieldRecommendations;
 
     @Override
     public boolean equals(Object o) {

@@ -4,15 +4,16 @@ import jakarta.transaction.Transactional;
 import org.example.apiapplication.constants.EntityName;
 import org.example.apiapplication.dto.fields.*;
 import org.example.apiapplication.dto.page.PageDto;
-import org.example.apiapplication.entities.extraction.FieldExtraction;
 import org.example.apiapplication.entities.fields.Field;
 import org.example.apiapplication.entities.fields.FieldType;
 import org.example.apiapplication.entities.fields.ProfileFieldValue;
 import org.example.apiapplication.exceptions.entity.EntityWithIdNotFoundException;
 import org.example.apiapplication.exceptions.field.FieldAlreadyExistsException;
+import org.example.apiapplication.exceptions.field.FieldCannotBeDeletedException;
 import org.example.apiapplication.exceptions.field.FieldTypesNotMatchException;
 import org.example.apiapplication.repositories.FieldRepository;
 import org.example.apiapplication.repositories.FieldTypeRepository;
+import org.example.apiapplication.repositories.ProfileFieldValueRepository;
 import org.example.apiapplication.services.interfaces.FieldService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,11 +27,14 @@ import java.util.List;
 public class FieldServiceImpl implements FieldService {
     private final FieldTypeRepository fieldTypeRepository;
     private final FieldRepository fieldRepository;
+    private final ProfileFieldValueRepository profileFieldValueRepository;
 
     public FieldServiceImpl(FieldTypeRepository fieldTypeRepository,
-                            FieldRepository fieldRepository) {
+                            FieldRepository fieldRepository,
+                            ProfileFieldValueRepository profileFieldValueRepository) {
         this.fieldTypeRepository = fieldTypeRepository;
         this.fieldRepository = fieldRepository;
+        this.profileFieldValueRepository = profileFieldValueRepository;
     }
 
     @Override
@@ -124,6 +128,10 @@ public class FieldServiceImpl implements FieldService {
         Field field = fieldRepository.findById(id)
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD, id));
 
+        if (!canBeDeleted(field)) {
+            throw new FieldCannotBeDeletedException(id);
+        }
+
         Field replacementField = fieldRepository.findById(deleteFieldDto.replacementFieldId())
                 .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD,
                         deleteFieldDto.replacementFieldId()));
@@ -134,20 +142,41 @@ public class FieldServiceImpl implements FieldService {
         }
 
         List<ProfileFieldValue> profileFieldValues = field.getProfileFieldValues();
+        List<ProfileFieldValue> profileFieldValuesToDelete = new ArrayList<>();
+
         for (ProfileFieldValue profileFieldValue : profileFieldValues) {
-            profileFieldValue.setField(replacementField);
+            if (profileFieldValue.getProfile().getProfileFieldValues()
+                    .stream()
+                    .noneMatch(x -> x.getField().equals(replacementField)))
+                profileFieldValue.setField(replacementField);
+            else {
+                profileFieldValuesToDelete.add(profileFieldValue);
+            }
         }
 
-        List<FieldExtraction> fieldExtractions = field.getFieldExtractions();
-        fieldExtractions.clear();
-
+        profileFieldValueRepository.saveAll(profileFieldValues);
+        profileFieldValueRepository.deleteAll(profileFieldValuesToDelete);
         fieldRepository.delete(field);
     }
 
     private FieldDto getFieldDto(Field field) {
         FieldType fieldType = field.getType();
 
-        return new FieldDto(field.getId(), field.getName(),
+        return new FieldDto(field.getId(), field.getName(), canBeDeleted(field),
                 new FieldTypeDto(fieldType.getId(), fieldType.getName().name()));
+    }
+
+    @Override
+    public boolean canBeDeleted(Field field) {
+        return field.getFieldExtractions().isEmpty() &&
+                field.getFieldRecommendations().isEmpty();
+    }
+
+    @Override
+    public boolean canBeDeleted(Integer fieldId) {
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new EntityWithIdNotFoundException(EntityName.FIELD, fieldId));
+
+        return canBeDeleted(field);
     }
 }

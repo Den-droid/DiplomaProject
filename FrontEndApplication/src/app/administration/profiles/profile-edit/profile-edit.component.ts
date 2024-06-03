@@ -98,6 +98,11 @@ export class ProfileEditComponent implements OnInit {
           this.profileService.getProfileFields(this.profileId).subscribe({
             next: (profileFields: ProfileField[]) => {
               this.originalProfileFields = profileFields;
+              this.originalProfileFields.forEach(x => {
+                if (x.field.fieldType.name === FieldTypeName.BOOLEAN && x.value == '')
+                  x.value = 'false';
+              })
+
               this.updatedProfileFields = this.originalProfileFields;
 
               for (let val of this.updatedProfileFields) {

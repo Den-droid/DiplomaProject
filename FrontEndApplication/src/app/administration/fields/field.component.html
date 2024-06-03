@@ -24,12 +24,10 @@
       *ngFor="let field of displayedFields">
       <span class="col-sm-6 text-center"> {{field.name}}</span>
       <div class="col-sm-6 d-flex align-items-center flex-column">
-        <button style="margin-top: 10px; margin-bottom: 10px" type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
-        field.fieldType.name !== 'H_INDEX' && field.fieldType.name !== 'LABEL'" class="btn btn-primary btn-block"
-          (click)="goToEditPage(field.id)">Відредагувати</button>
-        <button style="margin-top: 10px; margin-bottom: 10px" type="submit" *ngIf="field.fieldType.name !== 'CITATION' &&
-        field.fieldType.name !== 'H_INDEX' && field.fieldType.name !== 'LABEL'" class="btn btn-primary btn-block"
-          (click)="goToDeletePage(field.id)">Видалити</button>
+        <button style="margin-top: 10px; margin-bottom: 10px" type="submit"
+          class="btn btn-primary btn-block">Відредагувати</button>
+        <button style="margin-top: 10px; margin-bottom: 10px" type="submit" *ngIf="field.canBeDeleted"
+          class="btn btn-primary btn-block" (click)="goToDeletePage(field.id)">Видалити</button>
       </div>
     </div>
   </ng-template>

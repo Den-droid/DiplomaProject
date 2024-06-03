@@ -17,13 +17,13 @@ export class AuthorizeInterceptor implements HttpInterceptor {
 
   tokenRefreshed$ = new BehaviorSubject<boolean>(false);
 
-  addToken(req: HttpRequest<any>): HttpRequest<any> {
+  setHeader(req: HttpRequest<any>): HttpRequest<any> {
     const token = this.jwtService.getToken();
     return token ? req.clone({ setHeaders: { Authorization: 'Bearer ' + token } }) : req;
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(this.addToken(req)).pipe(
+    return next.handle(this.setHeader(req)).pipe(
       catchError(err => {
         if (err.status === 401) {
           return this.handle401Error(req, next);
@@ -39,7 +39,7 @@ export class AuthorizeInterceptor implements HttpInterceptor {
       return this.tokenRefreshed$.pipe(
         filter(Boolean),
         take(1),
-        concatMap(() => next.handle(this.addToken(req)))
+        concatMap(() => next.handle(this.setHeader(req)))
       );
     }
 
@@ -55,7 +55,7 @@ export class AuthorizeInterceptor implements HttpInterceptor {
         this.jwtService.setRefreshToken(res.refreshToken);
 
         this.tokenRefreshed$.next(true);
-        return next.handle(this.addToken(req));
+        return next.handle(this.setHeader(req));
       }),
       catchError((err) => {
         this.authService.logout();
